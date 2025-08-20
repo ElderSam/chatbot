@@ -4,7 +4,7 @@
 
 ## Backend
 ### Tests (TDD First)
-Back-0. [ ] Create Nest.js project
+Back-0. [x] Create Nest.js project
 Back-1. [ ] Write unit tests for `/chat` API (POST) <!-- challenge.md §8 -->  
 Back-2. [ ] Write unit tests for RouterAgent decision <!-- challenge.md §8 -->  
 Back-3. [ ] Write unit tests for MathAgent expressions <!-- challenge.md §8 -->  
