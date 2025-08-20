@@ -1,14 +1,6 @@
 # Backend
 Made with Nest.js.
 
-## create resource for each agent
-```
-mkdir src/agents
-cd src/agents
-nest generate resource router-agent
-```
-it will create the module, controller and services for each `nest generate resource ...` (including test files)
-
 -------------------------
 
 <p align="center">
