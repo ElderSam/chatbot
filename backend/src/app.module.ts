@@ -3,12 +3,14 @@ import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ChatController } from './chat/chat.controller';
+import { RouterAgentModule } from './agents/router-agent/router-agent.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true, // makes config available everywhere
-    })
+    }),
+    RouterAgentModule,
   ],
   controllers: [AppController, ChatController],
   providers: [AppService],
