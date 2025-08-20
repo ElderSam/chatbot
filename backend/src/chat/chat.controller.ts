@@ -1,12 +1,14 @@
-import { Body, Controller, Post, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Controller, Post, UsePipes, ValidationPipe, Body } from '@nestjs/common';
 import { ChatDto } from './dto/chat.dto';
+import { SanitizePipe } from './pipes/sanitize.pipe';
 
 @Controller('chat')
 export class ChatController {
     @Post()
-    @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+    @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }), SanitizePipe)
     handleChat(@Body() payload: ChatDto) {
-        console.log({ payload });
+        
+        console.log({payload});
 
         return {
             response: 'Here is the answer with personality.',
