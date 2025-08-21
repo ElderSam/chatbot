@@ -42,19 +42,19 @@ export class KnowledgeAgentService {
     const mainLink = limitedContext.length > 0 ? limitedContext[0].url : '';
 
     const prompt = `
-      Responda à pergunta do usuário usando os artigos abaixo.
-      Sempre inclua pelo menos um link relevante na resposta.
-      Pergunta: "${question}"
+      Answer the user's question using the articles below.
+      Always include at least one relevant link in your response.
+      Question: "${question}"
 
-      Artigos:
+      Articles:
       ${contextText}
     `;
 
-    // const prompt = `Você é um assistente que responde perguntas com base apenas no conteúdo fornecido.
-    //   \nResponda de forma objetiva e curta. Se não souber a resposta exata, cite explicitamente o link mais relevante para consulta: ${mainLink}
-    //   \n\nConteúdo disponível:
+    // const prompt = `You are an assistant that answers questions based only on the provided content.
+    //   \nRespond objectively and concisely. If you do not know the exact answer, explicitly cite the most relevant link for reference: ${mainLink}
+    //   \n\nAvailable content:
     //   \n${contextText}
-    //   \n\nPergunta: ${question}
+    //   \n\nQuestion: ${question}
     // `;
 
     console.log('KnowledgeAgentService - answer:');
