@@ -20,11 +20,11 @@ export class ChatController {
             console.log('/chat - start request: ', { payload })
 
             // Delegate routing decision to RouterAgent
-            const { chosenAgent, result } = await this.routerAgent.routeAndHandle(payload.message ?? '');
+            const { chosenAgent, agentResult } = await this.routerAgent.routeAndHandle(payload.message ?? '');
 
             response = {
-                response: '?',
-                source_agent_response: result,
+                response: agentResult.responseMsg,
+                source_agent_response: agentResult.data,
                 agent_workflow: [
                     { agent: 'RouterAgent', decision: chosenAgent },
                     { agent: chosenAgent }

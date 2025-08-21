@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { ChatCompletionResponse } from './groq.types';
 
 @Injectable()
 export class GroqService {
@@ -9,7 +10,7 @@ export class GroqService {
         this.groqKey = cfg.get<string>('GROQ_API_KEY') || undefined;
     }
 
-    async chatCompletion({ prompt, model = 'llama-3.1-8b-instant', temperature = 0, max_tokens = 8 }) {
+    async chatCompletion({ prompt, model = 'llama-3.1-8b-instant', temperature = 0, max_tokens = 24 }): Promise<ChatCompletionResponse> {
         if (!this.groqKey) throw new Error('GROQ_API_KEY not set');
 
         console.log('chatCompletion:')
@@ -20,7 +21,7 @@ export class GroqService {
             headers: { 'Authorization': `Bearer ${this.groqKey}`, 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 model,
-                messages: [{ role: 'user', content: prompt }],
+                messages: [{ role: 'user', content: prompt }], // TODO. verify if this role is correct
                 temperature,
                 max_tokens,
             }),
@@ -30,6 +31,7 @@ export class GroqService {
         const groqUsagePercent = ((data.usage.completion_tokens * 100) / data.usage.total_tokens).toFixed(2);
         console.log(`Groq usage: ${groqUsagePercent}%. Tokens remaining: ${data.usage.prompt_tokens}`);
 
-        return data?.choices?.[0]?.message?.content ?? '';
+        const responseMsg = data?.choices?.[0]?.message?.content ?? '';
+        return { responseMsg, data };
     }
 }
