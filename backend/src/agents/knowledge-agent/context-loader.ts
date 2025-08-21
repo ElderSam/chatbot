@@ -40,7 +40,10 @@ export async function loadDynamicContext(question: string): Promise<ArticleConte
     // Busca artigos e filtra por relevância
     const contexts: ArticleContext[] = [];
     const priority: ArticleContext[] = [];
+    let i = -1;
+
     for (const collectionUrl of collectionLinks) {
+        i++;
         try {
             const r = await fetch(collectionUrl);
             const h = await r.text();
@@ -64,7 +67,7 @@ export async function loadDynamicContext(question: string): Promise<ArticleConte
                     const href = $$(el).attr('href');
                     const dataTestId = $$(el).attr('data-testid');
                     // Adiciona apenas se data-testid NÃO for 'article-link'
-                    if (href && dataTestId == 'article-link') {
+                    if (href && dataTestId == 'article-link') { // remove os principais links, que vão repetir os links internos
                         articles.push(href);
                         // articles.push(`https://ajuda.infinitepay.io${href}`);
                     }
@@ -72,6 +75,18 @@ export async function loadDynamicContext(question: string): Promise<ArticleConte
             }
 
             console.log({ articlesQt: articles.length })
+
+            console.log({ i })
+
+            // TODO. teste temporário para impedir de ler muitos artigos.
+            if(i!== 1) {
+                while(articles.length) {
+                    articles.pop()
+                }
+            }
+            else {
+                console.log('só vai buscar o conteúdo dos artigos da 2a coleção')
+            }
 
             // Busca o conteúdo de cada artigo
             for (const link of articles) {
@@ -96,13 +111,19 @@ export async function loadDynamicContext(question: string): Promise<ArticleConte
                             priority.push(articleObj);
                         }
                         else {
+                            // TODO. ver se é necessário
                             // Fallback: verifica palavras-chave genéricas
                             const foundFallback = fallbackKeywords.some(w => text.toLowerCase().includes(w) || title.toLowerCase().includes(w));
                             if (foundFallback) {
                                 contexts.push(articleObj);
                             }
+                            // contexts.push(articleObj);
                         }
+                    } 
+                    else {
+                        console.log('Artigo não relevante:', { title, url: link });
                     }
+
                 } catch (err) {
                     console.error('Error fetching article:', link, err);
                 }
@@ -114,6 +135,8 @@ export async function loadDynamicContext(question: string): Promise<ArticleConte
 
     console.log({ priorities: priority.length, contexts: contexts.length });
 
+
+    // TODO. ver se é necessário
     // Se não encontrou nada relevante, retorna os primeiros artigos da coleção como fallback
     if (priority.length === 0 && contexts.length === 0) {
         console.log('Nenhum artigo relevante encontrado, usando fallback dos primeiros artigos.');
