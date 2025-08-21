@@ -1,23 +1,32 @@
 import { Injectable } from '@nestjs/common';
-import { RedisLoggerService } from 'src/redis-logger/redis-logger.service';
+// import { RedisLoggerService } from 'src/redis-logger/redis-logger.service';
+
+/* TODO
+ ### 2.2. 📚 KnowledgeAgent
+ - Uses **RAG (Retrieval-Augmented Generation)** based on content from:
+   - [https://ajuda.infinitepay.io/pt-BR/](https://ajuda.infinitepay.io/pt-BR/)
+ - May use **LangChain**, **LlamaIndex**, or similar.
+ - Must log:
+   - Source of the answer
+   - Execution time
+*/
 
 @Injectable()
 export class KnowledgeAgentService {
-    constructor(private readonly logger: RedisLoggerService) {}
+  // constructor(private logger: RedisLoggerService) {}
 
-    async answer(question: string): Promise<string> {
-        const start = Date.now();
+  async answer(question: string): Promise<string> {
+    const start = Date.now();
+    // TODO: implementar RAG no próximo passo
+    const answer = `Resposta simulada para: ${question}`;
+    const executionTimeMs = Date.now() - start;
 
-        // Simulação de resposta (ex.: chamada a LLM ou API externa)
-        const answer = `Resposta simulada para: ${question}`;
+    // await this.logger.log('knowledge-agent', {
+    //   question,
+    //   sources: [],            // no RAG vamos preencher
+    //   executionTimeMs,
+    // });
 
-        const executionTime = Date.now() - start;
-        await this.logger.log('knowledge-agent', {
-            question,
-            answer,
-            executionTime,
-        });
-
-        return answer;
-    }
+    return answer;
+  }
 }
