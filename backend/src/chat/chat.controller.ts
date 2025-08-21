@@ -15,8 +15,7 @@ export class ChatController {
 
         try {
             // Delegate routing decision to RouterAgent
-            const chosenAgent = await this.routerAgent.route(payload.message);
-            const result = 'Not implemented yet';
+            const { chosenAgent, result } = await this.routerAgent.handleQuery(payload.message);
 
             return {
                 response: payload.message, // Replace with actual agent response
