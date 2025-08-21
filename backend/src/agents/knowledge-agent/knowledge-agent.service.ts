@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { RedisLoggerService } from 'src/redis/redis-logger/redis-logger.service';
 import { GroqService } from '../groq/groq.service';
 import { loadDynamicContext, ArticleContext } from './context-loader';
+import { RedisCacheService } from 'src/redis/redis-cache/redis-cache.service';
+import { setRedisCacheService } from './context-loader';
 
 /* TODO
  ### 2.2. 📚 KnowledgeAgent
@@ -17,8 +19,11 @@ import { loadDynamicContext, ArticleContext } from './context-loader';
 export class KnowledgeAgentService {
   constructor(
     private logger: RedisLoggerService,
-    private readonly groq: GroqService
-  ) {}
+    private readonly groq: GroqService,
+    private readonly redisCache: RedisCacheService
+  ) {
+    setRedisCacheService(this.redisCache);
+  }
 
   async answer(question: string, context?: ArticleContext[]) {
     const start = Date.now();
