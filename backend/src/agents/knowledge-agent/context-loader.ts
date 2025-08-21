@@ -1,5 +1,6 @@
 // Usando fetch nativo do Node.js >=18
 import * as cheerio from 'cheerio';
+import { RedisCacheService } from '../../redis/redis-cache/redis-cache.service';
 
 export interface ArticleContext {
     title: string;
@@ -8,17 +9,30 @@ export interface ArticleContext {
 }
 
 // Cache simples em memória
-const articleCache = new Map<string, ArticleContext>();
-const collectionCache = new Map<string, string[]>();
+
+let redisCacheService: RedisCacheService | null = null;
+
+export function setRedisCacheService(service: RedisCacheService) {
+    redisCacheService = service;
+}
 
 export async function loadDynamicContext(question: string): Promise<ArticleContext[]> {
-    const baseUrl = 'https://ajuda.infinitepay.io/pt-BR/';
-    const res = await fetch(baseUrl);
-    const html = await res.text();
-    const $aux = cheerio.load(html);
 
+    const baseUrl = 'https://ajuda.infinitepay.io/pt-BR/';
+    const cacheKey = `collections:${baseUrl}`;
+    let html: string | null = null;
+    if (redisCacheService) {
+        html = await redisCacheService.getCache(cacheKey);
+    }
+    if (!html) {
+        const res = await fetch(baseUrl);
+        html = await res.text();
+        if (redisCacheService) {
+            await redisCacheService.setCache(cacheKey, html);
+        }
+    }
+    const $aux = cheerio.load(html);
     console.log('loadDynamicContext: dynamic context from:', {baseUrl});
-    console.log('Base page status:', res.status);
 
     // --------------------------------------------
     const section = $aux('main > div > section').html() || '';
@@ -48,13 +62,17 @@ export async function loadDynamicContext(question: string): Promise<ArticleConte
 
     for (const collectionUrl of collectionLinks) {
         collectionNum++;
-        try {
-            let articles: string[];
 
-            if (collectionCache.has(collectionUrl)) {
-                articles = collectionCache.get(collectionUrl)!;
+        try {
+            let articles: string[] = [];
+            const collectionCacheKey = `collection:${collectionUrl}`;
+            if (redisCacheService) {
+                const cachedArticles = await redisCacheService.getCache(collectionCacheKey);
+                if (cachedArticles) {
+                    articles = cachedArticles;
+                }
             }
-            else {
+            if (!articles.length) {
                 const r = await fetch(collectionUrl);
                 const h = await r.text();
                 const $$ = cheerio.load(h);
@@ -79,12 +97,12 @@ export async function loadDynamicContext(question: string): Promise<ArticleConte
                         // Adiciona apenas se data-testid NÃO for 'article-link'
                         if (href && dataTestId == 'article-link') { // remove os principais links, que vão repetir os links internos
                             articles.push(href);
-                            // articles.push(`https://ajuda.infinitepay.io${href}`);
                         }
                     });
                 }
-
-                collectionCache.set(collectionUrl, articles);
+                if (redisCacheService) {
+                    await redisCacheService.setCache(collectionCacheKey, articles);
+                }
             }
 
 
@@ -105,24 +123,32 @@ export async function loadDynamicContext(question: string): Promise<ArticleConte
 
             // Busca o conteúdo de cada artigo
             for (const link of articles) {
-                let articleObj: ArticleContext;
+
+                let articleObj: ArticleContext | null = null;
                 try {
-                    if (articleCache.has(link)) {
-                        articleObj = articleCache.get(link)!;
+                    const articleCacheKey = `article:${link}`;
+                    if (redisCacheService) {
+                        const cachedArticle = await redisCacheService.getCache(articleCacheKey);
+                        if (cachedArticle) {
+                            articleObj = cachedArticle;
+                        }
                     }
-                    else {
+                    if (!articleObj) {
                         const ar = await fetch(link);
                         console.log('Article page status:', link, ar.status);
-    
                         const ah = await ar.text();
                         const $$$ = cheerio.load(ah);
                         const text = $$$('.article').text();
                         const title = $$$('h1').first().text().trim() || link;
-    
                         console.log('Article processed:', { title, url: link, textLength: text.length });
-
                         articleObj = { title, url: link, text };
-                        articleCache.set(link, articleObj);
+                        if (redisCacheService) {
+                            await redisCacheService.setCache(articleCacheKey, articleObj);
+                        }
+                    }
+                    if (!articleObj) {
+                        // Se ainda não conseguiu obter o artigo, pula para o próximo
+                        continue;
                     }
 
                     // Filtra por relevância usando palavras da pergunta

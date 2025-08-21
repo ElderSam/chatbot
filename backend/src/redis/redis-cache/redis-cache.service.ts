@@ -8,5 +8,12 @@ export class RedisCacheService extends RedisBaseService {
         super(cfg);
     }
 
-    // Métodos específicos de cache, se necessário
+    async getCache(key: string): Promise<any | null> {
+        // Prefixo para evitar colisão com outros dados
+        return await this.get(`cache:${key}`);
+    }
+
+    async setCache(key: string, value: any, ttlSec = 86400) {
+        await this.set(`cache:${key}`, value, ttlSec);
+    }
 }
