@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-// import { RedisLoggerService } from 'src/redis-logger/redis-logger.service';
+import { RedisLoggerService } from 'src/redis-logger/redis-logger.service';
 
 /* TODO
  ### 2.2. 📚 KnowledgeAgent
@@ -13,7 +13,7 @@ import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class KnowledgeAgentService {
-  // constructor(private logger: RedisLoggerService) {}
+  constructor(private logger: RedisLoggerService) {}
 
   async answer(question: string): Promise<string> {
     const start = Date.now();
@@ -21,11 +21,11 @@ export class KnowledgeAgentService {
     const answer = `Resposta simulada para: ${question}`;
     const executionTimeMs = Date.now() - start;
 
-    // await this.logger.log('knowledge-agent', {
-    //   question,
-    //   sources: [],            // no RAG vamos preencher
-    //   executionTimeMs,
-    // });
+    await this.logger.log('knowledge-agent', {
+      question,
+      sources: [],            // no RAG vamos preencher
+      executionTimeMs,
+    });
 
     return answer;
   }

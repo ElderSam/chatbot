@@ -1,6 +1,11 @@
 # Backend
 Made with Nest.js.
 
+## Run Redis service:
+```
+docker compose up -d redis
+```
+
 -------------------------
 
 <p align="center">

@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { MathAgentService } from '../math-agent/math-agent.service';
 import { KnowledgeAgentService } from '../knowledge-agent/knowledge-agent.service';
 import { GroqService } from '../groq/groq.service';
-// import { RedisLoggerService } from 'src/redis-logger/redis-logger.service';
+import { RedisLoggerService } from 'src/redis-logger/redis-logger.service';
 
 type Route = 'MathAgent' | 'KnowledgeAgent';
 
@@ -12,7 +12,7 @@ export class RouterAgentService {
     private math: MathAgentService,
     private knowledge: KnowledgeAgentService,
     private groq: GroqService,
-    // private logger: RedisLoggerService,
+    private logger: RedisLoggerService,
   ) {}
 
   private heuristicRoute(q: string): { route: Route; confidence: number; reason: string } {
@@ -51,10 +51,10 @@ export class RouterAgentService {
     let route: Route = h.route;
     if (h.confidence < 0.85) route = await this.llmFallbackRoute(message);
 
-    // await this.logger.log('router-agent', {
-    //   message, chosenAgent: route, reason: h.reason, confidence: h.confidence,
-    //   usedLLM: h.confidence < 0.85, ts: new Date().toISOString(),
-    // });
+    await this.logger.log('router-agent', {
+      message, chosenAgent: route, reason: h.reason, confidence: h.confidence,
+      usedLLM: h.confidence < 0.85, ts: new Date().toISOString(),
+    });
 
     const result = route === 'MathAgent'
       ? await this.math.solve(message)

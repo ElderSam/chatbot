@@ -1,21 +1,21 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
-// import * as Redis from 'ioredis';
+import { Injectable } from '@nestjs/common';
+import Redis, { Redis as RedisClient } from 'ioredis';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
-export class RedisLoggerService implements OnModuleInit {
-    // private client: Redis.Redis;
+export class RedisLoggerService {
+  private client: RedisClient;
 
-    onModuleInit() {
-        // this.client = new Redis({
-        //     host: 'localhost',
-        //     port: 6379,
-        // });
+    constructor(private cfg: ConfigService) {
+        this.client = new Redis({
+            host: this.cfg.get('REDIS_HOST', 'localhost'),
+            port: Number(this.cfg.get('REDIS_PORT', 6379)),
+            password: this.cfg.get('REDIS_PASSWORD') || undefined,
+        });
     }
 
-    async log(agent: string, data: any) {
+    async log(agent: string, data: Record<string, any>, ttlSec = 900) {
         const key = `logs:${agent}:${Date.now()}`;
-        console.log(`Redis log NOT IMPLEMENTED YET - Key: ${key}, Data:`, data);
-        // console.log(`Logging to Redis - Key: ${key}, Data:`, data);
-        // await this.client.set(key, JSON.stringify(data), 'EX', 60 * 15); // expires in 15 min
+        await this.client.set(key, JSON.stringify({ ...data, agent }), 'EX', ttlSec);
     }
 }
