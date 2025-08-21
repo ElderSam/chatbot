@@ -1,103 +1,65 @@
 import { Injectable } from '@nestjs/common';
-import OpenAI from 'openai';
-
 import { MathAgentService } from '../math-agent/math-agent.service';
 import { KnowledgeAgentService } from '../knowledge-agent/knowledge-agent.service';
+import { GroqService } from '../groq/groq.service';
 // import { RedisLoggerService } from 'src/redis-logger/redis-logger.service';
 
-// ### 2.1. 🔀 RouterAgent
-// - Receives user messages.
-// - Decides which agent should answer: **KnowledgeAgent** or **MathAgent**.
-// - Generates structured logs with decision details.
-
-interface HandleQueryResponse {
-  chosenAgent: 'MathAgent' | 'KnowledgeAgent';
-  result: string;
-}
+type Route = 'MathAgent' | 'KnowledgeAgent';
 
 @Injectable()
 export class RouterAgentService {
-  private client = new OpenAI({
-    apiKey: process.env.OPENROUTER_API_KEY,
-    baseURL: 'https://openrouter.ai/api/v1',
-  });
-
   constructor(
-    private readonly mathAgent: MathAgentService,
-    private readonly knowledgeAgent: KnowledgeAgentService,
-    // private readonly logger: RedisLoggerService,
+    private math: MathAgentService,
+    private knowledge: KnowledgeAgentService,
+    private groq: GroqService,
+    // private logger: RedisLoggerService,
   ) {}
 
-  async route(query: string): Promise<'MathAgent' | 'KnowledgeAgent'> {
-    // const prompt = `
-    //   You are a RouterAgent. Your job is to decide which agent should handle a query.
+  private heuristicRoute(q: string): { route: Route; confidence: number; reason: string } {
+    // Normalize input: treat x/X/× as *
+    let s = q.toLowerCase().trim().replace(/[x×]/g, '*');
 
-    //   Agents:
-    //   - MathAgent: for any simple math, calculations, numbers, or formulas.
-    //   - KnowledgeAgent: for general knowledge, facts, or information.
+    const mathOps = ['+', '-', '*', '/', '^', '%'];
 
-    //   Query: "${query}"
+    const mathWords = ['somar','subtrair','multiplicar','dividir','porcent','porcentagem',
+      'raiz','potência','calculate','sum','minus','times','divide','percentage'];
 
-    //   Return ONLY "MathAgent" or "KnowledgeAgent".
-    // `;
+    const hasOp = mathOps.some(op => s.includes(op));
+    const hasDigit = /\d/.test(s);
+    const hasMathWord = mathWords.some(w => s.includes(w));
 
+    if ((hasDigit && hasOp) || hasMathWord) {
+      return { route: 'MathAgent', confidence: 0.9, reason: 'digits+operator or math word' };
+    }
+
+    return { route: 'KnowledgeAgent', confidence: 0.7, reason: 'no math pattern' };
+  }
+
+  private async llmFallbackRoute(q: string): Promise<Route> {
+    const prompt = `You are a strict router. Decide MATH or KNOWLEDGE.\nReturn ONLY JSON: {"route":"MathAgent"} or {"route":"KnowledgeAgent"}.\nQuery: """${q}"""`;
     try {
-      // const response = await this.client.chat.completions.create({
-      //   model: 'mistralai/mistral-7b-instruct',
-      //   messages: [{ role: 'user', content: prompt }],
-      //   temperature: 0,
-      // });
-
-      // const choice = response.choices[0].message.content?.trim();
-      // // Optionally log usage
-      // if (response.usage?.completion_tokens && response.usage?.total_tokens) {
-      //   const percentUsage = (response.usage.completion_tokens * 100) / response.usage.total_tokens;
-      //   console.log(`NOTE: usage = ${percentUsage}%`);
-      // }
-
-      let choice = 'KnowledgeAgent';
-      // Improved regex to detect mathematical expressions with numbers, operators, parentheses, and decimals
-      const mathRegex = /^[\d\s\+\-\*\/\.\(\)]+$/;
-      // Also considers phrases in English for math intent detection
-      const mathKeywords = [
-        'how much is',
-        'calculate',
-        'what is the result of',
-        'result of',
-        'sum',
-        'add',
-        'multiply',
-        'divide',
-        'subtract',
-      ];
-
-      if (
-        mathRegex.test(query.trim()) ||
-        mathKeywords.some((kw) => query.toLowerCase().includes(kw))
-      ) {
-        choice = 'MathAgent';
-      }
-
-      if (choice === 'MathAgent') return 'MathAgent';
+      const text = await this.groq.chatCompletion({ prompt, model: 'llama-3.1-8b-instant', temperature: 0, max_tokens: 8 });
+      const p = JSON.parse(text);
+      return p.route === 'MathAgent' ? 'MathAgent' : 'KnowledgeAgent';
+    } catch {
       return 'KnowledgeAgent';
-
-    } catch (error: any) {
-      // Propagate the error to the controller
-      throw error;
     }
   }
 
-  async handleQuery(query: string): Promise<HandleQueryResponse> {
-    const chosenAgent = await this.route(query);
-    let result: string = '';
+  async routeAndHandle(message: string) {
+    const h = this.heuristicRoute(message);
+    let route: Route = h.route;
+    if (h.confidence < 0.85) route = await this.llmFallbackRoute(message);
 
-    if (chosenAgent === 'MathAgent') {
-      result = await this.mathAgent.calculate(query);
-    }
-    else {
-      result = await this.knowledgeAgent.answer(query);
-    }
+    // await this.logger.log('router-agent', {
+    //   message, chosenAgent: route, reason: h.reason, confidence: h.confidence,
+    //   usedLLM: h.confidence < 0.85, ts: new Date().toISOString(),
+    // });
 
-    return { chosenAgent, result };
+    const result = route === 'MathAgent'
+      ? await this.math.solve(message)
+      : await this.knowledge.answer(message);
+
+    return { chosenAgent: route, result };
   }
 }
