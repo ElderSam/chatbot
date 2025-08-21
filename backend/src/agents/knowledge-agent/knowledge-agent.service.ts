@@ -30,20 +30,34 @@ export class KnowledgeAgentService {
     )
     .slice(0, 3);
 
-    const contextText = limitedContext.map(a => {
-      return `Título: ${a.title}\nLink: ${a.url}\nTrecho: ${a.text.slice(0, 500)}`
-    }).join('\n\n');
 
+    // const contextText = limitedContext.map(a => {
+    //   return `Título: ${a.title}\nLink: ${a.url}\nTrecho: ${a.text.slice(0, 500)}`
+    // }).join('\n\n');
+
+    const contextText = limitedContext.map(
+      (a, i) => `Artigo ${i + 1}: ${a.title}\nURL: ${a.url}\n${a.text}\n`
+    ).join('\n');
+    
     const mainLink = limitedContext.length > 0 ? limitedContext[0].url : '';
 
-    const prompt = `Você é um assistente que responde perguntas com base apenas no conteúdo fornecido.
-      \nResponda de forma objetiva e curta. Se não souber a resposta exata, cite explicitamente o link mais relevante para consulta: ${mainLink}
-      \n\nConteúdo disponível:
-      \n${contextText}
-      \n\nPergunta: ${question}
+    const prompt = `
+      Responda à pergunta do usuário usando os artigos abaixo.
+      Sempre inclua pelo menos um link relevante na resposta.
+      Pergunta: "${question}"
+
+      Artigos:
+      ${contextText}
     `;
 
-    console.log('KnowledgeAgentService - answer:', { question });
+    // const prompt = `Você é um assistente que responde perguntas com base apenas no conteúdo fornecido.
+    //   \nResponda de forma objetiva e curta. Se não souber a resposta exata, cite explicitamente o link mais relevante para consulta: ${mainLink}
+    //   \n\nConteúdo disponível:
+    //   \n${contextText}
+    //   \n\nPergunta: ${question}
+    // `;
+
+    console.log('KnowledgeAgentService - answer:');
 
     // TODO. remover?. teste temporário
     if(!limitedContext.length) {
