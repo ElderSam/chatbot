@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { RedisLoggerService } from 'src/redis-logger/redis-logger.service';
 import { GroqService } from '../groq/groq.service';
-import { loadDynamicContext } from './context-loader';
+import { loadDynamicContext, ArticleContext } from './context-loader';
 
 /* TODO
  ### 2.2. 📚 KnowledgeAgent
@@ -20,21 +20,49 @@ export class KnowledgeAgentService {
     private readonly groq: GroqService
   ) {}
 
-
-  async answer(question: string, context?: string[]) {
+  async answer(question: string, context?: ArticleContext[]) {
     const start = Date.now();
-    // Carrega contexto dos artigos da maquininha se não fornecido
-  const knowledgeContext = context && context.length > 0 ? context : await loadDynamicContext(question);
-    const prompt = `Você é um assistente que responde perguntas com base apenas no conteúdo fornecido.\nUse as informações abaixo para responder a pergunta do usuário.\nSe não souber, diga \"Não encontrei essa informação nos artigos\".\n\nConteúdo disponível:\n${knowledgeContext.join('\n\n')}\n\nPergunta: ${question}`;
+    // Carrega contexto dos artigos relevantes se não fornecido
+    const limitedContext = (
+      (context && context.length > 0) 
+      ? context 
+      : await loadDynamicContext(question)
+    )
+    .slice(0, 3);
 
+    const contextText = limitedContext.map(a => {
+      return `Título: ${a.title}\nLink: ${a.url}\nTrecho: ${a.text.slice(0, 500)}`
+    }).join('\n\n');
+
+    const mainLink = limitedContext.length > 0 ? limitedContext[0].url : '';
+
+    const prompt = `Você é um assistente que responde perguntas com base apenas no conteúdo fornecido.
+      \nResponda de forma objetiva e curta. Se não souber a resposta exata, cite explicitamente o link mais relevante para consulta: ${mainLink}
+      \n\nConteúdo disponível:
+      \n${contextText}
+      \n\nPergunta: ${question}
+    `;
+
+    console.log('KnowledgeAgentService - answer:', { question });
+
+    // TODO. remover?. teste temporário
+    if(!limitedContext.length) {
+      console.warn('KnowledgeAgentService - No context available, loading dynamic context...');
+      return { answer: 'Content not found', mainLink: ''}
+    }
+
+    // Calls LLM to generate answer
     const answer = await this.groq.chatCompletion({prompt});
 
     const executionTimeMs = Date.now() - start;
     await this.logger.log('knowledge-agent', {
       question,
-      sources: knowledgeContext.map((_, i) => `artigo_${i}`),
+      sources: limitedContext.map(a => a.url),
       executionTimeMs,
     });
-    return answer;
+    
+    console.log({ answer, mainLink })
+
+    return { answer, mainLink };
   }
 }

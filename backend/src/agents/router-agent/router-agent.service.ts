@@ -52,17 +52,29 @@ export class RouterAgentService {
   async routeAndHandle(message: string) {
     const h = this.heuristicRoute(message);
     let route: Route = h.route;
-    if (h.confidence < 0.85) route = await this.llmFallbackRoute(message);
+    console.log(`routeAndHandle: (confidence: ${h.confidence}, reason: ${h.reason})`);
+
+    // TODO. apagar. É só um teste temporário para economizar tokens
+    route = 'KnowledgeAgent';
+
+    // TODO. descomentar isso
+    // if (h.confidence < 0.85) route = await this.llmFallbackRoute(message);
+
+    console.log(`Routing decision: ${route}`);
 
     await this.logger.log('router-agent', {
       message, chosenAgent: route, reason: h.reason, confidence: h.confidence,
       usedLLM: h.confidence < 0.85, ts: new Date().toISOString(),
     });
 
-    const result = (route === 'MathAgent')
-      ? await this.math.solve(message)
-      : await this.knowledge.answer(message, []);
-
-    return { chosenAgent: route, result };
+    // TODO. descomentar isso?
+    // if (route === 'MathAgent') {
+    //   const result = await this.math.solve(message);
+    //   return { chosenAgent: route, result };
+    // }
+    // else {
+      const { answer, mainLink } = await this.knowledge.answer(message, []);
+      return { chosenAgent: route, result: answer, mainLink };
+    // }
   }
 }
