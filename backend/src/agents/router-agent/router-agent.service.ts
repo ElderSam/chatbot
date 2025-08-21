@@ -37,11 +37,14 @@ export class RouterAgentService {
 
   private async llmFallbackRoute(q: string): Promise<Route> {
     const prompt = `You are a strict router. Decide MATH or KNOWLEDGE.\nReturn ONLY JSON: {"route":"MathAgent"} or {"route":"KnowledgeAgent"}.\nQuery: """${q}"""`;
+
     try {
       const text = await this.groq.chatCompletion({ prompt, model: 'llama-3.1-8b-instant', temperature: 0, max_tokens: 8 });
+
       const p = JSON.parse(text);
       return p.route === 'MathAgent' ? 'MathAgent' : 'KnowledgeAgent';
-    } catch {
+    }
+    catch {
       return 'KnowledgeAgent';
     }
   }
@@ -56,9 +59,9 @@ export class RouterAgentService {
       usedLLM: h.confidence < 0.85, ts: new Date().toISOString(),
     });
 
-    const result = route === 'MathAgent'
+    const result = (route === 'MathAgent')
       ? await this.math.solve(message)
-      : await this.knowledge.answer(message);
+      : await this.knowledge.answer(message, []);
 
     return { chosenAgent: route, result };
   }
