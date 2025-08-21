@@ -1,51 +1,50 @@
 import { Injectable } from '@nestjs/common';
+import { create, all } from 'mathjs';
+import { ConfigService } from '@nestjs/config';
+import { GroqService } from '../groq/groq.service';
 
-/* TODO
- ### 2.3. 🧮 MathAgent
- - Uses an LLM to interpret and answer simple mathematical expressions.
- - Examples:
-   - `"How much is 65 x 3.11?"` // Não funciona ainda
-   - `"70 + 12"` // OK, funciona
-   - `"(42 * 2) / 6"` // Não funciona ainda
-*/
+const math = create(all, {});
 
 @Injectable()
 export class MathAgentService {
-  async calculate(expression: string): Promise<string> {
-    // Simple example, now with sanitization
+  constructor(cfg: ConfigService, private groq: GroqService) {}
+
+  private tryEval(expr: string): string | null {
+    try { return String(math.evaluate(expr)); } catch { return null; }
+  }
+
+  private sanitizeExpr(expr: string) {
+    // Treat x/X/× as * and only allow valid math chars
+    expr = expr.replace(/[x×]/gi, '*');
+    return expr.replace(/[^0-9\+\-\*\/\^\%\.\(\)]/g, '');
+  }
+
+  private extractDirect(message: string) {
+    return this.sanitizeExpr(message);
+  }
+
+  private async nlToExpr(nl: string): Promise<string | null> {
+    const prompt = `Convert the request into a valid mathjs expression.\nReturn ONLY the expression (no text). Example: "30% of 250" -> "0.30*250"\nUser: """${nl}"""`;
     try {
-        // Handle natural language math expressions with less repetition
-        const lower = expression.toLowerCase().trim();
-        // Only accept exact math expressions or well-defined natural language patterns
-        const patterns = [
-          { regex: /^calculate (\d+(?:\.\d+)?)(?:\s*([\+\-\*\/])\s*)(\d+(?:\.\d+)?)/, fn: (m: RegExpMatchArray) => eval(`${m[1]}${m[2]}${m[3]}`) },
-          { regex: /^add (\d+(?:\.\d+)?) (?:and|with|to) (\d+(?:\.\d+)?)/, fn: (m: RegExpMatchArray) => Number(m[1]) + Number(m[2]) },
-          { regex: /^subtract (\d+(?:\.\d+)?) from (\d+(?:\.\d+)?)/, fn: (m: RegExpMatchArray) => Number(m[2]) - Number(m[1]) },
-          { regex: /^multiply (\d+(?:\.\d+)?) by (\d+(?:\.\d+)?)/, fn: (m: RegExpMatchArray) => Number(m[1]) * Number(m[2]) },
-          { regex: /^divide (\d+(?:\.\d+)?) by (\d+(?:\.\d+)?)/, fn: (m: RegExpMatchArray) => Number(m[1]) / Number(m[2]) },
-          { regex: /^how much is (\d+(?:\.\d+)?)\s*x\s*(\d+(?:\.\d+)?)/, fn: (m: RegExpMatchArray) => Number(m[1]) * Number(m[2]) },
-        ];
-        for (const { regex, fn } of patterns) {
-          const match = lower.match(regex);
-          if (match) return String(fn(match));
-        }
-
-        // Direct math expression (e.g., "(42 * 2) / 6", "70 + 12")
-        const directMathRegex = /^[\d\s\+\-\*\/\.\(\)]+$/;
-        if (directMathRegex.test(expression.trim())) {
-          try {
-            return String(eval(expression));
-          } catch {
-            return 'NaN';
-          }
-        }
-
-        // If not matched, return NaN to indicate ambiguous or unsupported input
-        return 'NaN';
+      let expr = await this.groq.chatCompletion({ prompt, model: 'llama-3.1-8b-instant', temperature: 0, max_tokens: 24 });
+      expr = expr.trim().replace(/[x×]/g, '*').replace(/,/g, '.');
+      if (!expr || !/^[0-9\.\s\+\-\*\/\^\%\(\)]*$/.test(expr)) return null;
+      return expr;
+    } catch {
+      return null;
     }
-    catch (err) {
-      console.error('MathAgent error:', err);
-      return 'NaN';
+  }
+
+  async solve(message: string): Promise<string> {
+    const directExpr = this.extractDirect(message);
+    const directVal = this.tryEval(directExpr);
+    if (directVal !== null && directVal !== '') return directVal;
+
+    const expr = await this.nlToExpr(message);
+    if (expr) {
+      const v = this.tryEval(expr);
+      if (v !== null) return v;
     }
+    return 'Não consegui resolver. Tente algo como "30% de 250", "12 * 7", "raiz(16)".';
   }
 }
