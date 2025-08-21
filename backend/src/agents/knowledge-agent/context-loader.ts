@@ -7,6 +7,10 @@ export interface ArticleContext {
     text: string;
 }
 
+// Cache simples em memória
+const articleCache = new Map<string, ArticleContext>();
+const collectionCache = new Map<string, string[]>();
+
 export async function loadDynamicContext(question: string): Promise<ArticleContext[]> {
     const baseUrl = 'https://ajuda.infinitepay.io/pt-BR/';
     const res = await fetch(baseUrl);
@@ -40,46 +44,57 @@ export async function loadDynamicContext(question: string): Promise<ArticleConte
     // Busca artigos e filtra por relevância
     const contexts: ArticleContext[] = [];
     const priority: ArticleContext[] = [];
-    let i = -1;
+    let collectionNum = 0;
 
     for (const collectionUrl of collectionLinks) {
-        i++;
+        collectionNum++;
         try {
-            const r = await fetch(collectionUrl);
-            const h = await r.text();
-            const $$ = cheerio.load(h);
+            let articles: string[];
 
-            console.log('Collection page status:', collectionUrl, r.status);
-
-            // Seleciona os links dos artigos dentro da coleção
-            const articles: string[] = [];
-
-            $$('.article-list a').each((i, el) => {
-                // TODO. verificar se pode ficar assim.
-                if (i >= 5) return false; // Limita a 5 artigos por coleção
-
-                const href = $$(el).attr('href');
-                if (href) articles.push(`https://ajuda.infinitepay.io${href}`);
-            });
-
-            if (!articles.length) {
-                $$('body main > div > section section a').each((_, el) => {
-                    const href = $$(el).attr('href');
-                    const dataTestId = $$(el).attr('data-testid');
-                    // Adiciona apenas se data-testid NÃO for 'article-link'
-                    if (href && dataTestId == 'article-link') { // remove os principais links, que vão repetir os links internos
-                        articles.push(href);
-                        // articles.push(`https://ajuda.infinitepay.io${href}`);
-                    }
-                });
+            if (collectionCache.has(collectionUrl)) {
+                articles = collectionCache.get(collectionUrl)!;
             }
+            else {
+                const r = await fetch(collectionUrl);
+                const h = await r.text();
+                const $$ = cheerio.load(h);
+                articles = [];
+
+                console.log('Collection page status:', collectionUrl, r.status);
+    
+                // Seleciona os links dos artigos dentro da coleção
+                // TODO. ver se precisa disso, já que nunca entra aqui, mas sim na condição abaixo
+                $$('.article-list a').each((i, el) => {
+                    // TODO. verificar se pode ficar assim.
+                    if (i >= 5) return false; // Limita a 5 artigos por coleção
+    
+                    const href = $$(el).attr('href');
+                    if (href) articles.push(`https://ajuda.infinitepay.io${href}`);
+                });
+
+                if (!articles.length) {
+                    $$('body main > div > section section a').each((_, el) => {
+                        const href = $$(el).attr('href');
+                        const dataTestId = $$(el).attr('data-testid');
+                        // Adiciona apenas se data-testid NÃO for 'article-link'
+                        if (href && dataTestId == 'article-link') { // remove os principais links, que vão repetir os links internos
+                            articles.push(href);
+                            // articles.push(`https://ajuda.infinitepay.io${href}`);
+                        }
+                    });
+                }
+
+                collectionCache.set(collectionUrl, articles);
+            }
+
 
             console.log({ articlesQt: articles.length })
 
-            console.log({ i })
+            const collectionName = collectionUrl.split('/collections')[1];
+            console.log({ collectionNum, collectionName })
 
             // TODO. teste temporário para impedir de ler muitos artigos.
-            if(i!== 1) {
+            if(collectionNum!== 2) {
                 while(articles.length) {
                     articles.pop()
                 }
@@ -90,23 +105,33 @@ export async function loadDynamicContext(question: string): Promise<ArticleConte
 
             // Busca o conteúdo de cada artigo
             for (const link of articles) {
+                let articleObj: ArticleContext;
                 try {
-                    const ar = await fetch(link);
-                    console.log('Article page status:', link, ar.status);
+                    if (articleCache.has(link)) {
+                        articleObj = articleCache.get(link)!;
+                    }
+                    else {
+                        const ar = await fetch(link);
+                        console.log('Article page status:', link, ar.status);
+    
+                        const ah = await ar.text();
+                        const $$$ = cheerio.load(ah);
+                        const text = $$$('.article').text();
+                        const title = $$$('h1').first().text().trim() || link;
+    
+                        console.log('Article processed:', { title, url: link, textLength: text.length });
 
-                    const ah = await ar.text();
-                    const $$$ = cheerio.load(ah);
-                    const text = $$$('.article').text();
-                    const title = $$$('h1').first().text().trim() || link;
-
-                    console.log('Article processed:', { title, url: link, textLength: text.length });
+                        articleObj = { title, url: link, text };
+                        articleCache.set(link, articleObj);
+                    }
 
                     // Filtra por relevância usando palavras da pergunta
+                    const { text, title } = articleObj;
                     if (text && question) {
                         const qWords = question.toLowerCase().split(/\W+/).filter(w => w.length > 2);
                         const foundInText = qWords.some(w => text.toLowerCase().includes(w));
                         const foundInTitle = qWords.some(w => title.toLowerCase().includes(w));
-                        const articleObj = { title, url: link, text };
+                        // const articleObj = { title, url: link, text };
                         if (foundInTitle || foundInText) {
                             priority.push(articleObj);
                         }
@@ -166,7 +191,9 @@ export async function loadDynamicContext(question: string): Promise<ArticleConte
         limited.push(ctx);
         total += ctx.text.length;
     }
+
     console.log({ total })
-    console.log({ limited })
+    console.log({ limitedTitles: limited.map(c => c.title) })
+
     return limited;
 }
