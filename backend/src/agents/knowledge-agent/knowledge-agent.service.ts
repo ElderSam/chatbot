@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { RedisLoggerService } from 'src/redis-logger/redis-logger.service';
+import { RedisLoggerService } from 'src/redis/redis-logger/redis-logger.service';
 import { GroqService } from '../groq/groq.service';
 import { loadDynamicContext, ArticleContext } from './context-loader';
 

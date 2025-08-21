@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { MathAgentService } from '../math-agent/math-agent.service';
 import { KnowledgeAgentService } from '../knowledge-agent/knowledge-agent.service';
 import { GroqService } from '../groq/groq.service';
-import { RedisLoggerService } from 'src/redis-logger/redis-logger.service';
+import { RedisLoggerService } from 'src/redis/redis-logger/redis-logger.service';
 
 type Route = 'MathAgent' | 'KnowledgeAgent';
 
