@@ -34,6 +34,9 @@ export async function loadDynamicContext(question: string): Promise<ArticleConte
 
     console.log({ collectionLinksQtd: collectionLinks.length })
 
+    // Palavras-chave genéricas para fallback
+    const fallbackKeywords = ['pagamento', 'cartão', 'receber', 'transação', 'venda', 'máquina', 'infinitepay', 'dinheiro', 'saldo', 'transferência'];
+
     // Busca artigos e filtra por relevância
     const contexts: ArticleContext[] = [];
     const priority: ArticleContext[] = [];
@@ -48,7 +51,10 @@ export async function loadDynamicContext(question: string): Promise<ArticleConte
             // Seleciona os links dos artigos dentro da coleção
             const articles: string[] = [];
 
-            $$('.article-list a').each((_, el) => {
+            $$('.article-list a').each((i, el) => {
+                // TODO. verificar se pode ficar assim.
+                if (i >= 5) return false; // Limita a 5 artigos por coleção
+
                 const href = $$(el).attr('href');
                 if (href) articles.push(`https://ajuda.infinitepay.io${href}`);
             });
@@ -88,8 +94,13 @@ export async function loadDynamicContext(question: string): Promise<ArticleConte
                         const articleObj = { title, url: link, text };
                         if (foundInTitle || foundInText) {
                             priority.push(articleObj);
-                        } else {
-                            contexts.push(articleObj);
+                        }
+                        else {
+                            // Fallback: verifica palavras-chave genéricas
+                            const foundFallback = fallbackKeywords.some(w => text.toLowerCase().includes(w) || title.toLowerCase().includes(w));
+                            if (foundFallback) {
+                                contexts.push(articleObj);
+                            }
                         }
                     }
                 } catch (err) {
@@ -102,6 +113,27 @@ export async function loadDynamicContext(question: string): Promise<ArticleConte
     }
 
     console.log({ priorities: priority.length, contexts: contexts.length });
+
+    // Se não encontrou nada relevante, retorna os primeiros artigos da coleção como fallback
+    if (priority.length === 0 && contexts.length === 0) {
+        console.log('Nenhum artigo relevante encontrado, usando fallback dos primeiros artigos.');
+        for (const collectionUrl of collectionLinks) {
+            try {
+                const r = await fetch(collectionUrl);
+                const h = await r.text();
+                const $$ = cheerio.load(h);
+                $$('.article-list a').each((_, el) => {
+                    const href = $$(el).attr('href');
+                    if (href) {
+                        const link = `https://ajuda.infinitepay.io${href}`;
+                        contexts.push({ title: link, url: link, text: '' });
+                    }
+                });
+            } catch(error) {
+                console.error('Error fetching collection:', collectionUrl, error);
+            }
+        }
+    }
 
     // Prioriza artigos relevantes, depois completa com outros até o limite
     let total = 0;
