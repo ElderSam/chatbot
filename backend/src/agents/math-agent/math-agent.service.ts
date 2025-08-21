@@ -23,14 +23,18 @@ export class MathAgentService {
     return this.sanitizeExpr(message);
   }
 
+  // TODO. Não faz sentido isso. Deveria chamar o LLM direto para responder a pergunta matemática.
   private async nlToExpr(nl: string): Promise<string | null> {
     const prompt = `Convert the request into a valid mathjs expression.\nReturn ONLY the expression (no text). Example: "30% of 250" -> "0.30*250"\nUser: """${nl}"""`;
     try {
-      let expr = await this.groq.chatCompletion({ prompt, model: 'llama-3.1-8b-instant', temperature: 0, max_tokens: 24 });
+      let expr = await this.groq.chatCompletion({ prompt });
+
       expr = expr.trim().replace(/[x×]/g, '*').replace(/,/g, '.');
+
       if (!expr || !/^[0-9\.\s\+\-\*\/\^\%\(\)]*$/.test(expr)) return null;
       return expr;
-    } catch {
+    }
+    catch {
       return null;
     }
   }
