@@ -1,9 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { RedisLoggerService } from 'src/redis/redis-logger/redis-logger.service';
 import { GroqService } from '../groq/groq.service';
-import { loadDynamicContext, ArticleContext } from './context-loader';
-import { RedisCacheService } from 'src/redis/redis-cache/redis-cache.service';
-import { setRedisCacheService } from './context-loader';
+import { loadDynamicContext, ArticleContext, setRedisCacheService } from './context-loader';
+import { RedisLoggerService } from '../../redis/redis-logger/redis-logger.service';
+import { RedisCacheService } from '../../redis/redis-cache/redis-cache.service';
 
 /* TODO
  ### 2.2. 📚 KnowledgeAgent
