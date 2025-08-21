@@ -87,6 +87,6 @@ export class KnowledgeAgentService {
         finalResponse += `\n\nVeja mais detalhes neste artigo: ${mainLink}`;
     }
 
-    return { answer: finalResponse, mainLink };
+    return { answer: finalResponse };
   }
 }

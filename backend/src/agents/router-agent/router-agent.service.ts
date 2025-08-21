@@ -13,36 +13,16 @@ export class RouterAgentService {
     private knowledge: KnowledgeAgentService,
     private groq: GroqService,
     private logger: RedisLoggerService,
-  ) {}
+  ) { }
 
-  private heuristicRoute(q: string): { route: Route; confidence: number; reason: string } {
-    // Normalize input: treat x/X/× as *
-    let s = q.toLowerCase().trim().replace(/[x×]/g, '*');
-
-    const mathOps = ['+', '-', '*', '/', '^', '%'];
-
-    const mathWords = ['somar','subtrair','multiplicar','dividir','porcent','porcentagem',
-      'raiz','potência','calculate','sum','minus','times','divide','percentage'];
-
-    const hasOp = mathOps.some(op => s.includes(op));
-    const hasDigit = /\d/.test(s);
-    const hasMathWord = mathWords.some(w => s.includes(w));
-
-    if ((hasDigit && hasOp) || hasMathWord) {
-      return { route: 'MathAgent', confidence: 0.9, reason: 'digits+operator or math word' };
-    }
-
-    return { route: 'KnowledgeAgent', confidence: 0.7, reason: 'no math pattern' };
-  }
-
-  private async llmFallbackRoute(q: string): Promise<Route> {
-    const prompt = `You are a strict router. Decide MATH or KNOWLEDGE.\nReturn ONLY JSON: {"route":"MathAgent"} or {"route":"KnowledgeAgent"}.\nQuery: """${q}"""`;
+  private async decideAgent(q: string): Promise<Route> {
+    const prompt = `You are a strict router. Decide what agent should I call, returning only "MathAgent" or "KnowledgeAgent".\nQuery: """${q}"""`;
 
     try {
-      const text = await this.groq.chatCompletion({ prompt, model: 'llama-3.1-8b-instant', temperature: 0, max_tokens: 8 });
+      const text = await this.groq.chatCompletion({ prompt });
 
       const p = JSON.parse(text);
-      return p.route === 'MathAgent' ? 'MathAgent' : 'KnowledgeAgent';
+      return p === 'MathAgent' ? 'MathAgent' : 'KnowledgeAgent';
     }
     catch {
       return 'KnowledgeAgent';
@@ -50,31 +30,28 @@ export class RouterAgentService {
   }
 
   async routeAndHandle(message: string) {
-    const h = this.heuristicRoute(message);
-    let route: Route = h.route;
-    console.log(`routeAndHandle: (confidence: ${h.confidence}, reason: ${h.reason})`);
+    // route = 'KnowledgeAgent'; // TODO. apagar. É só um teste temporário para economizar tokens
 
-    // TODO. apagar. É só um teste temporário para economizar tokens
-    route = 'KnowledgeAgent';
-
-    // TODO. descomentar isso
-    // if (h.confidence < 0.85) route = await this.llmFallbackRoute(message);
+    const route = await this.decideAgent(message);
 
     console.log(`Routing decision: ${route}`);
 
-    await this.logger.log('router-agent', {
-      message, chosenAgent: route, reason: h.reason, confidence: h.confidence,
-      usedLLM: h.confidence < 0.85, ts: new Date().toISOString(),
-    });
+    let agentResult: string;
 
     // TODO. descomentar isso?
-    // if (route === 'MathAgent') {
-    //   const result = await this.math.solve(message);
-    //   return { chosenAgent: route, result };
-    // }
-    // else {
-      const { answer, mainLink } = await this.knowledge.answer(message, []);
-      return { chosenAgent: route, result: answer, mainLink };
-    // }
+    if (route === 'MathAgent') {
+      agentResult = await this.math.solve(message);
+    }
+    else {
+      const { answer } = await this.knowledge.answer(message, []);
+      agentResult = answer;
+    }
+
+    await this.logger.log('router-agent', {
+      message, chosenAgent: route, agentResult,
+      ts: new Date().toISOString(),
+    });
+
+    return { chosenAgent: route, result: agentResult };
   }
 }
