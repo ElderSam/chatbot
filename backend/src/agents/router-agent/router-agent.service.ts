@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { MathAgentService } from '../math-agent/math-agent.service';
 import { KnowledgeAgentService } from '../knowledge-agent/knowledge-agent.service';
+import { RedisLoggerService } from 'src/redis-logger/redis-logger.service';
 
 // ### 2.1. 🔀 RouterAgent
 // - Receives user messages.
@@ -12,6 +13,7 @@ export class RouterAgentService {
   constructor(
     private readonly mathAgent: MathAgentService,
     private readonly knowledgeAgent: KnowledgeAgentService,
+    private readonly logger: RedisLoggerService,
   ) {}
 
   async route(message: string) {
@@ -27,6 +29,12 @@ export class RouterAgentService {
       agent = 'knowledge-agent';
       result = await this.knowledgeAgent.answer(message);
     }
+
+    await this.logger.log('router-agent', {
+      message,
+      chosenAgent: agent,
+      timestamp: new Date().toISOString(),
+    });
 
     if(!result) result = 'Not implemented yet';
 
