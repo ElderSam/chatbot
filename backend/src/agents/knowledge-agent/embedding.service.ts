@@ -1,19 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { HfInference } from '@huggingface/inference';
+import { InferenceClient } from '@huggingface/inference';
 import { RedisCacheService } from '../../redis/redis-cache/redis-cache.service';
-import { ArticleContext } from './context-loader';
-
-export interface ArticleWithEmbedding extends ArticleContext {
-    embedding: number[];
-}
-
-@Injectable()
+import { ArticleContext, ArticleWithEmbedding } from './types';@Injectable()
 export class EmbeddingService {
-    private hf: HfInference;
+    private hf: InferenceClient;
 
     constructor(private readonly redisCache: RedisCacheService) {
         // Usar token do Hugging Face se disponível (pode ser variável de ambiente)
-        this.hf = new HfInference(process.env.HUGGINGFACE_API_KEY);
+        this.hf = new InferenceClient(process.env.HUGGINGFACE_API_KEY);
     }
 
     async generateEmbedding(text: string): Promise<number[]> {

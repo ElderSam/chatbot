@@ -1,12 +1,7 @@
 // Usando fetch nativo do Node.js >=18
 import * as cheerio from 'cheerio';
 import { RedisCacheService } from '../../redis/redis-cache/redis-cache.service';
-
-export interface ArticleContext {
-    title: string;
-    url: string;
-    text: string;
-}
+import { ArticleContext } from './types';
 
 // Cache simples em memória
 
