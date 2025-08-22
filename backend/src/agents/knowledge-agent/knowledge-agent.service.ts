@@ -71,11 +71,26 @@ export class KnowledgeAgentService {
       const mainLink = limitedContext[0].url;
 
       const prompt = `
-        Answer the user's question as a friendly chatbot assistant. Be direct and natural. If you do not know the answer, say you do not have that information right now, but suggest the user check the link below for more details. Do not mention articles or the search process.
-        Question: "${question}"
+        You are an InfinitePay assistant helping customers with information about products and services.
 
-        Context:
+        Use ONLY the information from the context below to answer the user's question. Be direct, helpful, and natural.
+
+        INSTRUCTIONS:
+        - Answer based on the provided context
+        - If the context contains the exact information, provide a complete answer
+        - If the context does not contain the specific information OR you're not completely sure about the details, say that you don't have that specific information available and suggest the user check the provided link for complete details
+        - Always provide the most relevant link from the context when you cannot give a complete answer
+        - Do not mention "articles" or the search process
+        - Be conversational and friendly
+        - Provide specific information when available in the context
+        - Answer in Portuguese
+
+        QUESTION: "${question}"
+
+        CONTEXT:
         ${contextText}
+
+        ANSWER:
       `;
 
       console.log('KnowledgeAgentService - generating answer with LLM');
@@ -86,6 +101,11 @@ export class KnowledgeAgentService {
       console.log({ responseMsg: responseMsg?.substring(0, 100), mainLink });
 
       let finalMessage = responseMsg?.trim() || 'Consulte o site da InfinitePay para mais detalhes.';
+      
+      // Verifica se a resposta parece ter sido cortada e adiciona reticências
+      if (finalMessage && !finalMessage.match(/[.!?…]$/)) {
+        finalMessage += '...';
+      }
       
       // Se houver link relevante, inclua de forma natural
       if (mainLink && !finalMessage.includes(mainLink)) {
