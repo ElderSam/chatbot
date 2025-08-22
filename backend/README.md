@@ -16,20 +16,20 @@ cp .env.example .env
 
 Get API keys:
 - **Groq**: https://console.groq.com → API Keys → Create API Key
-- **HuggingFace**: https://huggingface.co/settings/tokens → New token
+- **HuggingFace**: https://huggingface.co/settings/tokens → New token (Read)
 
 ### 2. Start Services
 ```bash
-# Start Redis
+# 2.1. Start Redis
 docker compose up -d redis
 
-# Install dependencies
+# 2.2. Install dependencies
 pnpm install
 
-# Generate embeddings (first time only)
+# 2.3. Generate embeddings (first time only)
 pnpm tsx scripts/generate-embeddings.ts
 
-# Start development server
+# 2.4. Start development server
 pnpm run start:dev
 ```
 
