@@ -29,30 +29,34 @@ export class KnowledgeAgentService {
 
   async answer(question: string, context?: ArticleContext[]) {
     const start = Date.now();
-    
+
     try {
-      // Primeiro, tenta buscar artigos relevantes usando embeddings semânticos
-      let limitedContext = await this.embeddingService.findMostRelevantArticles(question, 3);
-      
-      // Se não encontrou artigos relevantes ou há poucos embeddings, carrega contexto dinamicamente
+      // 🔒 TEMPORARY: Remove this section after testing
+      const TEMP_SAFETY_MODE = true; // TODO: Change to false after validation
+      const TEMP_MAX_ARTICLES = TEMP_SAFETY_MODE ? 3 : 5;
+
+      // First, try to find relevant articles using semantic embeddings
+      let limitedContext = await this.embeddingService.findMostRelevantArticles(question, TEMP_MAX_ARTICLES);
+
+      // If no relevant articles found or few embeddings, load context dynamically
       if (limitedContext.length === 0) {
         console.log('No relevant articles found with embeddings, loading dynamic context...');
         const dynamicArticles = await loadDynamicContext(question);
-        
-        // Gera embeddings para os novos artigos e os salva no Redis
+
+        // Generate embeddings for new articles and save them in Redis
         if (dynamicArticles.length > 0) {
           await this.embeddingService.storeArticleEmbeddings(dynamicArticles);
-          // Tenta novamente a busca por similaridade
+          // Try similarity search again
           limitedContext = await this.embeddingService.findMostRelevantArticles(question, 3);
-          
-          // Se ainda não encontrou, usa os artigos carregados dinamicamente como fallback
+
+          // If still not found, use dynamically loaded articles as fallback
           if (limitedContext.length === 0) {
             limitedContext = dynamicArticles.slice(0, 3);
           }
         }
       }
 
-      // Se foi fornecido contexto específico, usa ele
+      // If specific context provided, use it
       if (context && context.length > 0) {
         limitedContext = context.slice(0, 3);
       }
@@ -64,59 +68,52 @@ export class KnowledgeAgentService {
         return { responseMsg: 'Desculpe, não encontrei informações relevantes sobre sua pergunta no momento. Por favor, consulte o site da InfinitePay para mais detalhes.', data: {} };
       }
 
-      const contextText = limitedContext.map(
-        (a, i) => `Artigo ${i + 1}: ${a.title}\nURL: ${a.url}\n${a.text}\n`
-      ).join('\n');
-      
+      // 💰 OPTIMIZATION: Smart context compression to save tokens
+      const contextText = this.compressContext(limitedContext);
+
       const mainLink = limitedContext[0].url;
 
-      const prompt = `
-        You are an InfinitePay assistant helping customers with information about products and services.
+      // 💰 OPTIMIZATION: More efficient and focused prompt
+      const prompt = `Assistente InfinitePay. Use APENAS o contexto abaixo.
 
-        Use ONLY the information from the context below to answer the user's question. Be direct, helpful, and natural.
+PERGUNTA: "${question}"
 
-        INSTRUCTIONS:
-        - Answer based on the provided context
-        - If the context contains the exact information, provide a complete answer
-        - If the context does not contain the specific information OR you're not completely sure about the details, say that you don't have that specific information available and suggest the user check the provided link for complete details
-        - Always provide the most relevant link from the context when you cannot give a complete answer
-        - Do not mention "articles" or the search process
-        - Be conversational and friendly
-        - Provide specific information when available in the context
-        - Answer in Portuguese
+CONTEXTO:
+${contextText}
 
-        QUESTION: "${question}"
+REGRAS:
+- Se souber a resposta: seja completo e específico
+- Se não souber: diga "consulte o link para detalhes" 
+- Sempre inclua o link quando não souber completamente
+- Responda em português
+- Seja direto
 
-        CONTEXT:
-        ${contextText}
-
-        ANSWER:
-      `;
+RESPOSTA:`;
 
       console.log('KnowledgeAgentService - generating answer with LLM');
 
       // Calls LLM to generate answer
-      const { responseMsg, data } = await this.groq.chatCompletion({prompt});
-      
+      const { responseMsg, data } = await this.groq.chatCompletion({ prompt });
+
       console.log({ responseMsg: responseMsg?.substring(0, 100), mainLink });
 
       let finalMessage = responseMsg?.trim() || 'Consulte o site da InfinitePay para mais detalhes.';
-      
-      // Verifica se a resposta parece ter sido cortada e adiciona reticências
+
+      // Check if the answer seems cut off and add ellipsis
       if (finalMessage && !finalMessage.match(/[.!?…]$/)) {
         finalMessage += '...';
       }
-      
-      // Se houver link relevante, inclua de forma natural
+
+      // If there is a relevant link, include it naturally
       if (mainLink && !finalMessage.includes(mainLink)) {
-          finalMessage += `\n\nSaiba mais: ${mainLink}`;
+        finalMessage += `\n\nSaiba mais: ${mainLink}`;
       }
 
       const finalResponse = { responseMsg: finalMessage, data };
       const executionTimeMs = Date.now() - start;
 
       await this.logger.log('knowledge-agent', {
-        question, 
+        question,
         ...finalResponse,
         sources: limitedContext.map(a => a.url),
         executionTimeMs,
@@ -124,22 +121,62 @@ export class KnowledgeAgentService {
       });
 
       return finalResponse;
-      
+
     } catch (error) {
       console.error('Error in KnowledgeAgent answer:', error);
       const executionTimeMs = Date.now() - start;
-      
+
       await this.logger.log('knowledge-agent', {
-        question, 
+        question,
         error: error.message,
         executionTimeMs,
         usedEmbeddings: false,
       });
 
-      return { 
-        responseMsg: 'Desculpe, ocorreu um erro ao processar sua pergunta. Por favor, tente novamente.', 
-        data: {} 
+      return {
+        responseMsg: 'Desculpe, ocorreu um erro ao processar sua pergunta. Por favor, tente novamente.',
+        data: {}
       };
     }
+  }
+
+  // 💰 OPTIMIZATION: Smart context compression to save tokens
+  private compressContext(articles: ArticleContext[]): string {
+    return articles.map((article, i) => {
+      // Extract only the most relevant parts of the text
+      const relevantText = this.extractRelevantSentences(article.text, 300); // Max 300 chars per article
+      return `${i + 1}. ${article.title}\n${relevantText}\nURL: ${article.url}\n`;
+    }).join('\n');
+  }
+
+  // 🎯 OPTIMIZATION: Extracts most relevant sentences based on keywords
+  private extractRelevantSentences(text: string, maxChars: number): string {
+    if (text.length <= maxChars) return text;
+
+    const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 10);
+
+    // Prioritize sentences with important keywords
+    const importantKeywords = ['taxa', 'custo', 'valor', 'preço', 'cobrança', 'grátis', 'pagar', 'maquininha', 'InfinitePay'];
+
+    const scoredSentences = sentences.map(sentence => {
+      const score = importantKeywords.reduce((acc, keyword) => {
+        return acc + (sentence.toLowerCase().includes(keyword) ? 1 : 0);
+      }, 0);
+      return { sentence: sentence.trim(), score };
+    });
+
+    // Sort by relevance and concatenate up to the limit
+    let result = '';
+    const sortedSentences = scoredSentences.sort((a, b) => b.score - a.score);
+
+    for (const item of sortedSentences) {
+      if (result.length + item.sentence.length <= maxChars) {
+        result += item.sentence + '. ';
+      } else {
+        break;
+      }
+    }
+
+    return result || text.substring(0, maxChars) + '...';
   }
 }
