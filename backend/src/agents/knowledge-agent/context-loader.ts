@@ -11,6 +11,12 @@ export function setRedisCacheService(service: RedisCacheService) {
 
 // 🎯 OTIMIZAÇÃO: Mapeamento inteligente de palavras-chave para coleções
 function getRelevantCollections(question: string): number[] {
+    // Se question está vazia, retorna coleções principais
+    if (!question || question.trim() === '') {
+        console.log('🔍 No specific question provided, using main collections');
+        return [7, 1, 3]; // Coleções mais importantes
+    }
+
     const questionLower = question.toLowerCase();
     const collectionMap: Record<string, number[]> = {
         // Coleção 7: Sua Maquininha (mais frequente)
@@ -27,10 +33,12 @@ function getRelevantCollections(question: string): number[] {
         if (keywords === 'default') continue;
         const regex = new RegExp(keywords, 'i');
         if (regex.test(questionLower)) {
+            console.log(`🎯 Question "${question}" matched pattern "${keywords}" → collections ${collections.join(', ')}`);
             return collections;
         }
     }
     
+    console.log(`🔍 Question "${question}" didn't match any pattern → using default collections`);
     return collectionMap.default;
 }
 
@@ -71,8 +79,8 @@ async function processCollection(collectionUrl: string, collectionIndex: number)
 
         console.log(`📄 Collection ${collectionIndex} has ${articles.length} articles`);
 
-        // 🔒 TEMPORÁRIO: Processa apenas os primeiros 5 artigos para ser mais rápido
-        const TEMP_MAX_ARTICLES_PER_COLLECTION = 5; // TODO: Remover limitação após validação
+        // 🔒 TEMPORÁRIO: Processa apenas os primeiros 30 artigos para ser mais rápido
+        const TEMP_MAX_ARTICLES_PER_COLLECTION = 30; // TODO: Remover limitação após validação
         const articlesToProcess = articles.slice(0, TEMP_MAX_ARTICLES_PER_COLLECTION);
         console.log(`🚀 Processing first ${articlesToProcess.length} articles for speed...`);
 
@@ -131,8 +139,9 @@ async function processCollection(collectionUrl: string, collectionIndex: number)
 
 export async function loadDynamicContext(question: string): Promise<ArticleContext[]> {
     // 🔒 TEMPORÁRIO: Sistema de segurança - processa apenas 1 coleção
-    const TEMP_SINGLE_COLLECTION_MODE = true; // TODO: Alterar para false após validação
-    const TEMP_TARGET_COLLECTION = 7; // Sua Maquininha (mais relevante)
+    const TEMP_SINGLE_COLLECTION_MODE = true; // TODO: Alterar para false após validação ✅ ATIVADO!
+    const TEMP_TARGET_COLLECTION = 2; // seus primeiros passos
+    // const TEMP_TARGET_COLLECTION = 7; // Sua Maquininha (mais relevante)
 
     const baseUrl = 'https://ajuda.infinitepay.io/pt-BR/';
     const cacheKey = `collections:${baseUrl}`;
@@ -141,7 +150,8 @@ export async function loadDynamicContext(question: string): Promise<ArticleConte
     const quickCacheKey = 'processed_articles:quick';
     if (redisCacheService) {
         const quickCache = await redisCacheService.getCache(quickCacheKey);
-        if (quickCache && quickCache.length > 0) {
+
+        if (question && quickCache && quickCache.length > 0) {
             console.log('📚 Using quick cache with', quickCache.length, 'articles'); 
             return quickCache.slice(0, 10); // Retorna apenas 10 artigos mais relevantes 
         }
@@ -185,7 +195,12 @@ export async function loadDynamicContext(question: string): Promise<ArticleConte
         // 🔒 MODO TEMPORÁRIO: Processa apenas 1 coleção específica
         targetCollections = [TEMP_TARGET_COLLECTION];
         console.log(`🔒 TEMP MODE: Processing only collection ${TEMP_TARGET_COLLECTION}`);
-    } else {
+    }
+    else if(!question) {
+        // fill from 1 to 15
+        targetCollections = Array.from({ length: 15 }, (_, i) => i + 1);
+    }
+    else {
         // 🚀 MODO COMPLETO: Busca inteligente baseada na pergunta
         targetCollections = getRelevantCollections(question);
         console.log(`🎯 Smart search targeting collections: ${targetCollections.join(', ')}`);

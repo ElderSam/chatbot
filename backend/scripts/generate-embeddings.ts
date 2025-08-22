@@ -79,8 +79,11 @@ async function generateEmbeddings() {
         console.log('📚 Loading articles...');
         const startTime = Date.now();
 
-        // TODO. Entender porque está passando o texto abaixo para loadDynamicContext()
-        const articles = await loadDynamicContext('taxa maquininha pagamento cartão');
+        // OPÇÃO 1: Carrega todas as coleções sem filtro
+        const articles = await loadDynamicContext('');
+        
+        // OPÇÃO 2: Pergunta específica para testar busca inteligente
+        // const articles = await loadDynamicContext('taxa maquininha pagamento cartão');
 
         const loadTime = Date.now() - startTime;
         console.log(`⏱️ Articles loaded in ${loadTime}ms`);
@@ -92,8 +95,8 @@ async function generateEmbeddings() {
 
         console.log(`📄 Found ${articles.length} articles total`);
 
-        // Limita para apenas 3 artigos para teste mais rápido
-        const articlesToProcess = articles.slice(0, 3);
+        // Limita para apenas 30 artigos por segurança
+        const articlesToProcess = articles.slice(0, 30);
         console.log(`🎯 Processing first ${articlesToProcess.length} articles for initial test...`);
 
         let processed = 0;

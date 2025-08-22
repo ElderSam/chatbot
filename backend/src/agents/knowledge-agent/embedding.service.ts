@@ -117,9 +117,9 @@ export class EmbeddingService {
                     text: this.compressText(item.article.text, 400), // 🎯 OTIMIZAÇÃO: Comprime texto
                 }));
 
-            // Cache do resultado da busca por 30 minutos
+            // Cache do resultado da busca por 1 hora
             if (results.length > 0) {
-                await this.redisCache.setCache(searchCacheKey, results, 1800);
+                await this.redisCache.setCache(searchCacheKey, results, 3600);
             }
 
             console.log(`🎯 Found ${results.length} relevant articles (from ${articles.length} candidates)`);

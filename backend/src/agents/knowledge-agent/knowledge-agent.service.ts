@@ -32,8 +32,8 @@ export class KnowledgeAgentService {
 
     try {
       // 🔒 TEMPORARY: Remove this section after testing
-      const TEMP_SAFETY_MODE = true; // TODO: Change to false after validation
-      const TEMP_MAX_ARTICLES = TEMP_SAFETY_MODE ? 3 : 5;
+      const TEMP_SAFETY_MODE = false; // TODO: Change to false after validation
+      const TEMP_MAX_ARTICLES = TEMP_SAFETY_MODE ? 3 : 30;
 
       // First, try to find relevant articles using semantic embeddings
       let limitedContext = await this.embeddingService.findMostRelevantArticles(question, TEMP_MAX_ARTICLES);
@@ -59,6 +59,7 @@ export class KnowledgeAgentService {
       // If specific context provided, use it
       if (context && context.length > 0) {
         limitedContext = context.slice(0, 3);
+        console.log({ contextLen: context.length, limitedContextLen: limitedContext.length });
       }
 
       console.log(`Using ${limitedContext.length} articles for context`);
@@ -74,21 +75,22 @@ export class KnowledgeAgentService {
       const mainLink = limitedContext[0].url;
 
       // 💰 OPTIMIZATION: More efficient and focused prompt
-      const prompt = `Assistente InfinitePay. Use APENAS o contexto abaixo.
+      const prompt = `InfinitePay Assistant. Use ONLY the context below.
 
-PERGUNTA: "${question}"
+        QUESTION: "${question}"
 
-CONTEXTO:
-${contextText}
+        CONTEXT:
+        ${contextText}
 
-REGRAS:
-- Se souber a resposta: seja completo e específico
-- Se não souber: diga "consulte o link para detalhes" 
-- Sempre inclua o link quando não souber completamente
-- Responda em português
-- Seja direto
+        RULES:
+        - If you know the answer: be complete and specific
+        - If you don't know: say "check the link for details"
+        - Always include the link when you don't know completely
+        - Answer in Portuguese
+        - Be direct
 
-RESPOSTA:`;
+        ANSWER:
+      `;
 
       console.log('KnowledgeAgentService - generating answer with LLM');
 
