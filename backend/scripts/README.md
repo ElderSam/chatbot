@@ -8,11 +8,71 @@ This folder contains utility scripts for the knowledge-agent system.
 
 **Purpose:** Standalone script to generate and cache semantic embeddings for articles.
 
-**When to use:**
-- 🚀 **Initial setup** - Generate embeddings for the first time
-- 🔄 **Maintenance** - Regenerate embeddings after content updates  
-- 🐛 **Debug** - Test embedding generation independently of the main app
-- 📊 **Batch processing** - Process large sets of articles efficiently
+## 🎯 When Should You Run This Script?
+
+### **REQUIRED - First Time Setup** 🚀
+**Scenario:** You just cloned the project or set up a new environment
+**Why:** The semantic search won't work without embeddings in Redis
+**Command:**
+```bash
+pnpm tsx scripts/generate-embeddings.ts
+```
+
+### **REQUIRED - After Redis Cache Clear** 🗑️  
+**Scenario:** You cleared Redis cache (`redis-cli FLUSHDB`) or lost data
+**Why:** All embeddings are gone and need to be regenerated
+**Command:**
+```bash
+pnpm tsx scripts/generate-embeddings.ts
+```
+
+### **OPTIONAL - Content Updates** 🔄
+**Scenario:** InfinitePay updated their help articles
+**Why:** Old embeddings may not match new content
+**Command:**
+```bash
+# Clear old embeddings first
+redis-cli DEL "cache:processed_articles:quick"
+pnpm tsx scripts/generate-embeddings.ts
+```
+
+### **OPTIONAL - Debugging Issues** 🐛
+**Scenario:** Semantic search returning poor results
+**Why:** Test embedding generation independently
+**Command:**
+```bash
+pnpm tsx scripts/generate-embeddings.ts
+```
+
+## ⚠️ When NOT to Run This Script
+
+- ✅ **Backend is already working** - embeddings exist in Redis
+- ✅ **Semantic search is returning good results** - no issues detected
+- ✅ **Just restarted the backend** - embeddings persist in Redis
+- ✅ **Making code changes** - embeddings don't need regeneration
+
+## 🔍 How to Check if You Need to Run It
+
+**Option 1: Check Redis**
+```bash
+redis-cli KEYS "cache:embedding:*" | wc -l
+# If returns 0 or very low number, run the script
+```
+
+**Option 2: Test the chatbot**
+```bash
+curl -X POST http://localhost:3001/chat \
+  -H "Content-Type: application/json" \
+  -d '{"message": "Como acompanhar pedido da maquininha?"}'
+# If returns generic answers, you need embeddings
+```
+
+**Option 3: Check backend logs**
+```
+# Look for this message when starting backend:
+📚 Using quick cache with X articles
+# If you see this, embeddings exist
+```
 
 **Usage:**
 ```bash
