@@ -24,4 +24,8 @@ export abstract class RedisBaseService {
             await this.client.set(key, JSON.stringify(value));
         }
     }
+
+    async getKeysPattern(pattern: string): Promise<string[]> {
+        return await this.client.keys(pattern);
+    }
 }
