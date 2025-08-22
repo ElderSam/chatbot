@@ -17,7 +17,7 @@ export class RouterAgentService {
   ) { }
 
   private async decideAgent(q: string): Promise<Route> {
-    const prompt = `You are a strict router. Decide what agent should I call, returning only "MathAgent" or "KnowledgeAgent".\nQuery: """${q}"""`;
+  const prompt = `You are a strict router for a modular chatbot. Only return "MathAgent" if the user's query is a clear, explicit math calculation (with numbers and operators or math words). For all other cases, return "KnowledgeAgent". Respond with only one word: "MathAgent" or "KnowledgeAgent".\nQuery: """${q}"""`;
 
     try {
       const { responseMsg } = await this.groq.chatCompletion({ prompt });

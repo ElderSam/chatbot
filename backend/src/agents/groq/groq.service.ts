@@ -29,11 +29,11 @@ export class GroqService {
 
         const raw: any = await res.json();
 
-        const usagePercent = ((raw.usage?.completion_tokens * 100) / (raw.usage?.total_tokens || 1)).toFixed(2);
+        const usagePercent = ((raw.usage?.completion_tokens * 100) / (raw.usage?.total_tokens || 1)).toFixed(2) + '%';
         const remainingTokens = raw.usage?.prompt_tokens;
 
         console.log(raw.usage)
-        console.log(`Groq usage: ${usagePercent}%. Tokens remaining: ${remainingTokens}`);
+        console.log(`Groq usage: ${usagePercent}. Tokens remaining: ${remainingTokens}`);
 
         const responseMessage = raw?.choices?.[0]?.message;
 
