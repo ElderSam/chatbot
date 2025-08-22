@@ -17,79 +17,36 @@ chatbot/
 ### Prerequisites
 - Node.js 18+
 - Docker & Docker Compose
-- API Keys (Groq, HuggingFace)
 
-### Development Setup
-
-1. **Clone and navigate:**
-   ```bash
-   git clone <repo>
-   cd chatbot
-   ```
-
-2. **Backend setup:**
+### Setup
+1. **Start the backend:**
    ```bash
    cd backend
-   cp .env.example .env
-   # Edit .env: Add your API keys
-   
-   docker compose up -d redis
-   pnpm install
-   pnpm tsx scripts/generate-embeddings.ts
-   pnpm run start:dev
+   # Follow the complete setup guide in backend/README.md
    ```
 
-3. **Test the API:**
+2. **Start the frontend:** *(Coming Soon)*
    ```bash
-   curl -X POST http://localhost:3001/chat \
-     -H "Content-Type: application/json" \
-     -d '{"message": "Como acompanhar meu pedido?"}'
+   cd frontend
+   # React frontend will be implemented here
    ```
 
-## 🧠 Architecture
+## 🧠 System Overview
 
-The system uses intelligent agents to route and answer questions:
+An intelligent chatbot with modular agents:
 
-- **RouterAgent**: Determines which agent should handle each question
-- **KnowledgeAgent**: Uses semantic search with LangChain + HuggingFace embeddings
-- **MathAgent**: Solves mathematical expressions
-- **Security Layer**: Input sanitization and prompt injection protection
+- **Router Agent**: Directs questions to the right specialist
+- **Knowledge Agent**: Searches help articles semantically  
+- **Math Agent**: Solves calculations
+- **Security**: Validates and sanitizes all inputs
 
 ## 📖 Documentation
 
-### Project Overview
-- **[📋 Challenge Requirements](./docs/challenge.md)** - Original project specifications
-- **[📝 Tasks & Progress](./docs/tasks.md)** - Development tasks and status
-- **[🛡️ Security Documentation](./docs/security/)** - Security features and implementation
+### Getting Started
+- **[Backend Setup](./backend/README.md)** - Complete backend development guide
+- **Frontend Setup** - Coming soon with React implementation
 
-### Backend Documentation
-- **[⚙️ Backend Setup Guide](./backend/README.md)** - Complete backend setup and development
-- **[🧠 Knowledge Agent System](./backend/docs/KNOWLEDGE_AGENT.md)** - AI agents and semantic search
-- **[🔧 Scripts Usage](./backend/scripts/README.md)** - Utility scripts and embedding generation
-
-### Frontend Documentation
-- Frontend documentation will be available when the React frontend is implemented
-
-## 🛠️ Development
-
-### Backend
-```bash
-cd backend
-pnpm run start:dev    # Development server
-pnpm test            # Unit tests  
-pnpm test:e2e        # Integration tests
-```
-
-### Frontend (Coming Soon)
-The React frontend will be implemented as part of the complete chatbot solution.
-
-## 🤝 Contributing
-
-1. Follow the existing code structure
-2. Run tests before submitting
-3. Update documentation for new features
-4. Follow security best practices
-
-## 📄 License
-
-See LICENSE file for details.
+### Project Documentation  
+- **[📋 Project Requirements](./docs/challenge.md)** - Original challenge specifications
+- **[📝 Development Tasks](./docs/tasks.md)** - Progress tracking and task list
+- **[🛡️ Security Features](./docs/security/)** - Input validation and protection
