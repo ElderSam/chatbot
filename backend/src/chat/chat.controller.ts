@@ -39,7 +39,7 @@ export class ChatController {
                 details: error.response?.data || error.stack || null,
             };
         }
-        console.log('/chat - end request: ', { response })
+        console.log('/chat - end request: ', JSON.stringify({ response }))
         return response;
     }
 }

@@ -21,17 +21,32 @@ export class GroqService {
             headers: { 'Authorization': `Bearer ${this.groqKey}`, 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 model,
-                messages: [{ role: 'user', content: prompt }], // TODO. verify if this role is correct
+                messages: [{ role: 'user', content: prompt }],
                 temperature,
                 max_tokens,
             }),
         });
 
-        const data: any = await res.json();
-        const groqUsagePercent = ((data.usage.completion_tokens * 100) / data.usage.total_tokens).toFixed(2);
-        console.log(`Groq usage: ${groqUsagePercent}%. Tokens remaining: ${data.usage.prompt_tokens}`);
+        const raw: any = await res.json();
 
-        const responseMsg = data?.choices?.[0]?.message?.content ?? '';
+        const usagePercent = ((raw.usage?.completion_tokens * 100) / (raw.usage?.total_tokens || 1)).toFixed(2);
+        const remainingTokens = raw.usage?.prompt_tokens;
+
+        console.log(raw.usage)
+        console.log(`Groq usage: ${usagePercent}%. Tokens remaining: ${remainingTokens}`);
+
+        const responseMessage = raw?.choices?.[0]?.message;
+
+        // Filtra apenas os campos relevantes
+        const data = {
+            llm_api: 'groq',
+            object: raw.object,
+            model: raw.model,
+            responseMessage,
+            usage: { usagePercent, remainingTokens },
+        };
+
+        const responseMsg = responseMessage.content ?? '';
         return { responseMsg, data };
     }
 }
