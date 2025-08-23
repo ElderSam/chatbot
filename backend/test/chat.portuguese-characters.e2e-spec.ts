@@ -1,87 +1,19 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
-import { AppModule } from '../src/app.module';
-import { GroqService } from '../src/agents/groq/groq.service';
-import { EmbeddingService } from '../src/agents/knowledge-agent/embedding.service';
-import { ConfigService } from '@nestjs/config';
+import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
+import { TestAppFactory } from './utils/test-app.factory';
 
 describe('Chat Portuguese Characters (e2e)', () => {
   let app: INestApplication;
   const basePayload = {
-    user_id: 'client789',
+    user_id: 'client123',
     conversation_id: 'conv-1234',
   };
 
   beforeEach(async () => {
-    // Mock GroqService for E2E tests
-    const mockGroqService = {
-      chatCompletion: jest.fn().mockImplementation(({ prompt }) => {
-        if (prompt.includes('MathAgent') || prompt.includes('KnowledgeAgent')) {
-          return Promise.resolve({
-            responseMsg: 'KnowledgeAgent',
-            data: {}
-          });
-        }
-        return Promise.resolve({
-          responseMsg: 'Com base nas informações disponíveis, posso ajudar com sua pergunta sobre a InfinitePay.',
-          data: {}
-        });
-      })
-    };
-
-    // Mock ConfigService
-    const mockConfigService = {
-      get: jest.fn().mockImplementation((key: string) => {
-        switch (key) {
-          case 'REDIS_HOST':
-            return 'localhost';
-          case 'REDIS_PORT':
-            return '6379';
-          case 'GROQ_API_KEY':
-            return 'mock-groq-key';
-          case 'HUGGINGFACE_API_KEY':
-            return 'mock-hf-key';
-          default:
-            return null;
-        }
-      })
-    };
-
-    // Mock EmbeddingService
-    const mockEmbeddingService = {
-      generateEmbedding: jest.fn().mockResolvedValue([0.1, 0.2, 0.3, 0.4]),
-      findMostRelevantArticles: jest.fn().mockResolvedValue([
-        {
-          title: 'Test Article',
-          url: 'https://test.com/article',
-          text: 'This is a test article content',
-        }
-      ]),
-      storeArticleEmbeddings: jest.fn().mockResolvedValue(undefined)
-    };
-
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
-    })
-    .overrideProvider(GroqService)
-    .useValue(mockGroqService)
-    .overrideProvider(EmbeddingService)
-    .useValue(mockEmbeddingService)
-    .overrideProvider(ConfigService)
-    .useValue(mockConfigService)
-    .compile();
-    
-    app = moduleFixture.createNestApplication();
-    app.useGlobalPipes(new ValidationPipe({ 
-      whitelist: true, 
-      forbidNonWhitelisted: true, 
-      transform: true 
-    }));
-    await app.init();
+    app = await TestAppFactory.createApp();
   });
 
-  afterAll(async () => {
+  afterEach(async () => {
     await app.close();
   });
 
