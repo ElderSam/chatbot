@@ -4,6 +4,7 @@ import { EmbeddingService } from './embedding.service';
 import { GroqService } from '../groq/groq.service';
 import { RedisLoggerService } from '../../redis/redis-logger/redis-logger.service';
 import { RedisCacheService } from '../../redis/redis-cache/redis-cache.service';
+import { MAX_ARTICLES_FOR_CONTEXT, SAFETY_MODE, MAX_ARTICLES_SAFETY_MODE } from './constants';
 
 describe('KnowledgeAgentService', () => {
   let service: KnowledgeAgentService;
@@ -79,7 +80,8 @@ describe('KnowledgeAgentService', () => {
     
     const result = await service.answer(question);
     
-    expect(embeddingService.findMostRelevantArticles).toHaveBeenCalledWith(question, 3);
+    const maxArticles = SAFETY_MODE ? MAX_ARTICLES_SAFETY_MODE : MAX_ARTICLES_FOR_CONTEXT;
+    expect(embeddingService.findMostRelevantArticles).toHaveBeenCalledWith(question, maxArticles);
     expect(groqService.chatCompletion).toHaveBeenCalled();
     expect(result.responseMsg).toContain('acompanhar');
   });

@@ -5,6 +5,7 @@ import { EmbeddingService } from './embedding.service';
 import { RedisLoggerService } from '../../redis/redis-logger/redis-logger.service';
 import { RedisCacheService } from '../../redis/redis-cache/redis-cache.service';
 import { ArticleContext } from './types';
+import { MAX_ARTICLES_FOR_CONTEXT, SAFETY_MODE, MAX_ARTICLES_SAFETY_MODE } from './constants';
 
 /* TODO
  ### 2.2. 📚 KnowledgeAgent
@@ -31,12 +32,11 @@ export class KnowledgeAgentService {
     const start = Date.now();
 
     try {
-      // 🔒 TEMPORARY: Remove this section after testing
-      const TEMP_SAFETY_MODE = false; // TODO: Change to false after validation
-      const TEMP_MAX_ARTICLES = TEMP_SAFETY_MODE ? 3 : 30;
+      // Maximum number of articles to use for context
+      const maxArticles = SAFETY_MODE ? MAX_ARTICLES_SAFETY_MODE : MAX_ARTICLES_FOR_CONTEXT;
 
       // First, try to find relevant articles using semantic embeddings
-      let limitedContext = await this.embeddingService.findMostRelevantArticles(question, TEMP_MAX_ARTICLES);
+      let limitedContext = await this.embeddingService.findMostRelevantArticles(question, maxArticles);
 
       // If no relevant articles found or few embeddings, load context dynamically
       if (limitedContext.length === 0) {
@@ -47,18 +47,18 @@ export class KnowledgeAgentService {
         if (dynamicArticles.length > 0) {
           await this.embeddingService.storeArticleEmbeddings(dynamicArticles);
           // Try similarity search again
-          limitedContext = await this.embeddingService.findMostRelevantArticles(question, 3);
+          limitedContext = await this.embeddingService.findMostRelevantArticles(question, maxArticles);
 
           // If still not found, use dynamically loaded articles as fallback
           if (limitedContext.length === 0) {
-            limitedContext = dynamicArticles.slice(0, 3);
+            limitedContext = dynamicArticles.slice(0, maxArticles);
           }
         }
       }
 
       // If specific context provided, use it
       if (context && context.length > 0) {
-        limitedContext = context.slice(0, 3);
+        limitedContext = context.slice(0, maxArticles);
         console.log({ contextLen: context.length, limitedContextLen: limitedContext.length });
       }
 

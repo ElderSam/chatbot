@@ -3,6 +3,7 @@ import { InferenceClient } from '@huggingface/inference';
 import { RedisCacheService } from '../../redis/redis-cache/redis-cache.service';
 import { ArticleContext, ArticleWithEmbedding } from './types';
 import { prepareTextForSearch } from '../../common/utils/text-normalization.util';
+import { MAX_ARTICLES_FOR_CONTEXT } from './constants';
 
 @Injectable()
 export class EmbeddingService {
@@ -59,7 +60,7 @@ export class EmbeddingService {
         }
     }
 
-    async findMostRelevantArticles(question: string, limit: number = 3): Promise<ArticleContext[]> {
+    async findMostRelevantArticles(question: string, limit: number = MAX_ARTICLES_FOR_CONTEXT): Promise<ArticleContext[]> {
         try {
             // 🚀 OTIMIZAÇÃO: Cache de busca por pergunta similar
             const questionHash = this.hashQuestion(question);
