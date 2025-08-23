@@ -10,7 +10,14 @@ export class ChatController {
     ) {}
 
     @Post()
-    @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }), SanitizePipe)
+    @UsePipes(
+        new ValidationPipe({ 
+            whitelist: true, 
+            forbidNonWhitelisted: true, 
+            transform: true // Habilita transformações para usar @Transform
+        }), 
+        SanitizePipe
+    )
     async handleChat(@Body() payload: ChatDto) {
 
         let response = {};

@@ -1,7 +1,11 @@
-import { IsString, Matches } from 'class-validator';
+import { IsString, Matches, IsNotEmpty, MinLength } from 'class-validator';
+import { Transform } from 'class-transformer';
 
 export class ChatDto {
   @IsString()
+  @Transform(({ value }) => typeof value === 'string' ? value.trim() : value)
+  @IsNotEmpty({ message: 'Message cannot be empty' })
+  @MinLength(5, { message: 'Message must have at least 5 characters' })
   message: string;
 
   @IsString()

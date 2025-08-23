@@ -33,6 +33,20 @@ describe('Chat Validation (e2e)', () => {
       .expect(400);
   });
 
+  it('/chat (POST) - empty message', async () => {
+    await request(app.getHttpServer())
+      .post('/chat')
+      .send({ ...chatPayload, message: '' })
+      .expect(400);
+  });
+
+  it('/chat (POST) - whitespace only message', async () => {
+    await request(app.getHttpServer())
+      .post('/chat')
+      .send({ ...chatPayload, message: '   ' })
+      .expect(400);
+  });
+
   it('/chat (POST) - invalid user_id type', async () => {
     await request(app.getHttpServer())
       .post('/chat')
