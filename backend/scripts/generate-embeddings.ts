@@ -126,7 +126,8 @@ async function generateEmbeddings() {
                     }
 
                     // Gera embedding do título + texto do artigo (texto menor para ser mais rápido)
-                    const textToEmbed = `${article.title} ${article.text}`.substring(0, 500);
+                    const textToEmbed = `${article.title} ${article.text}`.substring(0, 3000);
+                    
                     console.log(`   📝 Text to embed (${textToEmbed.length} chars): ${textToEmbed.substring(0, 100)}...`);
 
                     console.log('   🌐 Calling Hugging Face API...');

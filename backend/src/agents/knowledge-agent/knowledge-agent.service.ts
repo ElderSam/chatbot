@@ -70,7 +70,11 @@ export class KnowledgeAgentService {
       }
 
       // 💰 OPTIMIZATION: Smart context compression to save tokens
-      const contextText = this.compressContext(limitedContext);
+      // TEMPORARY: Disable compression for testing - send full articles
+      const contextText = limitedContext.map((article, i) => {
+        return `${i + 1}. ${article.title}\n${article.text}\nURL: ${article.url}\n`;
+      }).join('\n');
+      // const contextText = this.compressContext(limitedContext);
 
       const mainLink = limitedContext[0].url;
 
@@ -145,31 +149,41 @@ export class KnowledgeAgentService {
   // 💰 OPTIMIZATION: Smart context compression to save tokens
   private compressContext(articles: ArticleContext[]): string {
     return articles.map((article, i) => {
-      // Extract only the most relevant parts of the text
-      const relevantText = this.extractRelevantSentences(article.text, 300); // Max 300 chars per article
+      // Use more text per article to avoid missing important information
+      const relevantText = this.extractRelevantSentences(article.text, 800); // Increased from 300 to 800
       return `${i + 1}. ${article.title}\n${relevantText}\nURL: ${article.url}\n`;
     }).join('\n');
   }
 
-  // 🎯 OPTIMIZATION: Extracts most relevant sentences based on keywords
+  // 🎯 OPTIMIZATION: Extracts most relevant sentences based on keywords + position
   private extractRelevantSentences(text: string, maxChars: number): string {
     if (text.length <= maxChars) return text;
 
     const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 10);
+    
+    // Always prioritize first sentences (they often contain the main answer)
+    const firstSentences = sentences.slice(0, 2); // First 2 sentences always included
+    
+    // Then add sentences with important keywords
+    const importantKeywords = ['taxa', 'custo', 'valor', 'preço', 'cobrança', 'grátis', 'pagar', 'maquininha', 'InfinitePay', 'horário', 'funcionamento', 'atendimento'];
 
-    // Prioritize sentences with important keywords
-    const importantKeywords = ['taxa', 'custo', 'valor', 'preço', 'cobrança', 'grátis', 'pagar', 'maquininha', 'InfinitePay'];
-
-    const scoredSentences = sentences.map(sentence => {
-      const score = importantKeywords.reduce((acc, keyword) => {
+    const scoredSentences = sentences.map((sentence, index) => {
+      let score = 0;
+      
+      // Bonus for being at the beginning of the text
+      if (index < 3) score += 2;
+      
+      // Bonus for containing keywords
+      score += importantKeywords.reduce((acc, keyword) => {
         return acc + (sentence.toLowerCase().includes(keyword) ? 1 : 0);
       }, 0);
-      return { sentence: sentence.trim(), score };
+      
+      return { sentence: sentence.trim(), score, index };
     });
 
-    // Sort by relevance and concatenate up to the limit
+    // Sort by relevance (score first, then by position)
     let result = '';
-    const sortedSentences = scoredSentences.sort((a, b) => b.score - a.score);
+    const sortedSentences = scoredSentences.sort((a, b) => b.score - a.score || a.index - b.index);
 
     for (const item of sortedSentences) {
       if (result.length + item.sentence.length <= maxChars) {
