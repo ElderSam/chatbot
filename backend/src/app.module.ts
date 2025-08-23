@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ChatController } from './chat/chat.controller';
+import { PromptGuardService } from './chat/prompt-guard.service';
 import { RouterAgentModule } from './agents/router-agent/router-agent.module';
 
 @Module({
@@ -13,6 +14,6 @@ import { RouterAgentModule } from './agents/router-agent/router-agent.module';
     RouterAgentModule,
   ],
   controllers: [AppController, ChatController],
-  providers: [AppService],
+  providers: [AppService, PromptGuardService],
 })
 export class AppModule {}

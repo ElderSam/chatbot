@@ -1,12 +1,14 @@
-import { Controller, Post, UsePipes, ValidationPipe, Body } from '@nestjs/common';
+import { Controller, Post, UsePipes, ValidationPipe, Body, ForbiddenException } from '@nestjs/common';
 import { ChatDto } from './dto/chat.dto';
 import { SanitizePipe, normalizedMessageCache } from './pipes/sanitize.pipe';
 import { RouterAgentService } from '../agents/router-agent/router-agent.service';
+import { PromptGuardService } from './prompt-guard.service';
 
 @Controller('chat')
 export class ChatController {
     constructor(
         private readonly routerAgent: RouterAgentService,
+        private readonly promptGuard: PromptGuardService
     ) {}
 
     @Post()
@@ -19,7 +21,11 @@ export class ChatController {
         SanitizePipe
     )
     async handleChat(@Body() payload: ChatDto) {
-
+        if (this.promptGuard.isBlocked(payload.message)) {
+            throw new ForbiddenException({
+                response: this.promptGuard.getBlockReason(payload.message)
+            });
+        }
         let response = {};
 
         try {
