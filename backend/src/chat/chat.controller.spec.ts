@@ -1,10 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ChatController } from './chat.controller';
 import { RouterAgentService } from '../agents/router-agent/router-agent.service';
+import { PromptGuardService } from './prompt-guard.service';
+import { UnitTestFactory } from '../../test/utils/unit-test.factory';
 
 describe('ChatController', () => {
   let controller: ChatController;
   let routerAgentService: jest.Mocked<RouterAgentService>;
+  let promptGuardService: jest.Mocked<PromptGuardService>;
 
   // Shared test data for chat
   const chatPayload = {
@@ -24,12 +27,18 @@ describe('ChatController', () => {
       })
     } as any;
 
-    const module: TestingModule = await Test.createTestingModule({
-      controllers: [ChatController],
+    promptGuardService = {
+      isBlocked: jest.fn().mockReturnValue(false),
+      getBlockReason: jest.fn().mockReturnValue('')
+    } as any;
+
+    const module: TestingModule = await UnitTestFactory.createTestingModule({
       providers: [
+        ChatController,
         { provide: RouterAgentService, useValue: routerAgentService },
-      ],
-    }).compile();
+        { provide: PromptGuardService, useValue: promptGuardService },
+      ]
+    });
     
     controller = module.get<ChatController>(ChatController);
   });

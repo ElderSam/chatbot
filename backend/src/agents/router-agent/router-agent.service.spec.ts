@@ -1,9 +1,9 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { RouterAgentService } from './router-agent.service';
 import { MathAgentService } from '../math-agent/math-agent.service';
 import { KnowledgeAgentService } from '../knowledge-agent/knowledge-agent.service';
 import { GroqService } from '../groq/groq.service';
 import { RedisLoggerService } from '../../redis/redis-logger/redis-logger.service';
+import { UnitTestFactory, CommonMockData } from '../../../test/utils/unit-test.factory';
 
 describe('RouterAgentService', () => {
   let service: RouterAgentService;
@@ -13,43 +13,26 @@ describe('RouterAgentService', () => {
   let loggerService: jest.Mocked<RedisLoggerService>;
 
   beforeEach(async () => {
-    // Create mocks
-    mathService = {
-      solve: jest.fn().mockResolvedValue({
-        responseMsg: 'The result is 42',
-        data: { calculation: '40 + 2 = 42' }
-      })
-    } as any;
-
-    knowledgeService = {
-      answer: jest.fn().mockResolvedValue({
-        responseMsg: 'Based on the knowledge base, here is the answer...',
-        data: { articles: [] }
-      })
-    } as any;
-
-    groqService = {
-      chatCompletion: jest.fn().mockResolvedValue({
-        responseMsg: 'KnowledgeAgent',
-        data: {}
-      })
-    } as any;
-
-    loggerService = {
-      log: jest.fn().mockResolvedValue(undefined)
-    } as any;
-
-    const module: TestingModule = await Test.createTestingModule({
+    const module = await UnitTestFactory.createTestingModule({
       providers: [
         RouterAgentService,
-        { provide: MathAgentService, useValue: mathService },
-        { provide: KnowledgeAgentService, useValue: knowledgeService },
-        { provide: GroqService, useValue: groqService },
-        { provide: RedisLoggerService, useValue: loggerService },
+        MathAgentService,
+        KnowledgeAgentService,
+        GroqService,
+        RedisLoggerService,
       ],
-    }).compile();
+      customMocks: {
+        groqService: {
+          chatCompletion: jest.fn().mockResolvedValue(CommonMockData.groqResponses.routerDecision)
+        }
+      }
+    });
 
     service = module.get<RouterAgentService>(RouterAgentService);
+    mathService = module.get(MathAgentService);
+    knowledgeService = module.get(KnowledgeAgentService);
+    groqService = module.get(GroqService);
+    loggerService = module.get(RedisLoggerService);
   });
 
   it('should be defined', () => {

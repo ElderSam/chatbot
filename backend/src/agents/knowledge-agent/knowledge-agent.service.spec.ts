@@ -5,6 +5,8 @@ import { GroqService } from '../groq/groq.service';
 import { RedisLoggerService } from '../../redis/redis-logger/redis-logger.service';
 import { RedisCacheService } from '../../redis/redis-cache/redis-cache.service';
 import { MAX_ARTICLES_FOR_CONTEXT, SAFETY_MODE, MAX_ARTICLES_SAFETY_MODE } from './constants';
+import { CommonMockData } from '../../../test/utils/unit-test.factory';
+import { AgentTestHelper, TestAssertions } from '../../../test/utils/agent-test.helpers';
 
 describe('KnowledgeAgentService', () => {
   let service: KnowledgeAgentService;
@@ -14,61 +16,34 @@ describe('KnowledgeAgentService', () => {
   let logger: jest.Mocked<RedisLoggerService>;
 
   beforeEach(async () => {
-    // Mock loadDynamicContext to return test articles
-    jest.spyOn(require('./context-loader'), 'loadDynamicContext').mockResolvedValue([
-      { 
-        title: 'Como acompanhar pedido da maquininha', 
-        url: 'https://ajuda.infinitepay.io/test', 
-        text: 'Para acompanhar seu pedido da maquininha, acesse o painel...' 
-      },
-      { 
-        title: 'Rastreamento da entrega', 
-        url: 'https://ajuda.infinitepay.io/test2', 
-        text: 'Você pode rastrear sua entrega usando o código fornecido...' 
-      }
-    ]);
+    // Mock contexto dinâmico
+    jest.spyOn(require('./context-loader'), 'loadDynamicContext')
+      .mockResolvedValue(CommonMockData.articles);
 
-    // Create mocks
-    embeddingService = {
-      findMostRelevantArticles: jest.fn().mockResolvedValue([
-        { 
-          title: 'Como acompanhar pedido da maquininha', 
-          url: 'https://ajuda.infinitepay.io/test', 
-          text: 'Para acompanhar seu pedido da maquininha, acesse o painel...' 
-        }
-      ]),
-      generateEmbedding: jest.fn().mockResolvedValue([0.1, 0.2, 0.3]),
-      storeArticleEmbeddings: jest.fn().mockResolvedValue(undefined)
-    } as any;
-
-    groqService = {
-      chatCompletion: jest.fn().mockResolvedValue({
-        responseMsg: 'Baseado nas informações disponíveis, você pode acompanhar o pedido da sua maquininha acessando o painel de controle...',
-        data: {}
-      })
-    } as any;
-
-    redisCache = {
-      getCache: jest.fn().mockResolvedValue(null),
-      setCache: jest.fn().mockResolvedValue(undefined),
-      getKeysPattern: jest.fn().mockResolvedValue([])
-    } as any;
-
-    logger = {
-      log: jest.fn()
-    } as any;
+    // Usar helper para criar mocks
+    const mocks = AgentTestHelper.createKnowledgeAgentMocks();
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         KnowledgeAgentService,
-        { provide: EmbeddingService, useValue: embeddingService },
-        { provide: GroqService, useValue: groqService },
-        { provide: RedisCacheService, useValue: redisCache },
-        { provide: RedisLoggerService, useValue: logger },
+        { provide: EmbeddingService, useValue: mocks.embeddingService },
+        { provide: GroqService, useValue: mocks.groqService },
+        { provide: RedisCacheService, useValue: {
+          getCache: jest.fn().mockResolvedValue(null),
+          setCache: jest.fn().mockResolvedValue(undefined),
+          getKeysPattern: jest.fn().mockResolvedValue([])
+        }},
+        { provide: RedisLoggerService, useValue: {
+          log: jest.fn()
+        }},
       ],
     }).compile();
 
     service = module.get<KnowledgeAgentService>(KnowledgeAgentService);
+    embeddingService = module.get(EmbeddingService);
+    groqService = module.get(GroqService);
+    redisCache = module.get(RedisCacheService);
+    logger = module.get(RedisLoggerService);
   });
 
   it('should be defined', () => {
@@ -76,14 +51,14 @@ describe('KnowledgeAgentService', () => {
   });
 
   it('should use semantic search to answer questions', async () => {
-    const question = 'Como faço para acompanhar minha maquininha?';
+    const question = CommonMockData.testQuestions.knowledge;
     
     const result = await service.answer(question);
     
+    TestAssertions.expectAgentResponse(result);
     const maxArticles = SAFETY_MODE ? MAX_ARTICLES_SAFETY_MODE : MAX_ARTICLES_FOR_CONTEXT;
     expect(embeddingService.findMostRelevantArticles).toHaveBeenCalledWith(question, maxArticles);
     expect(groqService.chatCompletion).toHaveBeenCalled();
-    expect(result.responseMsg).toContain('acompanhar');
   });
 
   it('should fallback to dynamic loading when no semantic results', async () => {
