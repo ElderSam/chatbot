@@ -2,11 +2,13 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { MathAgentService } from './math-agent.service';
 import { ConfigService } from '@nestjs/config';
 import { GroqService } from '../groq/groq.service';
+import { RedisLoggerService } from '../../redis/redis-logger/redis-logger.service';
 
 describe('MathAgentService', () => {
   let service: MathAgentService;
   let configService: jest.Mocked<ConfigService>;
   let groqService: jest.Mocked<GroqService>;
+  let loggerService: jest.Mocked<RedisLoggerService>;
 
   beforeEach(async () => {
     configService = {
@@ -20,11 +22,19 @@ describe('MathAgentService', () => {
       })
     } as any;
 
+    loggerService = {
+      log: jest.fn(),
+      info: jest.fn(),
+      debug: jest.fn(),
+      error: jest.fn()
+    } as any;
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         MathAgentService,
         { provide: ConfigService, useValue: configService },
         { provide: GroqService, useValue: groqService },
+        { provide: RedisLoggerService, useValue: loggerService },
       ],
     }).compile();
 

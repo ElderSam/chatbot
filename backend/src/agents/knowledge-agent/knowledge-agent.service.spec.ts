@@ -34,7 +34,10 @@ describe('KnowledgeAgentService', () => {
           getKeysPattern: jest.fn().mockResolvedValue([])
         }},
         { provide: RedisLoggerService, useValue: {
-          log: jest.fn()
+          log: jest.fn(),
+          info: jest.fn(),
+          debug: jest.fn(),
+          error: jest.fn()
         }},
       ],
     }).compile();
@@ -81,11 +84,11 @@ describe('KnowledgeAgentService', () => {
     const result = await service.answer(question);
     
     expect(result.responseMsg).toContain('Desculpe');
-    expect(logger.log).toHaveBeenCalledWith(
-      'knowledge-agent',
+        expect(logger.error).toHaveBeenCalledWith(
+      'KnowledgeAgent',
       expect.objectContaining({
         question: question,
-        error: expect.stringContaining('Embedding error')
+        error: 'Embedding error'
       })
     );
   });

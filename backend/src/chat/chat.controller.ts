@@ -38,7 +38,11 @@ export class ChatController {
             const messageToProcess = normalizedMessage || payload.message;
 
             // Delegate routing decision to RouterAgent
-            const { chosenAgent, agentResult } = await this.routerAgent.routeAndHandle(messageToProcess ?? '');
+            const userContext = {
+                user_id: payload.user_id,
+                conversation_id: payload.conversation_id
+            };
+            const { chosenAgent, agentResult } = await this.routerAgent.routeAndHandle(messageToProcess ?? '', userContext);
 
             response = {
                 response: agentResult.responseMsg,

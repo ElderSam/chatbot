@@ -28,7 +28,7 @@ export class KnowledgeAgentService {
     setRedisCacheService(this.redisCache);
   }
 
-  async answer(question: string, context?: ArticleContext[]) {
+  async answer(question: string, context?: ArticleContext[], userContext?: { user_id?: string; conversation_id?: string }) {
     const start = Date.now();
 
     try {
@@ -122,12 +122,13 @@ export class KnowledgeAgentService {
       const finalResponse = { responseMsg: finalMessage, data };
       const executionTimeMs = Date.now() - start;
 
-      await this.logger.log('knowledge-agent', {
+      await this.logger.info('KnowledgeAgent', {
         question,
         ...finalResponse,
         sources: limitedContext.map(a => a.url),
-        executionTimeMs,
+        execution_time: executionTimeMs,
         usedEmbeddings: true,
+        ...userContext
       });
 
       return finalResponse;
@@ -136,11 +137,12 @@ export class KnowledgeAgentService {
       console.error('Error in KnowledgeAgent answer:', error);
       const executionTimeMs = Date.now() - start;
 
-      await this.logger.log('knowledge-agent', {
+      await this.logger.error('KnowledgeAgent', {
         question,
         error: error.message,
-        executionTimeMs,
+        execution_time: executionTimeMs,
         usedEmbeddings: false,
+        ...userContext
       });
 
       return {

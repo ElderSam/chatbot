@@ -41,11 +41,12 @@ describe('RouterAgentService', () => {
 
   it('should route to KnowledgeAgent for non-math questions', async () => {
     const message = 'What is the current interest rate?';
+    const userContext = { user_id: 'test123', conversation_id: 'conv123' };
     
-    const result = await service.routeAndHandle(message);
+    const result = await service.routeAndHandle(message, userContext);
     
     expect(groqService.chatCompletion).toHaveBeenCalled();
-    expect(knowledgeService.answer).toHaveBeenCalledWith(message, []);
+    expect(knowledgeService.answer).toHaveBeenCalledWith(message, [], userContext);
     expect(result.chosenAgent).toBe('KnowledgeAgent');
     expect(result.agentResult.responseMsg).toContain('answer');
   });
@@ -57,11 +58,12 @@ describe('RouterAgentService', () => {
     });
 
     const message = '2 + 2 = ?';
+    const userContext = { user_id: 'test123', conversation_id: 'conv123' };
     
-    const result = await service.routeAndHandle(message);
+    const result = await service.routeAndHandle(message, userContext);
     
     expect(groqService.chatCompletion).toHaveBeenCalled();
-    expect(mathService.solve).toHaveBeenCalledWith(message);
+    expect(mathService.solve).toHaveBeenCalledWith(message, userContext);
     expect(result.chosenAgent).toBe('MathAgent');
     expect(result.agentResult.responseMsg).toContain('42');
   });
@@ -70,10 +72,11 @@ describe('RouterAgentService', () => {
     groqService.chatCompletion = jest.fn().mockRejectedValue(new Error('API Error'));
 
     const message = 'What is 2 + 2?';
+    const userContext = { user_id: 'test123', conversation_id: 'conv123' };
     
-    const result = await service.routeAndHandle(message);
+    const result = await service.routeAndHandle(message, userContext);
     
-    expect(knowledgeService.answer).toHaveBeenCalledWith(message, []);
+    expect(knowledgeService.answer).toHaveBeenCalledWith(message, [], userContext);
     expect(result.chosenAgent).toBe('KnowledgeAgent');
   });
 });

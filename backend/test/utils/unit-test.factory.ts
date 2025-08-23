@@ -69,7 +69,10 @@ export class UnitTestFactory {
       },
 
       redisLogger: {
-        log: jest.fn().mockResolvedValue(undefined)
+        log: jest.fn().mockResolvedValue(undefined),
+        info: jest.fn().mockResolvedValue(undefined),
+        debug: jest.fn().mockResolvedValue(undefined),
+        error: jest.fn().mockResolvedValue(undefined)
       },
 
       mathService: {

@@ -7,6 +7,11 @@ import { ChatCompletionResponse } from '../groq/groq.types';
 
 type Route = 'MathAgent' | 'KnowledgeAgent';
 
+interface UserContext {
+  user_id?: string;
+  conversation_id?: string;
+}
+
 @Injectable()
 export class RouterAgentService {
   constructor(
@@ -30,7 +35,12 @@ export class RouterAgentService {
     }
   }
 
-  async routeAndHandle(message: string): Promise<{ chosenAgent: Route; agentResult: ChatCompletionResponse }> {
+  async routeAndHandle(
+    message: string, 
+    userContext?: UserContext
+  ): Promise<{ chosenAgent: Route; agentResult: ChatCompletionResponse }> {
+    const start = Date.now();
+
     // route = 'KnowledgeAgent'; // TODO. apagar. É só um teste temporário para economizar tokens
 
     const route = await this.decideAgent(message);
@@ -41,15 +51,20 @@ export class RouterAgentService {
 
     // TODO. descomentar isso?
     if (route === 'MathAgent') {
-      agentResult = await this.math.solve(message);
+      agentResult = await this.math.solve(message, userContext);
     }
     else {
-      agentResult = await this.knowledge.answer(message, []);
+      agentResult = await this.knowledge.answer(message, [], userContext);
     }
 
-    await this.logger.log('router-agent', {
-      message, chosenAgent: route, agentResult,
-      ts: new Date().toISOString(),
+    const executionTime = Date.now() - start;
+
+    await this.logger.info('RouterAgent', {
+      message, 
+      decision: route, 
+      agentResult,
+      execution_time: executionTime,
+      ...userContext
     });
 
     return { chosenAgent: route, agentResult };

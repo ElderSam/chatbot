@@ -23,29 +23,70 @@ describe('RedisLoggerService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         RedisLoggerService,
-        { provide: ConfigService, useValue: configService },
+        { provide: ConfigService, useValue: configService }
       ],
     }).compile();
 
     service = module.get<RedisLoggerService>(RedisLoggerService);
+
+    // Mock the Redis connection methods
+    jest.spyOn(service, 'set').mockResolvedValue(undefined);
+    jest.spyOn(console, 'log').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
   });
 
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
 
-  it('should log data to Redis', async () => {
-    const logData = { message: 'test', timestamp: new Date() };
+  it('should log with proper format according to challenge requirements', async () => {
+    const testData = {
+      user_id: 'client789',
+      conversation_id: 'conv-1234',
+      execution_time: 150,
+      message: 'Test message',
+      decision: 'KnowledgeAgent'
+    };
 
-    // Mock the set method
-    const setSpy = jest.spyOn(service as any, 'set').mockResolvedValue(undefined);
+    await service.info('RouterAgent', testData);
 
-    await service.log('test-component', logData);
+    expect(service.set).toHaveBeenCalledWith(
+      expect.stringMatching(/^logs:RouterAgent:\d+$/),
+      expect.objectContaining({
+        timestamp: expect.stringMatching(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/),
+        level: 'INFO',
+        agent: 'RouterAgent',
+        user_id: 'client789',
+        conversation_id: 'conv-1234',
+        execution_time: 150,
+        message: 'Test message',
+        decision: 'KnowledgeAgent'
+      }),
+      900
+    );
 
-    expect(setSpy).toHaveBeenCalledWith(
-      expect.stringMatching(/^logs:test-component:\d+$/),
-      { ...logData, agent: 'test-component' },
-      900 // 15 minutes
+    expect(console.log).toHaveBeenCalledWith(
+      expect.stringContaining('"timestamp"')
+    );
+  });
+
+  it('should support different log levels', async () => {
+    await service.debug('TestAgent', { test: 'debug' });
+    await service.error('TestAgent', { test: 'error' });
+
+    expect(service.set).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.objectContaining({ level: 'DEBUG' }),
+      900
+    );
+
+    expect(service.set).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.objectContaining({ level: 'ERROR' }),
+      900
     );
   });
 });
