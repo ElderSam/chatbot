@@ -95,9 +95,11 @@ async function generateEmbeddings() {
 
         console.log(`📄 Found ${articles.length} articles total`);
 
-        // Limita para apenas 30 artigos por segurança
-        const articlesToProcess = articles.slice(0, 30);
-        console.log(`🎯 Processing first ${articlesToProcess.length} articles for initial test...`);
+        // Limita para apenas 30 artigos para teste mais rápido
+        // const articlesToProcess = articles.slice(0, 30);
+        // console.log(`🎯 Processing first ${articlesToProcess.length} articles for initial test...`);
+        const articlesToProcess = articles;
+        console.log(`🎯 Processing all ${articlesToProcess.length} articles! It can take a while⏳`);
 
         let processed = 0;
         let skipped = 0;

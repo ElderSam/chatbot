@@ -68,13 +68,13 @@ export class EmbeddingService {
             const questionEmbedding = await this.generateEmbedding(question);
 
             // 🔒 TEMPORÁRIO: Busca apenas em embeddings "ativos" (otimização para testes)
-            const TEMP_BATCH_MODE = true; // TODO: Alterar para false após validação
+            const TEMP_BATCH_MODE = false; // TODO: Alterar para false após validação?
             const activeKeys = await this.getActiveEmbeddingKeys();
             const articles: Array<{ article: ArticleWithEmbedding; similarity: number }> = [];
 
             if (TEMP_BATCH_MODE) {
                 // Processamento em lotes para evitar sobrecarga
-                const batchSize = 50; 
+                const batchSize = 50;
                 console.log(`🔄 Processing ${activeKeys.length} embeddings in batches of ${batchSize}`);
                 
                 for (let i = 0; i < activeKeys.length; i += batchSize) {

@@ -80,9 +80,12 @@ async function processCollection(collectionUrl: string, collectionIndex: number)
         console.log(`📄 Collection ${collectionIndex} has ${articles.length} articles`);
 
         // 🔒 TEMPORÁRIO: Processa apenas os primeiros 30 artigos para ser mais rápido
-        const TEMP_MAX_ARTICLES_PER_COLLECTION = 30; // TODO: Remover limitação após validação
-        const articlesToProcess = articles.slice(0, TEMP_MAX_ARTICLES_PER_COLLECTION);
-        console.log(`🚀 Processing first ${articlesToProcess.length} articles for speed...`);
+        // const TEMP_MAX_ARTICLES_PER_COLLECTION = 30; // TODO: Remover limitação após validação 
+        // const articlesToProcess = articles.slice(0, TEMP_MAX_ARTICLES_PER_COLLECTION);
+        // console.log(`🚀 Processing first ${articlesToProcess.length} articles for speed...`);
+
+        const articlesToProcess = articles;
+        console.log(`🚀 Processing all ${articlesToProcess.length} articles!`);
 
         // Process articles in parallel (maximum 3 simultaneous)
         const contexts: ArticleContext[] = [];
@@ -139,9 +142,8 @@ async function processCollection(collectionUrl: string, collectionIndex: number)
 
 export async function loadDynamicContext(question: string): Promise<ArticleContext[]> {
     // 🔒 TEMPORÁRIO: Sistema de segurança - processa apenas 1 coleção
-    const TEMP_SINGLE_COLLECTION_MODE = true; // TODO: Alterar para false após validação ✅ ATIVADO!
-    const TEMP_TARGET_COLLECTION = 2; // seus primeiros passos
-    // const TEMP_TARGET_COLLECTION = 7; // Sua Maquininha (mais relevante)
+    const TEMP_SINGLE_COLLECTION_MODE = false; // TODO: Alterar para false após validação ✅ ATIVADO!
+    const TEMP_TARGET_COLLECTION = 7; // Sua Maquininha (mais relevante)
 
     const baseUrl = 'https://ajuda.infinitepay.io/pt-BR/';
     const cacheKey = `collections:${baseUrl}`;
@@ -217,7 +219,7 @@ export async function loadDynamicContext(question: string): Promise<ArticleConte
             continue;
         }
         
-        console.log(`🎯 Processing collection ${collectionIndex}: ${targetUrl.split('/collections')[1]}`);
+        console.log(`\n🎯 Processing collection ${collectionIndex}: ${targetUrl.split('/collections')[1]}`);
         
         const collectionContexts = await processCollection(targetUrl, collectionIndex);
         contexts.push(...collectionContexts);
