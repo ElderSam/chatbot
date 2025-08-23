@@ -106,7 +106,14 @@ describe('EmbeddingService', () => {
     // Mock generateEmbedding to return vector similar to first article
     service.generateEmbedding = jest.fn().mockResolvedValue([0.9, 0.1, 0.0, 0.0]);
 
+    // Mock getActiveEmbeddingKeys to return cache keys
+    (service as any).getActiveEmbeddingKeys = jest.fn().mockResolvedValue([
+      'cache:embedding:https://test.com/pedido',
+      'cache:embedding:https://test.com/wifi'
+    ]);
+
     redisCache.getCache = jest.fn()
+      .mockResolvedValueOnce(null) // No cache hit for search
       .mockResolvedValueOnce(mockArticles[0])
       .mockResolvedValueOnce(mockArticles[1]);
 
@@ -114,6 +121,7 @@ describe('EmbeddingService', () => {
     
     const result = await service.findMostRelevantArticles(question, 1);
 
+    expect(Array.isArray(result)).toBe(true);
     expect(result).toHaveLength(1);
     expect(result[0].title).toBe('Acompanhar pedido');
   });
