@@ -5,21 +5,21 @@
 ## Backend
 ### Tests (TDD First)
 Back-0. [x] Create Nest.js project
-Back-1. [ ] Write unit tests for `/chat` API (POST) <!-- challenge.md §8 -->  
-Back-2. [ ] Write unit tests for RouterAgent decision <!-- challenge.md §8 -->  
-Back-3. [ ] Write unit tests for MathAgent expressions <!-- challenge.md §8 -->  
-Back-4. [ ] Write E2E tests for `/chat` API <!-- challenge.md §8 -->  
+Back-1. [x] Write unit tests for `/chat` API (POST) <!-- challenge.md §8 -->  
+Back-2. [x] Write unit tests for RouterAgent decision <!-- challenge.md §8 -->  
+Back-3. [x] Write unit tests for MathAgent expressions <!-- challenge.md §8 -->  
+Back-4. [x] Write E2E tests for `/chat` API <!-- challenge.md §8 -->  
 
 ### Implementation
-Back-5. [ ] Implement `/chat` API (POST) <!-- challenge.md §3 -->  
-Back-6. [ ] Create RouterAgent to decide between KnowledgeAgent and MathAgent <!-- challenge.md §2.1 -->  
-Back-7. [ ] Implement MathAgent for mathematical expressions <!-- challenge.md §2.3 -->  
-Back-8. [ ] Implement KnowledgeAgent with RAG using external content <!-- challenge.md §2.2 -->  
-Back-9. [ ] Add structured logs (JSON) <!-- challenge.md §6 -->  
-Back-10. [ ] Integrate Redis for history and logs <!-- challenge.md §7 -->  
-Back-11. [ ] Sanitize inputs and protect against prompt injection <!-- challenge.md §5 -->  
-Back-12. [ ] Handle errors without exposing exceptions <!-- challenge.md §5 -->  
-Back-13. [ ] Update README.md with backend features as implemented <!-- challenge.md §10 -->  
+Back-5. [x] Implement `/chat` API (POST) <!-- challenge.md §3 -->  
+Back-6. [x] Create RouterAgent to decide between KnowledgeAgent and MathAgent <!-- challenge.md §2.1 -->  
+Back-7. [x] Implement MathAgent for mathematical expressions <!-- challenge.md §2.3 -->  
+Back-8. [x] Implement KnowledgeAgent with RAG using external content <!-- challenge.md §2.2 -->  
+Back-9. [x] Add structured logs (JSON) <!-- challenge.md §6 -->  
+Back-10. [x] Integrate Redis for history and logs <!-- challenge.md §7 -->  
+Back-11. [x] Sanitize inputs and protect against prompt injection <!-- challenge.md §5 -->  
+Back-12. [x] Handle errors without exposing exceptions <!-- challenge.md §5 -->  
+Back-13. [x] Update README.md with backend features as implemented <!-- challenge.md §10 -->  
 
 ## Infraestructure
 Infra-1. [ ] Prepare basic infrastructure (Docker, docker-compose, Redis, folder structure) <!-- challenge.md §7 -->  
