@@ -6,5 +6,5 @@
   "transform": {
     "^.+\\.(t|j)s$": "ts-jest"
   },
-  "setupFilesAfterEnv": ["../jest-e2e.setup.js"]
+  "setupFilesAfterEnv": ["../jest-e2e.setup.ts"]
 }

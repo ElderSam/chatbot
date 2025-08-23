@@ -25,6 +25,20 @@ jest.mock('@huggingface/inference', () => ({
   }))
 }));
 
+// Mock Groq API for E2E tests (uses fetch directly)
+global.fetch = jest.fn().mockImplementation(() =>
+  Promise.resolve({
+    ok: true,
+    json: () => Promise.resolve({
+      choices: [{
+        message: {
+          content: 'Mocked E2E response from Groq'
+        }
+      }]
+    })
+  })
+) as jest.Mock;
+
 // Mock context loader to avoid external HTTP calls
 jest.mock('./src/agents/knowledge-agent/context-loader', () => ({
   loadDynamicContext: jest.fn().mockResolvedValue([
