@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InferenceClient } from '@huggingface/inference';
 import { RedisCacheService } from '../../redis/redis-cache/redis-cache.service';
-import { ArticleContext, ArticleWithEmbedding } from './types';@Injectable()
+import { ArticleContext, ArticleWithEmbedding } from './types';
+import { prepareTextForSearch } from '../../common/utils/text-normalization.util';
+
+@Injectable()
 export class EmbeddingService {
     private hf: InferenceClient;
 
@@ -35,8 +38,12 @@ export class EmbeddingService {
             if (cached) continue;
 
             try {
-                // Gera embedding do título + texto do artigo
-                const textToEmbed = `${article.title} ${article.text}`.substring(0, 1000);
+                // Normaliza o texto do artigo para melhor qualidade dos embeddings
+                const normalizedTitle = prepareTextForSearch(article.title);
+                const normalizedText = prepareTextForSearch(article.text);
+
+                // Gera embedding do título + texto normalizado do artigo
+                const textToEmbed = `${normalizedTitle} ${normalizedText}`.substring(0, 1000);
                 const embedding = await this.generateEmbedding(textToEmbed);
 
                 const articleWithEmbedding: ArticleWithEmbedding = {
@@ -57,15 +64,18 @@ export class EmbeddingService {
             // 🚀 OTIMIZAÇÃO: Cache de busca por pergunta similar
             const questionHash = this.hashQuestion(question);
             const searchCacheKey = `search_cache:${questionHash}`;
-            
+
             const cachedResult = await this.redisCache.getCache(searchCacheKey);
             if (cachedResult) {
                 console.log('🚀 Search cache hit!');
                 return cachedResult;
             }
 
-            // Gera embedding da pergunta
-            const questionEmbedding = await this.generateEmbedding(question);
+            // Normaliza a pergunta para melhor comparação com embeddings
+            const normalizedQuestion = prepareTextForSearch(question);
+
+            // Gera embedding da pergunta normalizada
+            const questionEmbedding = await this.generateEmbedding(normalizedQuestion);
 
             // 🔒 TEMPORÁRIO: Busca apenas em embeddings "ativos" (otimização para testes)
             const TEMP_BATCH_MODE = false; // TODO: Alterar para false após validação?
@@ -76,7 +86,7 @@ export class EmbeddingService {
                 // Processamento em lotes para evitar sobrecarga
                 const batchSize = 50;
                 console.log(`🔄 Processing ${activeKeys.length} embeddings in batches of ${batchSize}`);
-                
+
                 for (let i = 0; i < activeKeys.length; i += batchSize) {
                     const batch = activeKeys.slice(i, i + batchSize);
                     const batchPromises = batch.map(async (key) => {
@@ -85,10 +95,10 @@ export class EmbeddingService {
                         if (!articleWithEmbedding?.embedding) return null;
 
                         const similarity = this.cosineSimilarity(questionEmbedding, articleWithEmbedding.embedding);
-                        
+
                         // 🎯 OTIMIZAÇÃO: Filtro de relevância mínima (economiza processamento)
-                        if (similarity < 0.3) return null; // Ignora artigos pouco relevantes
-                        
+                        if (similarity < 0.3) return null; // Ignora artigos pouco relevantes 
+
                         return { article: articleWithEmbedding, similarity };
                     });
 
@@ -163,21 +173,21 @@ export class EmbeddingService {
         if (text.length <= maxChars) return text;
 
         const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 10);
-        
+
         // Prioriza frases com palavras-chave importantes
         const importantKeywords = ['taxa', 'custo', 'valor', 'preço', 'cobrança', 'grátis', 'pagar', 'maquininha'];
-        
+
         const scoredSentences = sentences.map(sentence => {
             const score = importantKeywords.reduce((acc, keyword) => {
                 return acc + (sentence.toLowerCase().includes(keyword) ? 1 : 0);
             }, 0);
             return { sentence: sentence.trim(), score };
         });
-        
+
         // Ordena por relevância e concatena até o limite
         let result = '';
         const sortedSentences = scoredSentences.sort((a, b) => b.score - a.score);
-        
+
         for (const item of sortedSentences) {
             if (result.length + item.sentence.length <= maxChars) {
                 result += item.sentence + '. ';
@@ -185,7 +195,7 @@ export class EmbeddingService {
                 break;
             }
         }
-        
+
         return result || text.substring(0, maxChars) + '...';
     }
 }
