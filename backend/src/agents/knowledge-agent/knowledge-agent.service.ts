@@ -78,28 +78,32 @@ export class KnowledgeAgentService {
 
       const mainLink = limitedContext[0].url;
 
-      // 💰 OPTIMIZATION: More efficient and focused prompt
-      const prompt = `InfinitePay Assistant. Use ONLY the context below.
+      // English prompt for better model performance
+      const prompt = `Answer the question directly based only on the provided information.
 
-        QUESTION: "${question}"
+        QUESTION: ${question}
 
-        CONTEXT:
+        INFORMATION:
         ${contextText}
 
-        RULES:
-        - If you know the answer: be complete and specific
-        - If you don't know: say "check the link for details"
-        - Always include the link when you don't know completely
-        - Answer in Portuguese
-        - Be direct
+        INSTRUCTIONS:
+        - Be direct and concise
+        - Include only essential information to answer the question
+        - If there's a specific contact (email, phone), include it COMPLETE
+        - Maximum 2-3 sentences
 
-        ANSWER:
-      `;
+        ANSWER:`
+      ;
 
       console.log('KnowledgeAgentService - generating answer with LLM');
 
       // Calls LLM to generate answer
-      const { responseMsg, data } = await this.groq.chatCompletion({ prompt });
+      const { responseMsg, data } = await this.groq.chatCompletion({ 
+        prompt,
+        model: 'llama-3.1-8b-instant',
+        temperature: 0.05, // Very low for deterministic responses
+        max_tokens: 512    // Sufficient but not excessive
+      });
 
       console.log({ responseMsg: responseMsg?.substring(0, 100), mainLink });
 
@@ -111,9 +115,9 @@ export class KnowledgeAgentService {
       }
 
       // If there is a relevant link, include it naturally
-      if (mainLink && !finalMessage.includes(mainLink)) {
-        finalMessage += `\n\nSaiba mais: ${mainLink}`;
-      }
+      // if (mainLink && !finalMessage.includes(mainLink)) {
+      //   finalMessage += `\n\nSaiba mais: ${mainLink}`;
+      // }
 
       const finalResponse = { responseMsg: finalMessage, data };
       const executionTimeMs = Date.now() - start;
