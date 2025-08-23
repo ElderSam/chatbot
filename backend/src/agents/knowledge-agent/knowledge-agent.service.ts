@@ -105,7 +105,7 @@ export class KnowledgeAgentService {
         max_tokens: 512    // Sufficient but not excessive
       });
 
-      console.log({ responseMsg: responseMsg?.substring(0, 100), mainLink });
+      // console.log({ responseMsg: responseMsg?.substring(0, 100), mainLink });
 
       let finalMessage = responseMsg?.trim() || 'Consulte o site da InfinitePay para mais detalhes.';
 
