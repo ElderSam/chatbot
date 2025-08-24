@@ -10,6 +10,7 @@ import { RouterAgentModule } from './agents/router-agent/router-agent.module';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true, // makes config available everywhere
+      envFilePath: 'config/env/.env', // specify the correct path
     }),
     RouterAgentModule,
   ],
