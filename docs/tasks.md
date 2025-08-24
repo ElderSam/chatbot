@@ -20,14 +20,24 @@ Back-10. [x] Integrate Redis for history and logs <!-- challenge.md §7 -->
 Back-11. [x] Sanitize inputs and protect against prompt injection <!-- challenge.md §5 -->  
 Back-12. [x] Handle errors without exposing exceptions <!-- challenge.md §5 -->  
 Back-13. [x] Update README.md with backend features as implemented <!-- challenge.md §10 -->  
+Back-14. [x] Create routes to integrate with frontend <!-- challenge.md §4 -->  
+- list conversations -> `GET /chats`
+    (receive "user_id")
 
-## Infraestructure
-Infra-1. [ ] Prepare basic infrastructure (Docker, docker-compose, Redis, folder structure) <!-- challenge.md §7 -->  
-Infra-2. [ ] Create Dockerfile for frontend and backend <!-- challenge.md §7 -->  
-Infra-3. [ ] Create `docker-compose.yml` to run frontend, backend and Redis locally <!-- challenge.md §7 -->  
+- get conversation -> `GET /chat`
+    (receive "user_id" and "conversation_id")
+
+## Infrastructure
+Infra-1. [x] Prepare basic infrastructure (Docker, docker-compose, Redis, folder structure) <!-- challenge.md §7 -->  
+Infra-2. [x] Create Dockerfile for frontend and backend <!-- challenge.md §7 -->  
+Infra-3. [x] Create `docker-compose.yml` to run frontend, backend and Redis locally <!-- challenge.md §7 -->  
+    - [x] backend runs with docker  
+    - [ ] frontend runs with docker
+
 Infra-4. [ ] Configure environment variables for front-backend integration <!-- challenge.md §7 -->  
-Infra-5. [ ] Create Kubernetes manifests for all services <!-- challenge.md §7 -->  
-Infra-6. [ ] Update README.md with infra features as implemented <!-- challenge.md §10 -->  
+Infra-5. [x] Create Kubernetes manifests for all services <!-- challenge.md §7 -->  
+Infra-6. [x] Organize infrastructure in dedicated `/infrastructure` folder <!-- Best practices -->  
+Infra-7. [x] Update README.md with infra features as implemented <!-- challenge.md §10 -->  
 
 ## Documentation
 Docs-1. [ ] Write README.md according to challenge requirements <!-- challenge.md §10 -->  
