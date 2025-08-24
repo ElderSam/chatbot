@@ -67,11 +67,11 @@ cd chatbot
 ## 🛠️ Tech Stack
 
 - **Backend**: NestJS (TypeScript)
-- **LLM**: Groq (Llama 3.1)
+- **LLM**: Groq (Llama 3.1) + HuggingFace (Embeddings)
 - **Database**: Redis
 - **Container**: Docker + Kubernetes
 - **Testing**: Jest (76 tests passing)
 
 ---
 
-**Status:** ✅ **Production Ready** | 🧪 **Fully Tested** | 🚀 **Cloud Native**
+**Status:** ✅ **Production Ready** | 🧪 **Main features Tested** | 🚀 **Cloud Native**
