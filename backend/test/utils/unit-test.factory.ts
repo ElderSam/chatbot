@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { createMockConfigService, createMockEmbeddingService } from './common-mocks';
 
 export interface MockServices {
   embeddingService?: any;
@@ -43,17 +44,7 @@ export class UnitTestFactory {
 
   private static createDefaultMocks(): MockServices {
     return {
-      embeddingService: {
-        findMostRelevantArticles: jest.fn().mockResolvedValue([
-          { 
-            title: 'Test Article', 
-            url: 'https://test.com/article', 
-            text: 'This is a test article content' 
-          }
-        ]),
-        generateEmbedding: jest.fn().mockResolvedValue([0.1, 0.2, 0.3]),
-        storeArticleEmbeddings: jest.fn().mockResolvedValue(undefined)
-      },
+      embeddingService: createMockEmbeddingService(),
 
       groqService: {
         chatCompletion: jest.fn().mockResolvedValue({
@@ -89,22 +80,7 @@ export class UnitTestFactory {
         })
       },
 
-      configService: {
-        get: jest.fn().mockImplementation((key: string) => {
-          switch (key) {
-            case 'REDIS_HOST':
-              return 'localhost';
-            case 'REDIS_PORT':
-              return '6379';
-            case 'GROQ_API_KEY':
-              return 'mock-groq-key';
-            case 'HUGGINGFACE_API_KEY':
-              return 'mock-hf-key';
-            default:
-              return null;
-          }
-        })
-      }
+      configService: createMockConfigService()
     };
   }
 

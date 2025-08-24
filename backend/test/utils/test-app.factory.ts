@@ -4,6 +4,7 @@ import { AppModule } from '../../src/app.module';
 import { GroqService } from '../../src/agents/groq/groq.service';
 import { EmbeddingService } from '../../src/agents/knowledge-agent/embedding.service';
 import { ConfigService } from '@nestjs/config';
+import { createTestModuleConfig } from './common-mocks';
 
 export interface MockGroqServiceOptions {
   type?: 'default' | 'sanitization' | 'workflow';
@@ -23,15 +24,13 @@ export class TestAppFactory {
   static async createApp(options: TestAppOptions = {}): Promise<INestApplication> {
     const { groqServiceOptions = {}, customMocks = {} } = options;
 
-    // Default mock services
-    const defaultMockGroqService = this.createMockGroqService(groqServiceOptions);
-    const defaultMockEmbeddingService = this.createMockEmbeddingService();
-    const defaultMockConfigService = this.createMockConfigService();
+    // Create base mocks using centralized configuration
+    const baseMocks = createTestModuleConfig();
 
-    // Use custom mocks if provided, otherwise use defaults
-    const mockGroqService = customMocks.groqService || defaultMockGroqService;
-    const mockEmbeddingService = customMocks.embeddingService || defaultMockEmbeddingService;
-    const mockConfigService = customMocks.configService || defaultMockConfigService;
+    // Override with custom mocks if provided
+    const mockGroqService = customMocks.groqService || this.createMockGroqService(groqServiceOptions);
+    const mockEmbeddingService = customMocks.embeddingService || baseMocks.embeddingService;
+    const mockConfigService = customMocks.configService || baseMocks.configService;
 
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
@@ -128,39 +127,6 @@ export class TestAppFactory {
           })
         };
     }
-  }
-
-  private static createMockEmbeddingService() {
-    return {
-      generateEmbedding: jest.fn().mockResolvedValue([0.1, 0.2, 0.3, 0.4]),
-      findMostRelevantArticles: jest.fn().mockResolvedValue([
-        {
-          title: 'Test Article',
-          url: 'https://test.com/article',
-          text: 'This is a test article content',
-        }
-      ]),
-      storeArticleEmbeddings: jest.fn().mockResolvedValue(undefined)
-    };
-  }
-
-  private static createMockConfigService() {
-    return {
-      get: jest.fn().mockImplementation((key: string) => {
-        switch (key) {
-          case 'REDIS_HOST':
-            return 'localhost';
-          case 'REDIS_PORT':
-            return '6379';
-          case 'GROQ_API_KEY':
-            return 'mock-groq-key';
-          case 'HUGGINGFACE_API_KEY':
-            return 'mock-hf-key';
-          default:
-            return null;
-        }
-      })
-    };
   }
 }
 
