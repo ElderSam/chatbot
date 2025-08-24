@@ -1,6 +1,6 @@
 import { Controller, Post, UsePipes, ValidationPipe, Body, ForbiddenException, HttpException, HttpStatus } from '@nestjs/common';
 import { ChatDto } from './dto/chat.dto';
-import { SanitizePipe, normalizedMessageCache } from './pipes/sanitize.pipe';
+import { SanitizePipe } from './pipes/sanitize.pipe';
 import { RouterAgentService } from '../agents/router-agent/router-agent.service';
 import { PromptGuardService } from './prompt-guard.service';
 
@@ -32,10 +32,9 @@ export class ChatController {
             console.log('\n--------------------------------')
             console.log('/chat - start request: ', { payload })
 
-            // Get normalized message from cache if available, fallback to original
-            const cacheKey = `${payload.conversation_id}:${payload.user_id}`;
-            const normalizedMessage = normalizedMessageCache.get(cacheKey);
-            const messageToProcess = normalizedMessage || payload.message;
+            // Always use the original message for processing agents
+            // The normalized cache is only for search/embedding purposes
+            const messageToProcess = payload.message;
 
             // Delegate routing decision to RouterAgent
             const userContext = {

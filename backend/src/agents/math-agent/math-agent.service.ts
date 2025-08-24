@@ -13,9 +13,16 @@ export class MathAgentService {
     private logger: RedisLoggerService
   ) {}
 
-  // TODO. Não faz sentido isso. Deveria chamar o LLM direto para responder a pergunta matemática.
   private async calculateMathExpression(message: string): Promise<ChatCompletionResponse> {
-    const prompt = `Calculate the following math expression and reply ONLY with the result (number, no explanation): """${message}"""`;
+    const prompt = [
+      "You are a basic math solver.",
+      "Solve the following simple math problem or expression.",
+      "Input may be in natural language or math notation.",
+      "Do not concatenate digits; perform the actual calculation.",
+      "Respond ONLY with the final answer (no explanation, no extra text).",
+      `Problem: """${message}"""`
+    ].join('\n');
+
     try {
       let mathRes = await this.groq.chatCompletion({ prompt });
       return mathRes;
