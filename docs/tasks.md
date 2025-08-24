@@ -41,23 +41,29 @@ Infra-7. [x] Update README.md with infra features as implemented <!-- challenge.
 
 ## Documentation
 Docs-1. [ ] Write README.md according to challenge requirements <!-- challenge.md §10 -->  
-Docs-2. [ ] Document: How to run the system locally (Docker + docker-compose) <!-- challenge.md §10.1 -->  
-Docs-3. [ ] Document: How to run on Kubernetes (kubectl apply -f) <!-- challenge.md §10.2 -->  
-Docs-4. [ ] Document: Architecture description (Router, Agents, Logs, Redis) <!-- challenge.md §10.3 -->  
-Docs-5. [ ] Document: How to access the front-end and test multiple conversations <!-- challenge.md §10.4 -->  
-Docs-6. [ ] Add example logs (in JSON) <!-- challenge.md §10.5 -->  
-Docs-7. [ ] Document: How sanitization and prompt injection protection work <!-- challenge.md §10.6 -->  
-Docs-8. [ ] Document: How to run the tests <!-- challenge.md §10.7 -->  
+    - [x] Docs-2: How to run locally (Docker + docker-compose) - delegated to Infrastructure Guide
+    - [x] Docs-3: How to run on Kubernetes - delegated to Infrastructure Guide  
+    - [x] Docs-4: Architecture description (Router, Agents, Logs, Redis) - present in diagram
+    - [ ] Docs-5: How to access front-end and test multiple conversations - PENDING (no frontend yet)
+    - [ ] Docs-6: Example logs (in JSON) - MISSING from main README
+    - [x] Docs-7: How sanitization works - delegated to security docs
+    - [x] Docs-8: How to run tests - delegated to backend README  
 
 ## Frontend
 ### Tests (TDD First)
+Front-0. [ ] Create Vite React.js project
 Front-1. [ ] Write frontend component tests for chat interface <!-- challenge.md §8 -->  
 Front-2. [ ] Write frontend component tests for multiple conversations <!-- challenge.md §8 -->  
 
 ### Implementation
 Front-3. [ ] Create simple chat interface in React <!-- challenge.md §4 -->  
 Front-4. [ ] Integrate with backend `/chat` API <!-- challenge.md §3, §4 -->  
-Front-5. [ ] Implement support for multiple conversations (conversation_id) <!-- challenge.md §4 -->  
+- list conversations -> `GET /chats`
+    (passing "user_id")
+
+- get conversation -> `GET /chat`
+    (passing "user_id" and "conversation_id")
+
 Front-6. [ ] Show full conversation history <!-- challenge.md §4 -->  
 Front-7. [ ] Show responsible agent for each response <!-- challenge.md §4 -->  
 Front-8. [ ] Sanitize user inputs <!-- challenge.md §5 -->  
@@ -65,6 +71,6 @@ Front-9. [ ] Show friendly error messages <!-- challenge.md §5 -->
 Front-10. [ ] Update README.md with frontend features as implemented <!-- challenge.md §10 -->  
 
 ## Deploy
-Deploy-1. [ ] Include cloud deploy instructions (Render.com, Vercel, etc.) <!-- challenge.md §11 -->  
-Deploy-2. [ ] Add log and message examples <!-- challenge.md §10.5, §9 -->  
-Deploy-3. [ ] Deploy to a cloud platform and document public URLs <!-- challenge.md §11 -->  
+Deploy-1. [ ] Include cloud deploy instructions (Render.com, Vercel, etc.) <!-- challenge.md §11 --> OPTIONAL
+Deploy-2. [x] Add log and message examples <!-- challenge.md §10.5, §9 --> PARTIAL: Security docs have examples, missing Docs-6 JSON logs in README
+Deploy-3. [ ] Deploy to a cloud platform and document public URLs <!-- challenge.md §11 --> OPTIONAL  
