@@ -35,7 +35,7 @@ docker-compose up redis -d
 
 # 3. Install and run
 pnpm install
-pnpm tsx scripts/generate-embeddings.ts  # First time only
+pnpm run embeddings  # First time only
 pnpm run start:dev
 ```
 

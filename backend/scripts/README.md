@@ -7,7 +7,12 @@ Utility scripts for embeddings and testing.
 Generates semantic embeddings for the Knowledge Agent.
 
 ```bash
+# Recommended: Simple npm script
+pnpm run embeddings
+
+# Alternative ways:
 pnpm tsx scripts/generate-embeddings.ts
+node --env-file=.env --loader=ts-node/esm scripts/generate-embeddings.ts
 ```
 
 **When to run:**
