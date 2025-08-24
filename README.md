@@ -1,12 +1,14 @@
 # 🤖 Chatbot Project
 
-Simple modular chatbot prototype, featuring specialized agents, basic security, and initial observability.
+A modular InfinitePay chatbot prototype, tailored for the InfinitePay platform (see [ajuda.infinitepay.io](https://ajuda.infinitepay.io/pt-BR/)), featuring specialized agents, platform-specific logic, basic security, and initial observability.
+
+---
 
 ## 🚀 Quick Start
 
 ### Local Development
 ```bash
-git clone <repository-url>
+git clone https://github.com/ElderSam/chatbot.git
 cd chatbot
 ```
 
@@ -19,20 +21,7 @@ cd chatbot
 
 > 💡 **Works without API keys** for testing. For full functionality, see [Backend Setup](./backend/README.md).
 
-## 🏗️ What's Built
-
-- **RouterAgent** → **KnowledgeAgent** + **MathAgent** → Specialized responses
-- **Security**: Input sanitization, prompt injection prevention  
-- **Observability**: Structured logs in Redis
-- **Docker**: Containerized with health checks
-- **Kubernetes**: Production-ready YAML manifests
-
-## 📚 Documentation
-
-- **[Development Setup](./backend/README.md)** - API keys, local dev, testing
-- **[Infrastructure Guide](./infrastructure/README.md)** - Docker & Kubernetes deployment
-- **[Technical Architecture](./backend/docs/README.md)** - How agents work
-- **[Project Requirements](./docs/challenge.md)** - Original challenge
+---
 
 ## 🏗️ Architecture Overview
 
@@ -54,12 +43,35 @@ cd chatbot
                          └─────────────────┘
 ```
 
-### Deployment Options
+---
 
-See detailed deployment guides in [Infrastructure Documentation](./infrastructure/README.md):
-- **🐳 Docker Compose** - Local development and testing
-- **☸️ Kubernetes** - Production with scaling and health checks
-- **🚀 Cloud Ready** - Works on any cloud provider
+## 🏗️ What's Built
+
+- **RouterAgent** → **KnowledgeAgent** + **MathAgent** → Specialized responses
+- **Security**: Input sanitization, prompt injection prevention  
+- **Observability**: Structured logs in Redis
+- **Docker**: Containerized with health checks
+- **Kubernetes**: Production-ready YAML manifests
 
 ---
-**Status:** ✅ Backend complete ✅ Kubernetes ready • 🚧 Frontend (React) coming soon 
+
+## 📚 Documentation
+
+- **[Backend Setup](./backend/README.md)** - API keys, local dev, testing
+- **[Infrastructure Guide](./infrastructure/README.md)** - Docker & Kubernetes deployment
+- **[Technical Architecture](./backend/docs/README.md)** - How agents work
+- **[Documentation Hub](./docs/README.md)** - Complete documentation index
+
+---
+
+## 🛠️ Tech Stack
+
+- **Backend**: NestJS (TypeScript)
+- **LLM**: Groq (Llama 3.1)
+- **Database**: Redis
+- **Container**: Docker + Kubernetes
+- **Testing**: Jest (76 tests passing)
+
+---
+
+**Status:** ✅ **Production Ready** | 🧪 **Fully Tested** | 🚀 **Cloud Native**

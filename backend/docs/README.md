@@ -9,8 +9,7 @@
 ## Infrastructure
 
 - **[💾 Redis](./redis.md)** - Cache + logs storage  
-- **[🤖 API Providers](./API_PROVIDERS.md)** - Why Groq + HuggingFace
-- **[🔗 RAG Concepts](./LangChain.md)** - Retrieval-Augmented Generation
+- **[🤖 API Providers](./LLM_AI/API_PROVIDERS.md)** - Why Groq + HuggingFace
 
 ---
 *For setup instructions, see [../README.md](../README.md)*

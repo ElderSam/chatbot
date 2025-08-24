@@ -7,17 +7,17 @@
 ```bash
 # Copy and edit with your real keys
 cp config/env/.env.example config/env/.env
-
-# Add these API keys to config/env/.env:
-GROQ_API_KEY=gsk_your_groq_key
-HUGGINGFACE_API_KEY=hf_your_hf_key
 ```
 
 **Get keys:**
-- [Groq API](https://console.groq.com) (free tier: 30 req/min)  
-- [HuggingFace](https://huggingface.co/settings/tokens) (free tier: 1000 req/month)
+- [Groq API](https://console.groq.com) (required - free tier: 30 req/min)  
+- [HuggingFace](https://huggingface.co/settings/tokens) (optional - free tier: 1000 req/month)
 
-## 🛠️ Local Development (Alternative)
+> See [config/env/README.md](./config/env/README.md) for all environment variables.
+
+## 🛠️ Local Development (Without Docker)
+
+**Prefer Docker?** → See [Infrastructure Guide](../infrastructure/README.md)
 
 Instead of Docker, run locally:
 
