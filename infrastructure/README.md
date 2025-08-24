@@ -1,30 +1,30 @@
 # Infrastructure
 
-Este diretório contém toda a infraestrutura como código (IaC) para o projeto Chatbot.
+This directory contains all infrastructure as code (IaC) for the Chatbot project.
 
-## 📁 Estrutura
+## 📁 Structure
 
 ```
 infrastructure/
-├── docker/                    # Containerização
-│   ├── backend/              # Configs específicas do backend
+├── docker/                    # Containerization
+│   ├── backend/              # Backend specific configs
 │   │   ├── Dockerfile
 │   │   ├── .dockerignore
 │   │   └── healthcheck.js
-│   └── docker-compose.yml    # Orquestração completa
+│   └── docker-compose.yml    # Complete orchestration
 ├── k8s/                      # Kubernetes
-│   ├── backend.yaml          # Deploy backend
-│   ├── redis.yaml           # Deploy Redis
+│   ├── backend.yaml          # Backend deployment
+│   ├── redis.yaml           # Redis deployment
 │   ├── ingress.yaml         # Ingress Controller
 │   ├── namespace.yaml       # Namespace
 │   ├── secrets.yaml         # Secrets
-│   └── deploy.sh            # Script de deploy
-└── README.md                # Este arquivo
+│   └── deploy.sh            # Deployment script
+└── README.md                # This file
 ```
 
 ## 🐳 Docker
 
-### Desenvolvimento Local (Quick Start)
+### Local Development (Quick Start)
 ```bash
 # 1. Clone and start
 git clone <repository-url>
@@ -37,13 +37,13 @@ curl http://localhost:3000/health
 
 **System available:** http://localhost:3000
 
-### Comandos adicionais
+### Additional commands
 ```bash
-# A partir da raiz do projeto
+# From project root
 cd infrastructure/docker
 docker-compose up
 
-# Build apenas do backend (a partir do backend/)
+# Build backend only (from backend/)
 npm run docker:build
 ```
 
@@ -55,7 +55,7 @@ npm run docker:build
 - NGINX Ingress Controller (for ingress)
 - Docker images built and available
 
-### Deploy completo (Quick Start)
+### Complete Deployment (Quick Start)
 ```bash
 # 1. Build Docker image
 cd chatbot/infrastructure/docker
@@ -72,17 +72,17 @@ kubectl port-forward svc/chatbot-backend 3000:3000 -n chatbot
 curl http://localhost:3000/health
 ```
 
-### Deploy usando scripts
+### Deploy using scripts
 ```bash
-# A partir do backend
+# From backend directory
 npm run k8s:deploy
 
-# Ou diretamente
+# Or directly
 cd infrastructure/k8s
 ./deploy.sh
 ```
 
-### Deploy manual
+### Manual deployment
 ```bash
 cd infrastructure/k8s
 
@@ -98,7 +98,7 @@ kubectl apply -f backend.yaml
 kubectl apply -f ingress.yaml
 ```
 
-### Verificar status
+### Check status
 ```bash
 kubectl get all -n chatbot
 kubectl get ingress -n chatbot
@@ -111,14 +111,14 @@ kubectl get ingress -n chatbot
 - **Services**: ClusterIP services for internal communication
 - **Ingress**: NGINX ingress for external access
 
-## 🔧 Configurações
+## 🔧 Configuration
 
-- **Docker**: Usa as variáveis de ambiente de `backend/config/env/`
-- **K8s**: Secrets definidos em `k8s/secrets.yaml`
-- **Healthcheck**: Implementado para todos os serviços
+- **Docker**: Uses environment variables from `backend/config/env/`
+- **K8s**: Secrets defined in `k8s/secrets.yaml`
+- **Healthcheck**: Implemented for all services
 
-## 🚀 Ambientes
+## 🚀 Environments
 
 - **Development**: `docker-compose.yml`
 - **Production**: Kubernetes configs
-- **Testing**: Pode usar containers isolados
+- **Testing**: Can use isolated containers
