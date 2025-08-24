@@ -9,7 +9,7 @@ Simple modular chatbot prototype, featuring specialized agents, basic security, 
 ```bash
 # 1. Clone and start
 git clone <repository-url>
-cd chatbot/backend
+cd chatbot/infrastructure/docker
 docker-compose up --build
 
 # 2. Test
@@ -22,11 +22,11 @@ curl http://localhost:3000/health
 
 ```bash
 # 1. Build Docker image
-cd chatbot/backend
-docker build -t chatbot-backend:latest .
+cd chatbot/infrastructure/docker
+docker build -f backend/Dockerfile -t chatbot-backend:latest ../../backend
 
 # 2. Deploy to Kubernetes
-cd k8s
+cd ../k8s
 kubectl apply -f .
 
 # 3. Access via port-forward
@@ -49,7 +49,7 @@ curl http://localhost:3000/health
 ## 📚 Documentation
 
 - **[Development Setup](./backend/README.md)** - API keys, local dev, testing
-- **[Kubernetes Deployment](./backend/k8s/README.md)** - Production deployment guide
+- **[Infrastructure Guide](./infrastructure/README.md)** - Docker & Kubernetes deployment
 - **[Technical Architecture](./backend/docs/README.md)** - How agents work
 - **[Project Requirements](./docs/challenge.md)** - Original challenge
 

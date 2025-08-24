@@ -166,7 +166,7 @@ pnpm tsx scripts/generate-embeddings.ts
 
 ### **"HuggingFace API errors"**
 **Cause:** Missing or invalid API key
-**Solution:** Check `.env` file has valid `HUGGINGFACE_API_KEY`
+**Solution:** Check `config/env/.env` file has valid `HUGGINGFACE_API_KEY`
 
 ### **"Scripts taking too long"**
 **Cause:** Processing all collections instead of optimized subset

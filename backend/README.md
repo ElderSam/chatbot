@@ -6,9 +6,9 @@
 
 ```bash
 # Copy and edit with your real keys
-cp .env.example .env
+cp config/env/.env.example config/env/.env
 
-# Add these API keys to .env:
+# Add these API keys to config/env/.env:
 GROQ_API_KEY=gsk_your_groq_key
 HUGGINGFACE_API_KEY=hf_your_hf_key
 ```
@@ -23,9 +23,10 @@ Instead of Docker, run locally:
 
 ```bash
 # 1. Start Redis only
+cd ../infrastructure/docker
 docker-compose up redis -d
 
-# 2. Install and run
+# 2. Install and run (from backend/)
 pnpm install
 pnpm run embeddings  # First time only - generates search data
 pnpm run start:dev    # Runs on port 3000

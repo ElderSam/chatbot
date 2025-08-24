@@ -6,7 +6,7 @@ Redis stores embeddings, logs, and cache data.
 
 ### Docker Compose (Recommended)
 ```yaml
-# From backend/docker-compose.yml
+# From infrastructure/docker/docker-compose.yml
 services:
   redis:
     image: redis:7-alpine
