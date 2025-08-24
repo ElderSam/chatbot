@@ -24,28 +24,34 @@ infrastructure/
 
 ## 🐳 Docker
 
-### Local Development (Quick Start)
+### Development (Hot Reload)
 ```bash
-# 1. Clone and start
-git clone <repository-url>
-cd chatbot/infrastructure/docker
+# Start development environment with hot reload
+cd infrastructure/docker
+docker-compose -f docker-compose.dev.yml up --build
+
+# Test
+curl http://localhost:3003/health
+curl -X POST http://localhost:3003/chat \
+  -H "Content-Type: application/json" \
+  -d '{"message": "Hello", "user_id": "client1", "conversation_id": "conv-1"}'
+```
+
+### Production
+```bash
+# Start production environment
+cd infrastructure/docker
 docker-compose up --build
 
-# 2. Test
-curl http://localhost:3000/health
+# Test
+curl http://localhost:3003/health
 ```
 
-**System available:** http://localhost:3000
+**Key differences:**
+- **Development**: Hot reload, volumes mounted, NODE_ENV=development
+- **Production**: Compiled code in image, optimized, NODE_ENV=production
 
-### Additional commands
-```bash
-# From project root
-cd infrastructure/docker
-docker-compose up
-
-# Build backend only (from backend/)
-npm run docker:build
-```
+**System available:** http://localhost:3003
 
 ## ☸️ Kubernetes
 
@@ -119,6 +125,16 @@ kubectl get ingress -n chatbot
 
 ## 🚀 Environments
 
-- **Development**: `docker-compose.yml`
-- **Production**: Kubernetes configs
-- **Testing**: Can use isolated containers
+- **Development**: `docker-compose.dev.yml` (hot reload, volumes)
+- **Production**: `docker-compose.yml` (optimized) or Kubernetes
+- **Testing**: Isolated containers for E2E tests
+
+## 📋 Environment Files
+
+```
+backend/config/env/
+├── .env              # Development
+├── .env.production   # Production  
+├── .env.test         # Testing
+└── .env.example      # Template
+```
