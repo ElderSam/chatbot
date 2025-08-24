@@ -72,11 +72,9 @@ export class KnowledgeAgentService {
       // 💰 OPTIMIZATION: Smart context compression to save tokens
       // TEMPORARY: Disable compression for testing - send full articles
       const contextText = limitedContext.map((article, i) => {
-        return `${i + 1}. ${article.title}\n${article.text}\nURL: ${article.url}\n`;
+        return `${i + 1}. ${article.title}\n${article.text}\nSaiba mais: ${article.url}\n`;
       }).join('\n');
       // const contextText = this.compressContext(limitedContext);
-
-      const mainLink = limitedContext[0].url;
 
       // English prompt for better model performance
       const prompt = `Answer the question directly based only on the provided information.
@@ -91,6 +89,8 @@ export class KnowledgeAgentService {
         - Include only essential information to answer the question
         - If there's a specific contact (email, phone), include it COMPLETE
         - Maximum 2-3 sentences
+        - if you don't know the exacly answer, include the most relevant article link at your answers end.
+        - if you don't have any relevant article link, include the main InfinitePay help site link at your answers end, searching for the users message. Example: "Saiba mais: https://ajuda.infinitepay.io/pt-BR/?q=Qual+a+taxa+da+maquininha%3F"
 
         ANSWER:`
       ;
@@ -105,19 +105,9 @@ export class KnowledgeAgentService {
         max_tokens: 512    // Sufficient but not excessive
       });
 
-      // console.log({ responseMsg: responseMsg?.substring(0, 100), mainLink });
+      // console.log({ responseMsg: responseMsg?.substring(0, 100) });
 
       let finalMessage = responseMsg?.trim() || 'Consulte o site da InfinitePay para mais detalhes.';
-
-      // Check if the answer seems cut off and add ellipsis
-      if (finalMessage && !finalMessage.match(/[.!?…]$/)) {
-        finalMessage += '...';
-      }
-
-      // If there is a relevant link, include it naturally
-      // if (mainLink && !finalMessage.includes(mainLink)) {
-      //   finalMessage += `\n\nSaiba mais: ${mainLink}`;
-      // }
 
       const finalResponse = { responseMsg: finalMessage, data };
       const executionTimeMs = Date.now() - start;
