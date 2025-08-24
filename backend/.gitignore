@@ -35,13 +35,12 @@ lerna-debug.log*
 !.vscode/launch.json
 !.vscode/extensions.json
 
-# dotenv environment variable files
-.env
-.env.development.local
-.env.test.local
-.env.production
-.env.production.local
-.env.local
+# dotenv environment variable files - now in config/env/
+config/env/.env
+config/env/.env.development.local  
+config/env/.env.test.local
+config/env/.env.production.local
+config/env/.env.local
 
 # temp directory
 .temp

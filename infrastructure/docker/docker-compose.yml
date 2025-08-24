@@ -12,13 +12,15 @@ services:
       retries: 3
 
   backend:
-    build: .
+    build: 
+      context: ../../backend
+      dockerfile: ../infrastructure/docker/backend/Dockerfile
     ports:
       - "3000:3000"
     env_file:
-      - .env.production  # Optional: only if you created this file with real API keys
+      - ../../backend/config/env/.env  # Development env file
     environment:
-      - NODE_ENV=production
+      - NODE_ENV=development
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - PORT=3000
