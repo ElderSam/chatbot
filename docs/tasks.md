@@ -25,6 +25,9 @@ Back-13. [x] Update README.md with backend features as implemented <!-- challeng
 Infra-1. [ ] Prepare basic infrastructure (Docker, docker-compose, Redis, folder structure) <!-- challenge.md §7 -->  
 Infra-2. [ ] Create Dockerfile for frontend and backend <!-- challenge.md §7 -->  
 Infra-3. [ ] Create `docker-compose.yml` to run frontend, backend and Redis locally <!-- challenge.md §7 -->  
+    - make backend run with docker
+    - make frontend run with docker
+
 Infra-4. [ ] Configure environment variables for front-backend integration <!-- challenge.md §7 -->  
 Infra-5. [ ] Create Kubernetes manifests for all services <!-- challenge.md §7 -->  
 Infra-6. [ ] Update README.md with infra features as implemented <!-- challenge.md §10 -->  
@@ -36,18 +39,24 @@ Docs-3. [ ] Document: How to run on Kubernetes (kubectl apply -f) <!-- challenge
 Docs-4. [ ] Document: Architecture description (Router, Agents, Logs, Redis) <!-- challenge.md §10.3 -->  
 Docs-5. [ ] Document: How to access the front-end and test multiple conversations <!-- challenge.md §10.4 -->  
 Docs-6. [ ] Add example logs (in JSON) <!-- challenge.md §10.5 -->  
-Docs-7. [ ] Document: How sanitization and prompt injection protection work <!-- challenge.md §10.6 -->  
+Docs-7. [ ] Document: How sanitization and prompt injection protection work  <!-- challenge.md §10.6 -->  
 Docs-8. [ ] Document: How to run the tests <!-- challenge.md §10.7 -->  
 
 ## Frontend
 ### Tests (TDD First)
+Front-0. [ ] Create Vite React.js project
 Front-1. [ ] Write frontend component tests for chat interface <!-- challenge.md §8 -->  
 Front-2. [ ] Write frontend component tests for multiple conversations <!-- challenge.md §8 -->  
 
 ### Implementation
 Front-3. [ ] Create simple chat interface in React <!-- challenge.md §4 -->  
 Front-4. [ ] Integrate with backend `/chat` API <!-- challenge.md §3, §4 -->  
-Front-5. [ ] Implement support for multiple conversations (conversation_id) <!-- challenge.md §4 -->  
+- list conversations -> `GET /chats`
+    (passing "user_id")
+
+- get conversation -> `GET /chat`
+    (passing "user_id" and "conversation_id")
+
 Front-6. [ ] Show full conversation history <!-- challenge.md §4 -->  
 Front-7. [ ] Show responsible agent for each response <!-- challenge.md §4 -->  
 Front-8. [ ] Sanitize user inputs <!-- challenge.md §5 -->  

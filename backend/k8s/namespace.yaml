@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: chatbot
+  labels:
+    name: chatbot
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: chatbot-config
+  namespace: chatbot
+data:
+  NODE_ENV: "production"
+  REDIS_HOST: "redis"
+  REDIS_PORT: "6379"
+  PORT: "3000"
+  REDIS_TTL: "900"
+  LOG_LEVEL: "info"

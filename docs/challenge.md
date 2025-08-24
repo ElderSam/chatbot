@@ -83,7 +83,7 @@ POST /chat
 
 ---
 
-## 4. 💻 Front-End (React)
+## 4. 💻 Front-End (React) - (falta fazer)
 
 **Requirements:**
 - Simple chat interface.
@@ -107,7 +107,7 @@ POST /chat
 
 ---
 
-## 6. 📊 Observability Requirements
+## 6. 📊 Observability Requirements (falta ver se está documentado como acessar os logs)
 
 Structured logs must include:
 - `timestamp`
@@ -134,21 +134,21 @@ Structured logs must include:
 
 ---
 
-## 7. ⚙️ Infrastructure
+## 7. ⚙️ Infrastructure (falta terminar)
 
-### Redis (required)
+### 1. Redis (required)
 Can be used for:
 - Storing conversation history
 - Simplified logging
 
-### Docker
-- **Dockerfile** for front-end and back-end.
-- **docker-compose.yml** for local execution.
+### 2. Docker ✅
+- **Dockerfile** for back-end ✅
+- **docker-compose.yml** for local execution ✅
 
-### Kubernetes
+### 3. Kubernetes (falta fazer)
 Organized YAMLs for:
 - Deployment, Service, Ingress of:
-  - Front-end
+  - Front-end (farei depois)
   - Back-end
   - Redis
 
@@ -163,7 +163,7 @@ Basic unit tests:
 
 ---
 
-## 9. 💬 Example Messages
+## 9. 💬 Example Messages (falta testar)
 
 - `"What are the card machine fees?"`
 - `"Can I use my phone as a card machine?"`
@@ -171,7 +171,7 @@ Basic unit tests:
 
 ---
 
-## 10. 📄 Expected `README.md`
+## 10. 📄 Expected `README.md` (falta fazer)
 
 The file must include:
 1. How to run the system locally (**Docker + docker-compose**)
@@ -184,7 +184,7 @@ The file must include:
 
 ---
 
-## 11. 🏆 Bonus Challenge (Optional)
+## 11. 🏆 Bonus Challenge (Optional) - (falta fazer)
 
 ### 💡 Push yourself beyond local
 Deploy the project on some cloud platform (free or trial).
