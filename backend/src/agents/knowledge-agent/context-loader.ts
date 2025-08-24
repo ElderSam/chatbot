@@ -142,9 +142,8 @@ async function processCollection(collectionUrl: string, collectionIndex: number)
 
 export async function loadDynamicContext(question: string): Promise<ArticleContext[]> {
     // 🔒 TEMPORÁRIO: Sistema de segurança - processa apenas 1 coleção
-    const TEMP_SINGLE_COLLECTION_MODE = true; // TODO: Alterar para false após validação ✅ ATIVADO!
-    const TEMP_TARGET_COLLECTION = 1;
-    // const TEMP_TARGET_COLLECTION = 7; // Sua Maquininha (mais relevante) 
+    const TEMP_SINGLE_COLLECTION_MODE = false; // TODO: Alterar para false após validação ✅ ATIVADO!
+    const TEMP_TARGET_COLLECTION = 7; // Sua Maquininha (mais relevante)
 
     const baseUrl = 'https://ajuda.infinitepay.io/pt-BR/';
     const cacheKey = `collections:${baseUrl}`;
@@ -182,7 +181,7 @@ export async function loadDynamicContext(question: string): Promise<ArticleConte
     const collectionLinks: string[] = [];
     $('a[href*="/collections/"]').each((_, el) => {
         const href = $(el).attr('href');
-        if (href && href.startsWith('/pt-BR/collections/')) { // TODO. ver se apaga, pois nunca entra nesse if
+        if (href && href.startsWith('/pt-BR/collections/')) {
             collectionLinks.push(`https://ajuda.infinitepay.io${href}`);
         }
         else if (href && href.includes('/pt-BR/collections/')) {
@@ -199,7 +198,7 @@ export async function loadDynamicContext(question: string): Promise<ArticleConte
         targetCollections = [TEMP_TARGET_COLLECTION];
         console.log(`🔒 TEMP MODE: Processing only collection ${TEMP_TARGET_COLLECTION}`);
     }
-    else if(!question) { // TODO. fazer entrar aqui só se for gerar embeddings
+    else if(!question) {
         // fill from 1 to 15
         targetCollections = Array.from({ length: 15 }, (_, i) => i + 1);
     }
