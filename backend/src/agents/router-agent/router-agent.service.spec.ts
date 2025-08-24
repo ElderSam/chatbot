@@ -68,15 +68,18 @@ describe('RouterAgentService', () => {
     expect(result.agentResult.responseMsg).toContain('42');
   });
 
-  it('should fallback to KnowledgeAgent on routing error', async () => {
+  it('should throw error on routing failure', async () => {
     groqService.chatCompletion = jest.fn().mockRejectedValue(new Error('API Error'));
 
     const message = 'What is 2 + 2?';
     const userContext = { user_id: 'test123', conversation_id: 'conv123' };
     
-    const result = await service.routeAndHandle(message, userContext);
+    await expect(service.routeAndHandle(message, userContext))
+      .rejects
+      .toThrow('Unable to route your message. Please check if the system is properly configured.');
     
-    expect(knowledgeService.answer).toHaveBeenCalledWith(message, [], userContext);
-    expect(result.chosenAgent).toBe('KnowledgeAgent');
+    expect(groqService.chatCompletion).toHaveBeenCalled();
+    expect(knowledgeService.answer).not.toHaveBeenCalled();
+    expect(mathService.solve).not.toHaveBeenCalled();
   });
 });

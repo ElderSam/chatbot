@@ -1,4 +1,4 @@
-import { Controller, Post, UsePipes, ValidationPipe, Body, ForbiddenException } from '@nestjs/common';
+import { Controller, Post, UsePipes, ValidationPipe, Body, ForbiddenException, HttpException, HttpStatus } from '@nestjs/common';
 import { ChatDto } from './dto/chat.dto';
 import { SanitizePipe, normalizedMessageCache } from './pipes/sanitize.pipe';
 import { RouterAgentService } from '../agents/router-agent/router-agent.service';
@@ -54,12 +54,15 @@ export class ChatController {
             };
         }
         catch (error: any) {
-            // Retorna erro ao usuário
-            response = {
-                statusCode: error.statusCode || 500,
-                error: error.message || 'Agent routing failed',
-                details: error.response?.data || error.stack || null,
-            };
+            // Log the error for debugging
+            console.error('Chat request failed:', error.message);
+            
+            // Return proper HTTP error status
+            throw new HttpException({
+                message: 'Unable to process your request. Please try again later.',
+                error: 'Internal Server Error',
+                statusCode: 500
+            }, HttpStatus.INTERNAL_SERVER_ERROR);
         }
         // console.log('/chat - end request: ', JSON.stringify({ response }))
         return response;

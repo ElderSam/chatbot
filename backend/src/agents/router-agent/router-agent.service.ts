@@ -31,7 +31,7 @@ export class RouterAgentService {
     }
     catch(error) {
       console.error('Error deciding agent:', error);
-      return 'KnowledgeAgent';
+      throw new Error('Unable to route your message. Please check if the system is properly configured.');
     }
   }
 
