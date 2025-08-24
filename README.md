@@ -1,45 +1,35 @@
 # 🤖 Chatbot Project
 
-An intelligent modular chatbot with specialized agents, security, and observability.
+Simple modular chatbot prototype, featuring specialized agents, basic security, and initial observability.
 
 ## 🚀 Quick Start
 
 ```bash
-# 1. Clone and navigate
+# 1. Clone and start
 git clone <repository-url>
 cd chatbot/backend
-
-# 2. Start with Docker
 docker-compose up --build
 
-# 3. Test the system
+# 2. Test
 curl http://localhost:3000/health
 ```
 
-**System available at:**
-- Backend API: http://localhost:3000
-- Redis: localhost:6379
+**System available:** http://localhost:3000
 
-> ⚠️ **API Keys needed for full functionality**: The chatbot works without API keys for testing, but you'll need [Groq](https://console.groq.com) + [HuggingFace](https://huggingface.co/settings/tokens) keys for LLM responses. See [backend setup](./backend/README.md) for details.
+> 💡 **Works without API keys** for testing. For full functionality, see [setup guide](./backend/README.md).
 
-## 🏗️ Architecture
+## 🏗️ What's Built
 
-- **🔀 RouterAgent**: Routes messages to specialized agents
-- **📚 KnowledgeAgent**: RAG-based search using InfinitePay documentation  
-- **🧮 MathAgent**: Solves mathematical expressions
-- **🔐 Security**: Input sanitization + prompt injection prevention
-- **📊 Observability**: Structured logging in Redis
+- **RouterAgent** → **KnowledgeAgent** + **MathAgent** → Specialized responses
+- **Security**: Input sanitization, prompt injection prevention  
+- **Observability**: Structured logs in Redis
+- **Docker**: Containerized with health checks
 
-## 📖 Documentation
+## 📚 Documentation
 
-- **[ Backend Setup](./backend/README.md)** - Development guide
-- **[� Project Challenge](./docs/challenge.md)** - Original requirements
-- **[📚 Technical Details](./backend/docs/README.md)** - Architecture documentation
-
-## 🎯 Project Status
-
-✅ **Complete**: Backend API, Agents, Security, Observability, Docker  
-🚧 **Next**: Frontend (React), Kubernetes, Cloud deployment
+- **[Development Setup](./backend/README.md)** - API keys, local dev, testing
+- **[Technical Architecture](./backend/docs/README.md)** - How agents work
+- **[Project Requirements](./docs/challenge.md)** - Original challenge
 
 ---
-*For detailed setup and development, see [backend/README.md](./backend/README.md)*
+**Status:** ✅ Backend complete • 🚧 Frontend (React) + K8s coming soon

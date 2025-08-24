@@ -110,36 +110,10 @@ pnpm tsx scripts/generate-embeddings.ts
 
 ## 🔍 Developer Workflow
 
-### **New Developer Setup**
-```bash
-# 1. Clone and setup
-git clone <repo>
-cd backend && cp .env.example .env
+### **Understanding the System**
+For setup, see [../README.md](../README.md). This doc covers **how the code works**.
 
-# 2. Add API keys to .env
-GROQ_API_KEY=your_groq_key
-HUGGINGFACE_API_KEY=your_hf_key
-
-# 3. Start Redis
-docker compose up -d redis
-
-# 4. Generate embeddings (REQUIRED)
-pnpm tsx scripts/generate-embeddings.ts
-
-# 5. Start backend
-pnpm run start:dev
-```
-
-### **Daily Development**
-```bash
-# Normal development - no need to regenerate embeddings
-pnpm run start:dev
-
-# Test specific questions
-curl -X POST http://localhost:3001/chat \
-  -H "Content-Type: application/json" \
-  -d '{"message": "Qual a taxa da maquininha?"}'
-```
+### **Key Files & Their Purpose**
 
 ### **When Things Go Wrong**
 ```bash

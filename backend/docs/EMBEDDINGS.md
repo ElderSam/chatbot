@@ -158,45 +158,18 @@ Question → Embedding generation (API) → Cosine similarity search → Top art
 - Fallback to dynamic loading if no embeddings are found
 - All operations are logged with execution time and sources
 
-## 7. How to Use - Complete Guide
+## 💡 Usage Examples
 
-### First-Time Setup
-1. **Get your Hugging Face API key**:
-   - Visit [https://huggingface.co/settings/tokens](https://huggingface.co/settings/tokens)
-   - Create a new token (free account is sufficient)
-   
-2. **Configure environment**:
-   ```bash
-   cp .env.example .env
-   # Add your API key to .env:
-   HUGGINGFACE_API_KEY=hf_your_actual_key_here
-   ```
-
-3. **Start Redis** (if not already running):
-   ```bash
-   docker run -d -p 6379:6379 redis:alpine
-   ```
-
-4. **Generate initial embeddings**:
-   ```bash
-   pnpm tsx scripts/generate-embeddings.ts
-   ```
-
-5. **Start the backend**:
-   ```bash
-   pnpm start:dev
-   ```
-
-### Testing the Semantic Search
-Try asking these questions to see the improved relevance:
+### Testing Semantic Search
+Questions that show improved relevance:
 - "Qual a taxa da maquininha?" (Portuguese)
-- "What are the card machine fees?" (English)
+- "What are the card machine fees?" (English)  
 - "Como receber pagamentos?" (Related concepts)
 
-The system will now find semantically related articles even if exact words don't match.
+The system finds semantically related articles even without exact word matches.
 
-### Updating Content
-When articles are updated or new ones are added:
+### Updating Embeddings
+When articles change:
 ```bash
 # Simply run the generation script again
 pnpm tsx scripts/generate-embeddings.ts

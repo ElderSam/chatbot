@@ -1,16 +1,8 @@
 # Redis Infrastructure
 
-## 🚀 Quick Start
+## � Data Structure
 
-```bash
-# Start Redis with Docker
-docker compose up -d redis
-
-# Verify Redis is running
-redis-cli ping  # Should return "PONG"
-```
-
-## 🔧 Configuration
+Redis stores embeddings, logs, and cache data.
 
 ### Docker Compose (Recommended)
 ```yaml

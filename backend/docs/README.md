@@ -1,19 +1,16 @@
-# 📚 Backend Documentation
+# 📚 Technical Documentation
 
-## Architecture & Implementation
+## How It Works
 
-- **[🧠 Agent System](./KNOWLEDGE_AGENT.md)** - How RouterAgent, KnowledgeAgent, and MathAgent work
-- **[📊 Observability System](./OBSERVABILITY_IMPLEMENTATION.md)** - Structured logging implementation
-- **[🔍 Embeddings & Search](./EMBEDDINGS.md)** - Semantic search technical details
+- **[🧠 Agent System](./KNOWLEDGE_AGENT.md)** - Router → Knowledge/Math agents workflow
+- **[🔍 Semantic Search](./EMBEDDINGS.md)** - HuggingFace embeddings + cosine similarity  
+- **[📊 Observability](./OBSERVABILITY_IMPLEMENTATION.md)** - Structured JSON logs in Redis
 
 ## Infrastructure
 
-- **[💾 Redis Setup](./redis.md)** - Database configuration and usage
-- **[🤖 API Providers](./API_PROVIDERS.md)** - Why we use Groq + HuggingFace
-
-## Concepts
-
-- **[🔗 RAG Pipeline](./LangChain.md)** - Retrieval-Augmented Generation concepts
+- **[💾 Redis](./redis.md)** - Cache + logs storage  
+- **[🤖 API Providers](./API_PROVIDERS.md)** - Why Groq + HuggingFace
+- **[🔗 RAG Concepts](./LangChain.md)** - Retrieval-Augmented Generation
 
 ---
-*For development setup, see [../README.md](../README.md)*
+*For setup instructions, see [../README.md](../README.md)*

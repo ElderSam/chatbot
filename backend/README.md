@@ -1,80 +1,53 @@
-# Backend - NestJS Chatbot
+# Backend Setup
 
-> **🔼 For project overview, see [main README](../README.md)**
+> **Already ran the quick start?** → Skip to [API Keys Setup](#-api-keys-for-full-functionality)
 
-## 🚀 Development Setup
+## 🔑 API Keys for Full Functionality
 
-### Option 1: Docker (Recommended)
-
-**Quick start without API keys:**
 ```bash
-docker-compose up --build
-# System starts but LLM features won't work without API keys
-```
-
-**With API keys (for full functionality):**
-```bash
-# Method A: Create .env.production file
-cp .env.production.example .env.production
-# Edit .env.production and add your real API keys
-
-# Method B: Or set environment variables directly
-export GROQ_API_KEY=your_actual_groq_key
-export HUGGINGFACE_API_KEY=your_actual_hf_key
-docker-compose up --build
-```
-
-### Option 2: Local Development
-```bash
-# 1. Setup API keys
+# Copy and edit with your real keys
 cp .env.example .env
-# Add your GROQ_API_KEY and HUGGINGFACE_API_KEY
 
-# 2. Start Redis
+# Add these API keys to .env:
+GROQ_API_KEY=gsk_your_groq_key
+HUGGINGFACE_API_KEY=hf_your_hf_key
+```
+
+**Get keys:**
+- [Groq API](https://console.groq.com) (free tier: 30 req/min)  
+- [HuggingFace](https://huggingface.co/settings/tokens) (free tier: 1000 req/month)
+
+## 🛠️ Local Development (Alternative)
+
+Instead of Docker, run locally:
+
+```bash
+# 1. Start Redis only
 docker-compose up redis -d
 
-# 3. Install and run
+# 2. Install and run
 pnpm install
-pnpm run embeddings  # First time only
-pnpm run start:dev
+pnpm run embeddings  # First time only - generates search data
+pnpm run start:dev    # Runs on port 3000
 ```
 
-## 🧪 Testing & Development
+## 🧪 Testing
 
 ```bash
-# Tests
-pnpm test              # Unit tests
-pnpm test:e2e          # E2E tests  
-pnpm test:cov          # Coverage
-
-# API Test
-curl -X POST http://localhost:3000/chat \
-  -H "Content-Type: application/json" \
-  -d '{"message": "Como acompanhar meu pedido?", "user_id": "test", "conversation_id": "conv-1"}'
+pnpm test        # Unit tests
+pnpm test:e2e    # E2E tests
+pnpm test:cov    # Coverage report
 ```
 
-## 📖 Technical Documentation
-
-**[📚 Documentation Index](./docs/README.md)** - Complete technical documentation
-
-Quick links:
-- **[🧠 Agent System](./docs/KNOWLEDGE_AGENT.md)** - How agents work
-- **[📊 Observability](./docs/OBSERVABILITY_IMPLEMENTATION.md)** - Logging system  
-- **[🔧 Embeddings](./docs/EMBEDDINGS.md)** - Semantic search details
-
-## 🏗️ Architecture
+## 📊 System Architecture
 
 ```
-src/
-├── agents/          # RouterAgent, KnowledgeAgent, MathAgent
-├── chat/           # API controllers and DTOs  
-├── redis/          # Cache and logging services
-└── common/         # Shared utilities
+Chat Request → RouterAgent → KnowledgeAgent/MathAgent → Response
+                    ↓              ↓           ↓
+                 Redis Logs → Observability
 ```
 
-**Development Guides:**
-- **[⚙️ Scripts](./scripts/README.md)** - Utility scripts
-- **[🧪 Testing](./test/README.md)** - Test patterns
+**Technical details:** See [docs/README.md](./docs/README.md)
 
 ---
-*API Keys required: [Groq](https://console.groq.com) + [HuggingFace](https://huggingface.co/settings/tokens)*
+**Quick test:** `curl -X POST http://localhost:3000/chat -H "Content-Type: application/json" -d '{"message": "How much is 2+2?", "user_id": "test", "conversation_id": "123"}'`
