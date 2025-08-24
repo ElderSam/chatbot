@@ -142,9 +142,8 @@ async function processCollection(collectionUrl: string, collectionIndex: number)
 
 export async function loadDynamicContext(question: string): Promise<ArticleContext[]> {
     // 🔒 TEMPORÁRIO: Sistema de segurança - processa apenas 1 coleção
-    const TEMP_SINGLE_COLLECTION_MODE = true; // TODO: Alterar para false após validação ✅ ATIVADO!
-    const TEMP_TARGET_COLLECTION = 1;
-    // const TEMP_TARGET_COLLECTION = 7; // Sua Maquininha (mais relevante) 
+    const TEMP_SINGLE_COLLECTION_MODE = false; // TODO: Alterar para false após validação ✅ ATIVADO!
+    const TEMP_TARGET_COLLECTION = 7; // Sua Maquininha (mais relevante) 
 
     const baseUrl = 'https://ajuda.infinitepay.io/pt-BR/';
     const cacheKey = `collections:${baseUrl}`;
