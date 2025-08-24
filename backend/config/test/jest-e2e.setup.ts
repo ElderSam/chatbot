@@ -40,7 +40,7 @@ global.fetch = jest.fn().mockImplementation(() =>
 ) as jest.Mock;
 
 // Mock context loader to avoid external HTTP calls
-jest.mock('./src/agents/knowledge-agent/context-loader', () => ({
+jest.mock('../../src/agents/knowledge-agent/context-loader', () => ({
   loadDynamicContext: jest.fn().mockResolvedValue([
     {
       title: 'Test Article',
