@@ -15,13 +15,13 @@ services:
   backend:
     build: 
       context: ../../backend
-      dockerfile: ../infrastructure/docker/backend/Dockerfile
+      dockerfile: ../infrastructure/docker/backend/Dockerfile.dev
     ports:
       - "3003:3003"
     env_file:
-      - ../../backend/config/env/.env.production  # Production env file
+      - ../../backend/config/env/.env
     environment:
-      - NODE_ENV=production
+      - NODE_ENV=development
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - PORT=3003
@@ -30,12 +30,17 @@ services:
     depends_on:
       redis:
         condition: service_healthy
+    volumes:
+      - ../../backend/src:/app/src:ro
+      - ../../backend/package.json:/app/package.json:ro
+      - ../../backend/tsconfig.json:/app/tsconfig.json:ro
+      - ../../backend/nest-cli.json:/app/nest-cli.json:ro
     healthcheck:
-      test: ["CMD", "node", "healthcheck.js"]
+      test: ["CMD", "curl", "-f", "http://localhost:3003/health"]
       interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 10s
+      start_period: 15s
 
 volumes:
   redis_data:

@@ -1,0 +1,24 @@
+FROM node:20-alpine
+
+# Install pnpm
+RUN npm install -g pnpm
+
+WORKDIR /app
+
+# Copy dependency files
+COPY package.json pnpm-lock.yaml ./
+RUN pnpm install
+
+# Copy config files
+COPY tsconfig*.json nest-cli.json ./
+
+# Create directories that will be mounted
+RUN mkdir -p src
+
+# Install nodemon for hot reload
+RUN pnpm install -D nodemon
+
+EXPOSE 3003
+
+# Use nodemon for development with hot reload
+CMD ["pnpm", "run", "start:dev"]
