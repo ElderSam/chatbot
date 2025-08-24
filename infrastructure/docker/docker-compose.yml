@@ -1,10 +1,11 @@
-version: "3.9"
 services:
   redis:
     image: redis:7
     ports:
       - "6379:6379"
-    command: ["redis-server", "--appendonly", "no"]
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis_data:/data
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 30s
@@ -16,14 +17,14 @@ services:
       context: ../../backend
       dockerfile: ../infrastructure/docker/backend/Dockerfile
     ports:
-      - "3000:3000"
+      - "3003:3003"
     env_file:
       - ../../backend/config/env/.env  # Development env file
     environment:
       - NODE_ENV=development
       - REDIS_HOST=redis
       - REDIS_PORT=6379
-      - PORT=3000
+      - PORT=3003
       - REDIS_TTL=900
       - LOG_LEVEL=info
     depends_on:
@@ -35,3 +36,6 @@ services:
       timeout: 10s
       retries: 3
       start_period: 10s
+
+volumes:
+  redis_data:
