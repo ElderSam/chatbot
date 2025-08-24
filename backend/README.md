@@ -1,75 +1,80 @@
 # Backend - NestJS Chatbot
 
-> **🚀 For project overview, see the [main project README](../README.md)**
+> **🔼 For project overview, see [main README](../README.md)**
 
-This is the backend service built with NestJS, featuring intelligent agents, semantic search, and security layers.
+## 🚀 Development Setup
 
-## 🎯 Quick Setup
+### Option 1: Docker (Recommended)
 
-### 1. API Keys Setup
+**Quick start without API keys:**
 ```bash
-cp .env.example .env
-# Edit .env and add:
-# GROQ_API_KEY=your_groq_key
-# HUGGINGFACE_API_KEY=your_hf_key
+docker-compose up --build
+# System starts but LLM features won't work without API keys
 ```
 
-Get API keys:
-- **Groq**: https://console.groq.com → API Keys → Create API Key
-- **HuggingFace**: https://huggingface.co/settings/tokens → New token (Read)
-
-### 2. Start Services
+**With API keys (for full functionality):**
 ```bash
-# 2.1. Start Redis
-docker compose up -d redis
+# Method A: Create .env.production file
+cp .env.production.example .env.production
+# Edit .env.production and add your real API keys
 
-# 2.2. Install dependencies
+# Method B: Or set environment variables directly
+export GROQ_API_KEY=your_actual_groq_key
+export HUGGINGFACE_API_KEY=your_actual_hf_key
+docker-compose up --build
+```
+
+### Option 2: Local Development
+```bash
+# 1. Setup API keys
+cp .env.example .env
+# Add your GROQ_API_KEY and HUGGINGFACE_API_KEY
+
+# 2. Start Redis
+docker-compose up redis -d
+
+# 3. Install and run
 pnpm install
-
-# 2.3. Generate embeddings (first time only)
-pnpm tsx scripts/generate-embeddings.ts
-
-# 2.4. Start development server
+pnpm tsx scripts/generate-embeddings.ts  # First time only
 pnpm run start:dev
 ```
 
-### 3. Test API
+## 🧪 Testing & Development
+
 ```bash
-curl -X POST http://localhost:3001/chat \
+# Tests
+pnpm test              # Unit tests
+pnpm test:e2e          # E2E tests  
+pnpm test:cov          # Coverage
+
+# API Test
+curl -X POST http://localhost:3000/chat \
   -H "Content-Type: application/json" \
-  -d '{"message": "Como acompanhar meu pedido?"}'
+  -d '{"message": "Como acompanhar meu pedido?", "user_id": "test", "conversation_id": "conv-1"}'
 ```
 
-## 🧪 Testing
+## 📖 Technical Documentation
 
-```bash
-# Unit tests
-pnpm test
+**[📚 Documentation Index](./docs/README.md)** - Complete technical documentation
 
-# E2E tests  
-pnpm test:e2e
-
-# Coverage
-pnpm test:cov
-```
+Quick links:
+- **[🧠 Agent System](./docs/KNOWLEDGE_AGENT.md)** - How agents work
+- **[📊 Observability](./docs/OBSERVABILITY_IMPLEMENTATION.md)** - Logging system  
+- **[🔧 Embeddings](./docs/EMBEDDINGS.md)** - Semantic search details
 
 ## 🏗️ Architecture
 
-Built with **NestJS** featuring:
-- **RouterAgent**: Routes questions to appropriate agents
-- **KnowledgeAgent**: Semantic search with LangChain + HuggingFace
-- **MathAgent**: Mathematical expression solving
-- **Redis**: Caching and conversation history
-- **Security**: Input sanitization and prompt injection protection
+```
+src/
+├── agents/          # RouterAgent, KnowledgeAgent, MathAgent
+├── chat/           # API controllers and DTOs  
+├── redis/          # Cache and logging services
+└── common/         # Shared utilities
+```
 
-## 📖 Backend Documentation
+**Development Guides:**
+- **[⚙️ Scripts](./scripts/README.md)** - Utility scripts
+- **[🧪 Testing](./test/README.md)** - Test patterns
 
-For detailed information, see:
-
-- **[🧠 Knowledge Agent System](./docs/KNOWLEDGE_AGENT.md)** - AI agents and semantic search
-- **[🔧 Scripts Usage](./scripts/README.md)** - Utility scripts
-- **[💾 Redis Configuration](./docs/redis.md)** - Database setup
-- **[🔧 Technical Implementation](./docs/EMBEDDINGS.md)** - Semantic search details
-- **[🔗 LangChain Integration](./docs/LangChain.md)** - RAG pipeline concepts
-
-
+---
+*API Keys required: [Groq](https://console.groq.com) + [HuggingFace](https://huggingface.co/settings/tokens)*

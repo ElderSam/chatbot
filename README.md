@@ -1,52 +1,45 @@
-# Chatbot Project
+# 🤖 Chatbot Project
 
-An intelligent chatbot system with modular agents, semantic search, and security features.
-
-## �️ Project Structure
-
-```
-chatbot/
-├── backend/          # NestJS API with intelligent agents
-├── frontend/         # React frontend (coming soon)
-├── docs/            # Project documentation
-└── README.md        # This file
-```
+An intelligent modular chatbot with specialized agents, security, and observability.
 
 ## 🚀 Quick Start
 
-### Prerequisites
-- Node.js 18+
-- Docker & Docker Compose
+```bash
+# 1. Clone and navigate
+git clone <repository-url>
+cd chatbot/backend
 
-### Setup
-1. **Start the backend:**
-   ```bash
-   cd backend
-   # Follow the complete setup guide in backend/README.md
-   ```
+# 2. Start with Docker
+docker-compose up --build
 
-2. **Start the frontend:** *(Coming Soon)*
-   ```bash
-   cd frontend
-   # React frontend will be implemented here
-   ```
+# 3. Test the system
+curl http://localhost:3000/health
+```
 
-## 🧠 System Overview
+**System available at:**
+- Backend API: http://localhost:3000
+- Redis: localhost:6379
 
-An intelligent chatbot with modular agents:
+> ⚠️ **API Keys needed for full functionality**: The chatbot works without API keys for testing, but you'll need [Groq](https://console.groq.com) + [HuggingFace](https://huggingface.co/settings/tokens) keys for LLM responses. See [backend setup](./backend/README.md) for details.
 
-- **Router Agent**: Directs questions to the right specialist
-- **Knowledge Agent**: Searches help articles semantically  
-- **Math Agent**: Solves calculations
-- **Security**: Validates and sanitizes all inputs
+## 🏗️ Architecture
+
+- **🔀 RouterAgent**: Routes messages to specialized agents
+- **📚 KnowledgeAgent**: RAG-based search using InfinitePay documentation  
+- **🧮 MathAgent**: Solves mathematical expressions
+- **🔐 Security**: Input sanitization + prompt injection prevention
+- **📊 Observability**: Structured logging in Redis
 
 ## 📖 Documentation
 
-### Getting Started
-- **[Backend Setup](./backend/README.md)** - Complete backend development guide
-- **Frontend Setup** - Coming soon with React implementation
+- **[ Backend Setup](./backend/README.md)** - Development guide
+- **[� Project Challenge](./docs/challenge.md)** - Original requirements
+- **[📚 Technical Details](./backend/docs/README.md)** - Architecture documentation
 
-### Project Documentation  
-- **[📋 Project Requirements](./docs/challenge.md)** - Original challenge specifications
-- **[📝 Development Tasks](./docs/tasks.md)** - Progress tracking and task list
-- **[🛡️ Security Features](./docs/security/)** - Input validation and protection
+## 🎯 Project Status
+
+✅ **Complete**: Backend API, Agents, Security, Observability, Docker  
+🚧 **Next**: Frontend (React), Kubernetes, Cloud deployment
+
+---
+*For detailed setup and development, see [backend/README.md](./backend/README.md)*
