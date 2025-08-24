@@ -4,39 +4,20 @@ Simple modular chatbot prototype, featuring specialized agents, basic security, 
 
 ## 🚀 Quick Start
 
-### Docker (Local Development)
-
+### Local Development
 ```bash
-# 1. Clone and start
 git clone <repository-url>
-cd chatbot/infrastructure/docker
-docker-compose up --build
-
-# 2. Test
-curl http://localhost:3000/health
+cd chatbot
 ```
 
-**System available:** http://localhost:3000
+**Choose your setup:**
+- **🐳 Docker** (recommended): See [Infrastructure Guide](./infrastructure/README.md#-docker)
+- **💻 Local Development**: See [Backend Setup](./backend/README.md)
 
-### Kubernetes (Production)
+### Production Deployment
+- **☸️ Kubernetes**: See [Infrastructure Guide](./infrastructure/README.md#️-kubernetes)
 
-```bash
-# 1. Build Docker image
-cd chatbot/infrastructure/docker
-docker build -f backend/Dockerfile -t chatbot-backend:latest ../../backend
-
-# 2. Deploy to Kubernetes
-cd ../k8s
-kubectl apply -f .
-
-# 3. Access via port-forward
-kubectl port-forward svc/chatbot-backend 3000:3000 -n chatbot
-
-# 4. Test
-curl http://localhost:3000/health
-```
-
-> 💡 **Works without API keys** for testing. For full functionality, see [setup guide](./backend/README.md).
+> 💡 **Works without API keys** for testing. For full functionality, see [Backend Setup](./backend/README.md).
 
 ## 🏗️ What's Built
 
@@ -75,9 +56,10 @@ curl http://localhost:3000/health
 
 ### Deployment Options
 
-- **🐳 Docker Compose**: Perfect for local development and testing
-- **☸️ Kubernetes**: Production-ready with scaling, health checks, and ingress
-- **🚀 Cloud**: Ready for deployment on any cloud provider
+See detailed deployment guides in [Infrastructure Documentation](./infrastructure/README.md):
+- **🐳 Docker Compose** - Local development and testing
+- **☸️ Kubernetes** - Production with scaling and health checks
+- **🚀 Cloud Ready** - Works on any cloud provider
 
 ---
 **Status:** ✅ Backend complete ✅ Kubernetes ready • 🚧 Frontend (React) coming soon 

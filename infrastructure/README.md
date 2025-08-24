@@ -24,16 +24,26 @@ infrastructure/
 
 ## 🐳 Docker
 
-### Desenvolvimento Local
+### Desenvolvimento Local (Quick Start)
+```bash
+# 1. Clone and start
+git clone <repository-url>
+cd chatbot/infrastructure/docker
+docker-compose up --build
+
+# 2. Test
+curl http://localhost:3000/health
+```
+
+**System available:** http://localhost:3000
+
+### Comandos adicionais
 ```bash
 # A partir da raiz do projeto
 cd infrastructure/docker
 docker-compose up
-```
 
-### Build apenas do backend
-```bash
-# A partir do backend
+# Build apenas do backend (a partir do backend/)
 npm run docker:build
 ```
 
@@ -45,7 +55,24 @@ npm run docker:build
 - NGINX Ingress Controller (for ingress)
 - Docker images built and available
 
-### Deploy completo
+### Deploy completo (Quick Start)
+```bash
+# 1. Build Docker image
+cd chatbot/infrastructure/docker
+docker build -f backend/Dockerfile -t chatbot-backend:latest ../../backend
+
+# 2. Deploy to Kubernetes
+cd ../k8s
+kubectl apply -f .
+
+# 3. Access via port-forward
+kubectl port-forward svc/chatbot-backend 3000:3000 -n chatbot
+
+# 4. Test
+curl http://localhost:3000/health
+```
+
+### Deploy usando scripts
 ```bash
 # A partir do backend
 npm run k8s:deploy
