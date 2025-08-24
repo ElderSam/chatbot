@@ -1,30 +1,7 @@
 import { InferenceClient } from '@huggingface/inference';
 import Redis from 'ioredis';
-import { readFileSync } from 'fs';
-import { join } from 'path';
 import { loadDynamicContext, setRedisCacheService } from '../src/agents/knowledge-agent/context-loader';
 import { ArticleWithEmbedding } from '../src/agents/knowledge-agent/types';
-
-// Carrega variáveis do .env manualmente
-function loadEnvFile() {
-    try {
-        const envPath = join(__dirname, '../.env');
-        const envFile = readFileSync(envPath, 'utf8');
-
-        envFile.split('\n').forEach(line => {
-            const trimmed = line.trim();
-            if (trimmed && !trimmed.startsWith('#')) {
-                const [key, ...valueParts] = trimmed.split('=');
-                if (key && valueParts.length > 0) {
-                    const value = valueParts.join('=');
-                    process.env[key] = value;
-                }
-            }
-        });
-    } catch (error) {
-        console.warn('Could not load .env file:', error.message);
-    }
-}
 
 // Cache service simplificado
 class SimpleCacheService {
@@ -49,16 +26,13 @@ class SimpleCacheService {
 }
 
 async function generateEmbeddings() {
-    // Carrega variáveis de ambiente do .env
-    console.log('🔧 Loading environment variables...');
-    loadEnvFile();
-
-    console.log('🚀 Starting embeddings generation...');
+    console.log(' Starting embeddings generation...');
 
     // Verifica se a API key está configurada
     if (!process.env.HUGGINGFACE_API_KEY) {
         console.error('❌ HUGGINGFACE_API_KEY not found in environment variables');
-        console.log('Please check your .env file and make sure the API key is set');
+        console.log('💡 Run with: node --env-file=.env scripts/generate-embeddings.js');
+        console.log('   Or set the environment variable directly');
         return;
     }
 
