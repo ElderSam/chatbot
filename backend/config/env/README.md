@@ -25,5 +25,5 @@ REDIS_PORT=6379
 
 # Server
 NODE_ENV=development
-PORT=3003
+PORT=3000
 ```

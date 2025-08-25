@@ -5,9 +5,9 @@
 
 **Local (Desenvolvimento):**
 ```
-VITE_BACKEND_URL=http://localhost:3003
+VITE_BACKEND_URL=http://localhost:3000
 ```
-Acesse: http://localhost:3003
+Acesse: http://localhost:3000
 
 **Produção/Kubernetes:**
 ```

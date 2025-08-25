@@ -10,7 +10,7 @@ docker-compose -f docker-compose.dev.yml up --build
 ## URLs de acesso
 
 **Local (Desenvolvimento):**
-http://localhost:3003 (frontend)
+http://localhost:3000 (frontend)
 http://localhost:3000 (backend)
 
 **Produção/Kubernetes:**

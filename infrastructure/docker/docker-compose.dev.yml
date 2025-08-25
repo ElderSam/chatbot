@@ -17,14 +17,14 @@ services:
       context: ../../backend
       dockerfile: ../infrastructure/docker/backend/Dockerfile.dev
     ports:
-      - "3003:3003"
+  - "3000:3000"
     env_file:
       - ../../backend/config/env/.env
     environment:
       - NODE_ENV=development
       - REDIS_HOST=redis
       - REDIS_PORT=6379
-      - PORT=3003
+  - PORT=3000
       - REDIS_TTL=900
       - LOG_LEVEL=info
     depends_on:
@@ -36,7 +36,7 @@ services:
       - ../../backend/tsconfig.json:/app/tsconfig.json:ro
       - ../../backend/nest-cli.json:/app/nest-cli.json:ro
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3003/health"]
+  test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -49,7 +49,7 @@ services:
     ports:
       - "3000:80"
     environment:
-      - VITE_BACKEND_URL=http://backend:3003
+  - VITE_BACKEND_URL=http://backend:3000
     depends_on:
       - backend
     volumes:

@@ -17,14 +17,14 @@ services:
       context: ../../backend
       dockerfile: ../infrastructure/docker/backend/Dockerfile
     ports:
-      - "3003:3003"
+  - "3000:3000"
     env_file:
       - ../../backend/config/env/.env.production  # Production env file
     environment:
       - NODE_ENV=production
       - REDIS_HOST=redis
       - REDIS_PORT=6379
-      - PORT=3003
+  - PORT=3000
       - REDIS_TTL=900
       - LOG_LEVEL=info
     depends_on:
@@ -44,7 +44,7 @@ services:
     ports:
       - "3000:80"
     environment:
-      - VITE_BACKEND_URL=http://backend:3003
+  - VITE_BACKEND_URL=http://backend:3000
     depends_on:
       - backend
 

@@ -17,7 +17,7 @@ See [Backend Setup - System Architecture](./backend/README.md#️-system-archite
 
 ### 4. 💻 Frontend access
 **Local (Desenvolvimento):**
-http://localhost:3003
+http://localhost:3000
 
 **Produção/Kubernetes:**
 http://chatbot.local
@@ -25,7 +25,7 @@ http://chatbot.local
 Configure o arquivo `.env` do frontend conforme o ambiente:
 ```
 # Local
-VITE_BACKEND_URL=http://localhost:3003
+VITE_BACKEND_URL=http://localhost:3000
 
 # Produção/Kubernetes
 # VITE_BACKEND_URL=/api
