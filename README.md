@@ -13,8 +13,7 @@ See [Infrastructure Guide - Docker](./infrastructure/README.md#-docker) for comp
 See [Infrastructure Guide - Kubernetes](./infrastructure/README.md#️-kubernetes) for deployment steps.
 
 ### 3. 🏗️ Architecture (Router, Agents, Logs, Redis)
-**RouterAgent** → decides → **KnowledgeAgent** (RAG + embeddings) or **MathAgent** (LLM calculations)  
-All interactions logged as **structured JSON** in **Redis** for observability.
+See [Backend Setup - System Architecture](./backend/README.md#️-system-architecture) for complete architecture diagram and component details.
 
 ### 4. 💻 Frontend access
 Frontend not yet implemented. Use API directly: `POST /chat` with `{"message": "...", "user_id": "...", "conversation_id": "..."}`
@@ -51,28 +50,6 @@ cd chatbot
 
 ---
 
-## 🏗️ Architecture Overview
-
-```
-┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
-│   RouterAgent   │────│  KnowledgeAgent  │    │   MathAgent     │
-│                 │    │                  │    │                 │
-│ • Route logic   │    │ • RAG with docs  │    │ • Math parsing  │
-│ • Input guard   │    │ • Embeddings     │    │ • LLM compute   │
-│ • Structured    │    │ • Context search │    │ • Expressions   │
-│   logging       │    │ • Source citing  │    │ • Calculations  │
-└─────────────────┘    └──────────────────┘    └─────────────────┘
-         │                        │                       │
-         └────────────────────────┼───────────────────────┘
-                                  │
-                         ┌─────────────────┐
-                         │ Redis (Logs &   │
-                         │ Cache Storage)  │
-                         └─────────────────┘
-```
-
----
-
 ## 🏗️ What's Built
 
 - **RouterAgent** → **KnowledgeAgent** + **MathAgent** → Specialized responses
@@ -85,9 +62,8 @@ cd chatbot
 
 ## 📚 Documentation
 
-- **[Backend Setup](./backend/README.md)** - API keys, local dev, testing
+- **[Backend Setup](./backend/README.md)** - API keys, local dev, testing, architecture
 - **[Infrastructure Guide](./infrastructure/README.md)** - Docker & Kubernetes deployment
-- **[Technical Architecture](./backend/docs/README.md)** - How agents work
 - **[Documentation Hub](./docs/README.md)** - Complete documentation index
 
 ---

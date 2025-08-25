@@ -40,13 +40,36 @@ pnpm test:e2e    # E2E tests
 pnpm test:cov    # Coverage report
 ```
 
-## 📊 System Architecture
+## 🏗️ System Architecture
 
 ```
-Chat Request → RouterAgent → KnowledgeAgent/MathAgent → Response
-                    ↓              ↓           ↓
-                 Redis Logs → Observability
+┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
+│   RouterAgent   │────│  KnowledgeAgent  │    │   MathAgent     │
+│                 │    │                  │    │                 │
+│ • Route logic   │    │ • RAG with docs  │    │ • Math parsing  │
+│ • Input guard   │    │ • Embeddings     │    │ • LLM compute   │
+│ • Structured    │    │ • Context search │    │ • Expressions   │
+│   logging       │    │ • Source citing  │    │ • Calculations  │
+└─────────────────┘    └──────────────────┘    └─────────────────┘
+         │                        │                       │
+         └────────────────────────┼───────────────────────┘
+                                  │
+                         ┌─────────────────┐
+                         │ Redis (Logs &   │
+                         │ Cache Storage)  │
+                         └─────────────────┘
 ```
+
+**Flow:** Chat Request → RouterAgent → KnowledgeAgent/MathAgent → Response  
+**Observability:** All interactions logged as structured JSON in Redis
+
+### Agent Components
+- **🧠 RouterAgent**: Decision logic + input validation + structured logging
+- **🔍 KnowledgeAgent**: RAG system with HuggingFace embeddings + cosine similarity search  
+- **🧮 MathAgent**: LLM-powered mathematical expression parsing and calculations
+- **💾 Redis**: Cache storage + structured JSON logs for observability
+
+**Technical details:** See [docs/KNOWLEDGE_AGENT.md](./docs/KNOWLEDGE_AGENT.md), [docs/EMBEDDINGS.md](./docs/EMBEDDINGS.md), [docs/OBSERVABILITY_IMPLEMENTATION.md](./docs/OBSERVABILITY_IMPLEMENTATION.md)
 
 **Technical details:** See [docs/README.md](./docs/README.md)
 
