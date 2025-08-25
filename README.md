@@ -16,25 +16,25 @@ See [Kubernetes Deploy Guide](./infrastructure/k8s/DEPLOY_GUIDE.md) for full dep
 See [Backend Setup - System Architecture](./backend/README.md#️-system-architecture) for complete architecture diagram and component details.
 
 ### 4. 💻 Frontend access
-**Local (Desenvolvimento):**
+**Local (Development):**
 http://localhost:3000
 
-**Produção/Kubernetes:**
+**Production/Kubernetes:**
 - Via Port-forward: http://localhost:8080
-- ⚠️ Via Ingress: http://chatbot.local (configuração complexa, não recomendado)
+- ⚠️ Via Ingress: http://chatbot.local (complex setup, not recommended)
 
 **Cloud Deploy:**
-Ver [Cloud Deploy Guide](./CLOUD_DEPLOY.md) para URLs públicas
+See [Cloud Deploy Guide](./CLOUD_DEPLOY.md) for public URLs
 
-Configure o arquivo `.env` do frontend conforme o ambiente:
+Configure the frontend `.env` file according to the environment:
 ```
 # Local
 VITE_BACKEND_URL=http://localhost:3000
 
-# Produção/Kubernetes
+# Production/Kubernetes
 # VITE_BACKEND_URL=/api
 ```
-Veja [Frontend README](./frontend/README.md) para instruções detalhadas.
+See [Frontend README](./frontend/README.md) for detailed instructions.
 
 ### 5. 📊 Example logs (JSON)
 See [Backend Setup](./backend/README.md#-api-examples--logs) for complete request/response/log examples.
@@ -98,3 +98,4 @@ cd chatbot
 ---
 
 **Status:** ✅ **Production Ready** | 🧪 **Main features Tested** | 🚀 **Cloud Native**
+
