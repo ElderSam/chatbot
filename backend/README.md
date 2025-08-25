@@ -28,9 +28,15 @@ docker-compose up redis -d
 
 # 2. Install and run (from backend/)
 pnpm install
-pnpm run embeddings  # First time only - generates search data
+
+# 3. ⚠️ FIRST: Generate embeddings for KnowledgeAgent
+# See scripts/README.md for details
+pnpm run embeddings
+
 pnpm run start:dev    # Runs on port 3000
 ```
+
+> **⚠️ Important:** Before starting the backend, see [scripts/README.md](./scripts/README.md) for required setup steps.
 
 ## 🧪 Testing
 

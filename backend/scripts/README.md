@@ -1,17 +1,37 @@
 # 🔧 Scripts
 
+## ⚠️ **IMPORTANT: Run BEFORE starting the backend**
+
+The KnowledgeAgent requires embeddings data to answer questions about InfinitePay. **Without this, the backend will start but fail silently on knowledge questions.**
+
+---
+
 ## `generate-embeddings.ts`
 
-Creates semantic search data for the Knowledge Agent.
+**Purpose:** Creates semantic search data for InfinitePay articles.
 
 ```bash
+# Run from backend/ directory
 pnpm run embeddings
 ```
 
+**What it does:**
+- Scrapes articles from https://ajuda.infinitepay.io/pt-BR/
+- Generates AI embeddings using HuggingFace API
+- Stores embeddings in Redis for fast semantic search
+- Takes ~2 minutes on first run
+
 **When to run:**
-- ✅ First setup (required)
-- 🔄 After clearing Redis cache
-- 📝 When InfinitePay articles change
+- ✅ **First setup** (required before starting backend)
+- 🔄 After clearing Redis cache (`docker-compose down -v`)
+- 📝 When InfinitePay updates their help articles
+
+**Without this script:**
+- ❌ Questions like "taxa da maquininha" will fail
+- ❌ KnowledgeAgent returns generic fallback responses
+- ❌ No semantic search functionality
+
+---
 
 ## `test-observability.ts` 
 
