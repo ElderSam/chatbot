@@ -4,6 +4,8 @@ services:
   - type: redis
     name: chatbot-redis
     plan: free
+    ipAllowList:
+      - source: 0.0.0.0/0
 
 
   # Backend API
