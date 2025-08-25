@@ -16,4 +16,4 @@
 
 ## Project Information
 - **[Original Challenge](./challenge.md)** - Project requirements
-- **[Task Management](./tasks.md)** - Development progress
+- **[Task Management](https://github.com/ElderSam/chatbot/issues)** - Development progress and issue tracking
