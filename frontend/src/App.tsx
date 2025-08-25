@@ -30,13 +30,19 @@ const indexRoute = createRoute({
   component: HomePage,
 });
 
+const homeAliasRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/home',
+  component: HomePage,
+});
+
 const createUserRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/create-user',
   component: UserPage,
 });
 
-const routeTree = rootRoute.addChildren([indexRoute, createUserRoute]);
+const routeTree = rootRoute.addChildren([indexRoute, homeAliasRoute, createUserRoute]);
 
 const router = createRouter({ routeTree });
 
