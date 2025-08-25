@@ -21,7 +21,7 @@ spec:
         image: chatbot-frontend:latest
         imagePullPolicy: IfNotPresent
         ports:
-        - containerPort: 3003
+        - containerPort: 80
         env:
         - name: NODE_ENV
           value: "production"
@@ -45,7 +45,7 @@ spec:
   type: ClusterIP
   ports:
   - port: 80
-    targetPort: 3003
+  targetPort: 80
     protocol: TCP
     name: http
   selector:
