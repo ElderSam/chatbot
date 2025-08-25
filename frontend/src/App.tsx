@@ -12,16 +12,22 @@ import CreateChatPage from './pages/CreateChatPage';
 
 import './App.css';
 
+// Not Found component
+const NotFound = () => (
+  <div style={{ textAlign: 'center', marginTop: '4rem' }}>
+    <h2>Página não encontrada</h2>
+    <p>Verifique o endereço ou volte para a Home.</p>
+  </div>
+);
+
 // Root route
 const rootRoute = createRootRoute({
   component: () => (
     <>
-      {/* <div style={{position: 'fixed', top: 0, left: 0, background: '#ff0', color: '#000', zIndex: 9999, padding: 4}}>
-        RootRoute Rendered
-      </div> */}
       <Outlet />
     </>
   ),
+  notFoundComponent: NotFound,
 });
 
 // Child routes
