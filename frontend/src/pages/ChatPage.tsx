@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from '@tanstack/react-router';
+import styles from './ChatPage.module.css';
 
 const ChatPage: React.FC = () => {
   const params = useParams({ from: '/chat/$conversation_id' });
@@ -69,35 +70,50 @@ const ChatPage: React.FC = () => {
   };
 
   return (
-    <div style={{ maxWidth: 600, margin: '2rem auto', padding: '1rem', border: '1px solid #eee', borderRadius: 8 }}>
-      <h2>Chat</h2>
-      <div style={{ minHeight: 200, marginBottom: 16 }}>
+    <div className={styles.container}>
+      <h2 className={styles.header}>Chat</h2>
+      <div className={styles.messages}>
         {messages.length === 0 ? (
           <p>No messages yet.</p>
         ) : (
           messages.map((msg, idx) => (
-            <div key={idx} style={{ marginBottom: 12 }}>
-              <div><strong>You:</strong> {msg.message}</div>
-              <div><strong>Bot:</strong> {msg.response}</div>
-              <div style={{ fontSize: '0.8em', color: '#888' }}>Agent: {msg.agent} | {new Date(msg.timestamp).toLocaleString()}</div>
+            <div key={idx} style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+              <div className={styles.userRow}>
+                <div className={styles.userMessage}>
+                  <strong>You:</strong> {msg.message}
+                </div>
+              </div>
+              <div className={styles.botRow}>
+                <div className={
+                  `${styles.botMessage} ` +
+                  (msg.agent === 'KnowledgeAgent'
+                    ? styles.agentKnowledge
+                    : msg.agent === 'MathAgent'
+                    ? styles.agentMath
+                    : styles.agentOther)
+                }>
+                  <strong>Bot:</strong> {msg.response}
+                  <div className={styles.timestamp}>Agent: {msg.agent} | {new Date(msg.timestamp).toLocaleString()}</div>
+                </div>
+              </div>
             </div>
           ))
         )}
       </div>
-      <form onSubmit={handleSend} style={{ display: 'flex', gap: 8 }}>
+      <form onSubmit={handleSend} className={styles.form}>
         <input
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Type your message..."
-          style={{ flex: 1, padding: 8 }}
+          className={styles.input}
           disabled={loading}
         />
-        <button type="submit" disabled={loading || !input.trim()}>
+        <button type="submit" disabled={loading || !input.trim()} className={styles.button}>
           {loading ? 'Sending...' : 'Send'}
         </button>
       </form>
-      {error && <p style={{ color: 'red', marginTop: 8 }}>{error}</p>}
+      {error && <p className={styles.error}>{error}</p>}
     </div>
   );
 };

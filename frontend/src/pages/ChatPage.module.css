@@ -1,0 +1,89 @@
+.container {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 1rem;
+  border: 1px solid #222;
+  border-radius: 8px;
+  background: #111;
+  color: #fff;
+}
+
+.header {
+  margin-bottom: 1rem;
+}
+
+.messages {
+  min-height: 200px;
+  margin-bottom: 16px;
+}
+
+.userMessage {
+  background: #25d366;
+  color: #fff;
+  border-radius: 16px 16px 0 16px;
+  padding: 8px 16px;
+  max-width: 70%;
+  margin-bottom: 2px;
+  align-self: flex-end;
+  text-align: right;
+}
+
+.userRow {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.botMessage {
+  color: #fff;
+  border-radius: 16px 16px 16px 0;
+  padding: 8px 16px;
+  max-width: 70%;
+  margin-bottom: 8px;
+  align-self: flex-start;
+  text-align: left;
+}
+
+.botRow {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.agentKnowledge {
+  background: #1976d2;
+}
+.agentMath {
+  background: #444;
+}
+.agentOther {
+  background: #333;
+}
+
+.timestamp {
+  font-size: 0.8em;
+  color: #bbb;
+  margin-top: 2px;
+}
+
+.form {
+  display: flex;
+  gap: 8px;
+}
+.input {
+  flex: 1;
+  padding: 8px;
+  border-radius: 16px;
+  border: 1px solid #444;
+  background: #222;
+  color: #fff;
+}
+.button {
+  border-radius: 16px;
+  padding: 8px 16px;
+  background: #25d366;
+  color: #fff;
+  border: none;
+}
+.error {
+  color: #ff4444;
+  margin-top: 8px;
+}
