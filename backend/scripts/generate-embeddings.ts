@@ -31,7 +31,7 @@ async function generateEmbeddings() {
     // Verifica se a API key está configurada
     if (!process.env.HUGGINGFACE_API_KEY) {
         console.error('❌ HUGGINGFACE_API_KEY not found in environment variables');
-        console.log('💡 Run with: node --env-file=.env scripts/generate-embeddings.js');
+        console.log('💡 Run with: pnpm run embeddings');
         console.log('   Or set the environment variable directly');
         return;
     }
