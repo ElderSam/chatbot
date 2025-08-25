@@ -14,8 +14,8 @@ export const UserForm: React.FC<UserFormProps> = ({ onUserCreated }) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    if (userName.trim().length < 2 || userName.trim().length > 50) {
-      setError('Name must be between 2 and 50 characters.');
+    if (userName.trim().length < 3 || userName.trim().length > 50) {
+      setError('Name must be between 3 and 50 characters.');
       return;
     }
     setLoading(true);
