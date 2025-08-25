@@ -15,7 +15,10 @@ cd infrastructure/docker
 docker-compose up --build
 ```
 
+
 ## ☸️ Kubernetes
+
+See [Kubernetes Deploy Guide](../k8s/DEPLOY_GUIDE.md) for the full step-by-step deployment, including Redis, Backend, Frontend, and public URLs for challenge.md.
 
 ### Quick Deploy
 ```bash

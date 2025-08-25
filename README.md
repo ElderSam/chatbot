@@ -10,7 +10,7 @@ A modular InfinitePay chatbot prototype, tailored for the InfinitePay platform (
 See [Infrastructure Guide - Docker](./infrastructure/README.md#-docker) for complete setup commands.
 
 ### 2. ☸️ How to run on Kubernetes
-See [Infrastructure Guide - Kubernetes](./infrastructure/README.md#️-kubernetes) for deployment steps.
+See [Kubernetes Deploy Guide](./infrastructure/k8s/DEPLOY_GUIDE.md) for full deployment steps, including Redis, Backend, Frontend, and URLs for challenge.md.
 
 ### 3. 🏗️ Architecture (Router, Agents, Logs, Redis)
 See [Backend Setup - System Architecture](./backend/README.md#️-system-architecture) for complete architecture diagram and component details.
