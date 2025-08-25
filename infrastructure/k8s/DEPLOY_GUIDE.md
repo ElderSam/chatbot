@@ -1,145 +1,146 @@
 # 🚀 Kubernetes Deploy Guide
 
-Este guia cobre o deploy completo do chatbot usando Kubernetes, seguindo os requisitos do `challenge.md`.
+This guide covers the complete deployment of the chatbot using Kubernetes, following the requirements from `challenge.md`.
 
-## ⚠️ **Importante: Acesso Real**
+## ⚠️ **Important: Real Access**
 
-**Este deploy Kubernetes é para desenvolvimento/aprendizado.** Para acesso público real, veja [Cloud Deploy Guide](../../CLOUD_DEPLOY.md).
+**This Kubernetes deployment is for development/learning purposes.** For real public access, see [Cloud Deploy Guide](../../CLOUD_DEPLOY.md).
 
-**Acesso funcional após deploy:**
+**Functional access after deployment:**
 - ✅ Via `kubectl port-forward` (localhost)
-- ⚠️ Via Ingress `chatbot.local` (requer configuração manual complexa)
+- ⚠️ Via Ingress `chatbot.local` (requires complex manual setup)
 
 ---
 
-## 📋 **Pré-requisitos**
-- Minikube ou cluster Kubernetes local
-- `kubectl` instalado e configurado
-- Docker para build das imagens
-- NGINX Ingress Controller habilitado (`minikube addons enable ingress`)
+## 📋 **Prerequisites**
+- Minikube or local Kubernetes cluster
+- `kubectl` installed and configured
+- Docker for building images
+- NGINX Ingress Controller enabled (`minikube addons enable ingress`)
 
 ---
 
 ## 1. Namespace
-Crie o namespace para isolar os recursos:
+Create the namespace to isolate resources:
 ```bash
 kubectl apply -f infrastructure/k8s/namespace.yaml
 ```
 
 ## 2. Secrets
-Configure secrets para variáveis sensíveis (ex: senhas, API keys):
+Set up secrets for sensitive variables (e.g., passwords, API keys):
 ```bash
 kubectl apply -f infrastructure/k8s/secrets.yaml
 ```
 
 ## 3. Redis
-Deploy do Redis:
+Deploy Redis:
 ```bash
 kubectl apply -f infrastructure/k8s/redis.yaml
 ```
-- O volume persistente garante que o dump.rdb seja mantido entre reinicializações.
-- Para restaurar um backup, substitua o arquivo no volume antes de subir o pod.
+- The persistent volume ensures that dump.rdb is kept between restarts.
+- To restore a backup, replace the file in the volume before starting the pod.
 
 ## 4. Backend
-Deploy do backend:
+Deploy the backend:
 ```bash
 kubectl apply -f infrastructure/k8s/backend.yaml
 ```
-- Certifique-se que as variáveis do `.env` estejam configuradas como secrets ou configMap.
-- O backend irá se conectar ao Redis usando as variáveis de ambiente.
+- Make sure `.env` variables are set as secrets or configMap.
+- The backend will connect to Redis using environment variables.
 
 ## 5. Frontend
-Deploy do frontend:
+Deploy the frontend:
 ```bash
 kubectl apply -f infrastructure/k8s/frontend.yaml
 ```
 
-## 6. Ingress (Opcional - Configuração Avançada)
-Configure o acesso via domínio local:
+## 6. Ingress (Optional - Advanced Setup)
+Configure access via local domain:
 ```bash
 kubectl apply -f infrastructure/k8s/ingress.yaml
 
-# Configure hosts (opcional)
+# Configure hosts (optional)
 echo "$(minikube ip) chatbot.local" | sudo tee -a /etc/hosts
 ```
-⚠️ **Nota**: Ingress pode ser complexo. Use port-forward para acesso garantido.
+⚠️ **Note**: Ingress can be complex. Use port-forward for guaranteed access.
 
-## 7. ✅ **Verificação e Acesso Funcional**
+## 7. ✅ **Verification and Functional Access**
 
-### Status dos Pods
+### Pod Status
 ```bash
 kubectl get pods -n chatbot
-# Deve mostrar todos READY 1/1
+# Should show all READY 1/1
 ```
 
-### 🎯 **Acesso Recomendado (Port-forward)**
+### 🎯 **Recommended Access (Port-forward)**
 ```bash
 # Backend
 kubectl port-forward -n chatbot svc/chatbot-backend 3000:3000 &
 
-# Frontend (em outro terminal)  
+# Frontend (in another terminal)  
 kubectl port-forward -n chatbot svc/chatbot-frontend 8080:80 &
 ```
 
-**URLs funcionais:**
+**Functional URLs:**
 - ✅ Frontend: http://localhost:8080
 - ✅ Backend Health: http://localhost:3000/health
 - ✅ Backend API: http://localhost:3000/chat
 
-### 🧪 **Teste de Funcionalidade**
+### 🧪 **Functionality Test**
 ```bash
 # 1. Health check
 curl localhost:3000/health
 
-# 2. Criar usuário
+# 2. Create user
 curl -X POST localhost:3000/user \
   -H "Content-Type: application/json" \
   -d '{"user_name":"Test User"}'
 
-# 3. Criar conversa (use user_id retornado)
+# 3. Create conversation (use returned user_id)
 curl -X POST localhost:3000/chats/new \
   -H "Content-Type: application/json" \
   -d '{"user_id":"CLIENT_ID"}'
 
-# 4. Enviar mensagem (use conversation_id retornado)  
+# 4. Send message (use returned conversation_id)  
 curl -X POST localhost:3000/chat \
   -H "Content-Type: application/json" \
   -d '{"user_id":"CLIENT_ID","conversation_id":"CONV_ID","message":"Hello!"}'
 ```
 
-## 8. 🔧 **Configuração de API Keys (Opcional)**
+## 8. 🔧 **API Keys Setup (Optional)**
 
-Para funcionalidade completa do chat:
+For full chat functionality:
 
 ```bash
-# Delete secret existente  
+# Delete existing secret  
 kubectl delete secret -n chatbot chatbot-secrets
 
-# Crie com suas chaves reais
+# Create with your real keys
 kubectl create secret generic chatbot-secrets -n chatbot \
-  --from-literal=GROQ_API_KEY=sua_chave_groq \
-  --from-literal=HUGGINGFACE_API_KEY=sua_chave_huggingface
+  --from-literal=GROQ_API_KEY=your_groq_key \
+  --from-literal=HUGGINGFACE_API_KEY=your_huggingface_key
 
-# Reinicie backend para carregar
+# Restart backend to reload
 kubectl delete pod -n chatbot -l app=chatbot-backend
 ```
 
-## 9. 🌐 **Para Acesso Público Real**
+## 9. 🌐 **For Real Public Access**
 
-**⚠️ Este deploy Kubernetes é local/desenvolvimento.**
+**⚠️ This Kubernetes deployment is for local/development use.**
 
-Para URLs públicas reais, use:
+For real public URLs, use:
 - **☁️ Cloud Deploy**: [Cloud Deploy Guide](../../CLOUD_DEPLOY.md)
-- **🌐 URLs públicas**: Render.com, Railway, Fly.io
-- **🔒 HTTPS automático**: Incluso no cloud deploy
+- **🌐 Public URLs**: Render.com, Railway, Fly.io
+- **🔒 Automatic HTTPS**: Included in cloud deploy
 
 ---
 
-## 📚 **Referências**
-- [challenge.md](../../docs/challenge.md) - Requisitos originais
-- [Cloud Deploy Guide](../../CLOUD_DEPLOY.md) - Deploy público real  
-- [Infrastructure Guide](../README.md) - Visão geral de infraestrutura
+## 📚 **References**
+- [challenge.md](../../docs/challenge.md) - Original requirements
+- [Cloud Deploy Guide](../../CLOUD_DEPLOY.md) - Real public deployment  
+- [Infrastructure Guide](../README.md) - Infrastructure overview
 
 ---
 
-✅ **Deploy Kubernetes completo!** Para acesso público, vá para cloud deploy.
+✅ **Kubernetes deployment complete!** For public access, go to cloud deploy.
+
