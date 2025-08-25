@@ -1,14 +1,17 @@
-import { Controller, Post, UsePipes, ValidationPipe, Body, ForbiddenException, HttpException, HttpStatus } from '@nestjs/common';
+import { Controller, Post, Get, UsePipes, ValidationPipe, Body, Query, ForbiddenException, HttpException, HttpStatus } from '@nestjs/common';
 import { ChatDto } from './dto/chat.dto';
+import { CreateUserDto } from './dto/create-user.dto';
 import { SanitizePipe } from './pipes/sanitize.pipe';
 import { RouterAgentService } from '../agents/router-agent/router-agent.service';
 import { PromptGuardService } from './prompt-guard.service';
+import { RedisCacheService } from '../redis/redis-cache/redis-cache.service';
 
 @Controller('chat')
 export class ChatController {
     constructor(
         private readonly routerAgent: RouterAgentService,
-        private readonly promptGuard: PromptGuardService
+        private readonly promptGuard: PromptGuardService,
+        private readonly redis: RedisCacheService
     ) {}
 
     @Post()
@@ -65,5 +68,23 @@ export class ChatController {
         }
         // console.log('/chat - end request: ', JSON.stringify({ response }))
         return response;
+    }
+
+    @Post('user')
+    @UsePipes(new ValidationPipe({ 
+        whitelist: true, 
+        forbidNonWhitelisted: true, 
+        transform: true 
+    }), SanitizePipe)
+    async createUser(@Body() payload: CreateUserDto) {
+        const user_id = `client${Date.now()}`;
+        const userData = {
+            user_id,
+            user_name: payload.user_name,
+            created_at: new Date().toISOString()
+        };
+
+        await this.redis.set(`users:${user_id}`, userData);
+        return { user_id };
     }
 }
