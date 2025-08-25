@@ -92,6 +92,7 @@ const ChatPage: React.FC = () => {
               <div className={styles.userRow}>
                 <div className={styles.userMessage}>
                   <strong>You:</strong> {msg.message}
+                  <div className={styles.timestamp}>{formatWhatsappDate(msg.timestamp)}</div>
                 </div>
               </div>
               <div className={styles.botRow}>
