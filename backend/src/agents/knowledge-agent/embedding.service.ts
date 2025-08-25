@@ -52,7 +52,7 @@ export class EmbeddingService {
                     embedding,
                 };
 
-                await this.redisCache.setCache(embeddingKey, articleWithEmbedding);
+                await this.redisCache.setCache(embeddingKey, articleWithEmbedding, undefined); // Permanent
                 console.log(`Stored embedding for: ${article.title}`);
             } catch (error) {
                 console.error(`Error processing article ${article.url}:`, error);
@@ -130,7 +130,11 @@ export class EmbeddingService {
 
             // Cache do resultado da busca por 1 hora
             if (results.length > 0) {
-                await this.redisCache.setCache(searchCacheKey, results, 3600);
+                if (searchCacheKey.startsWith('cache:')) {
+                    await this.redisCache.setCache(searchCacheKey, results, undefined); // Permanent for cache:*
+                } else {
+                    await this.redisCache.setCache(searchCacheKey, results, 3600); // 1h for non-cache:*
+                }
             }
 
             console.log(`🎯 Found ${results.length} relevant articles (from ${articles.length} candidates)`);
