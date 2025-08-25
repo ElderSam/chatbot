@@ -1,4 +1,6 @@
-module.exports = {
+import type { Config } from 'jest';
+
+const config: Config = {
   moduleFileExtensions: ['js', 'json', 'ts'],
   rootDir: '../../',
   testRegex: '.*\\.spec\\.ts$',
@@ -18,3 +20,5 @@ module.exports = {
   testEnvironment: 'node',
   setupFilesAfterEnv: ['<rootDir>/config/test/jest.setup.ts'],
 };
+
+export default config;

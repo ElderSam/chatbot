@@ -49,7 +49,7 @@ EXPOSE 3000
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD node healthcheck.js
+  CMD node --experimental-strip-types healthcheck.ts
 
 # Start application
 CMD ["node", "dist/src/main.js"]
