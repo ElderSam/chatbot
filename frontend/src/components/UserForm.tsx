@@ -50,6 +50,7 @@ export const UserForm: React.FC<UserFormProps> = ({ onUserCreated }) => {
         onChange={(e) => setUserName(e.target.value)}
         placeholder="Enter your name"
         disabled={loading}
+        className={styles.input}
       />
       <button type="submit" disabled={loading || !userName.trim()}>
         {loading ? 'Creating...' : 'Create User'}
