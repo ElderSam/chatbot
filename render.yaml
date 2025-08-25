@@ -1,0 +1,53 @@
+services:
+  # Redis (Key-Value Store)
+  - type: redis
+    name: chatbot-redis
+    plan: free
+    region: ohio
+
+  # Backend API
+  - type: web
+    name: chatbot-backend
+    runtime: node
+    plan: free  
+    region: ohio
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    healthCheckPath: /health
+    rootDir: ./backend
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: REDIS_HOST
+        fromService:
+          type: redis
+          name: chatbot-redis
+          property: host
+      - key: REDIS_PORT
+        fromService:
+          type: redis
+          name: chatbot-redis
+          property: port
+      - key: REDIS_PASSWORD
+        fromService:
+          type: redis
+          name: chatbot-redis
+          property: password
+
+  # Frontend
+  - type: web
+    name: chatbot-frontend
+    runtime: static
+    plan: free
+    region: ohio
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./dist
+    rootDir: ./frontend
+    envVars:
+      - key: VITE_BACKEND_URL
+        fromService:
+          type: web
+          name: chatbot-backend
+          property: host

@@ -20,7 +20,11 @@ See [Backend Setup - System Architecture](./backend/README.md#️-system-archite
 http://localhost:3000
 
 **Produção/Kubernetes:**
-http://chatbot.local
+- Via Port-forward: http://localhost:8080
+- Via Ingress: http://chatbot.local (requer configuração de /etc/hosts)
+
+**Cloud Deploy:**
+Ver [Cloud Deploy Guide](./CLOUD_DEPLOY.md) para URLs públicas
 
 Configure o arquivo `.env` do frontend conforme o ambiente:
 ```
@@ -59,6 +63,7 @@ cd chatbot
 
 ### Production Deployment
 - **☸️ Kubernetes**: See [Infrastructure Guide](./infrastructure/README.md#️-kubernetes)
+- **☁️ Cloud Deploy** (Bonus Challenge): See [Cloud Deploy Guide](./CLOUD_DEPLOY.md)
 
 > 💡 **Works without API keys** for testing. For full functionality, see [Backend Setup](./backend/README.md).
 

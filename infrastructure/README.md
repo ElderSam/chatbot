@@ -10,12 +10,19 @@ docker-compose -f docker-compose.dev.yml up --build
 ## URLs de acesso
 
 **Local (Desenvolvimento):**
-http://localhost:3000 (frontend)
-http://localhost:3000 (backend)
+- Frontend: http://localhost:3000
+- Backend: http://localhost:3000
 
 **Produção/Kubernetes:**
-http://chatbot.local (frontend via Ingress)
-http://chatbot.local/api (backend via Ingress)
+- Frontend via Port-forward: http://localhost:8080  
+- Backend via Port-forward: http://localhost:3000
+- Frontend via Ingress: http://chatbot.local
+- Backend via Ingress: http://chatbot.local/api
+
+> Para usar Ingress, adicione `192.168.49.2 chatbot.local` ao `/etc/hosts`
+
+**Cloud Deploy (Render.com):**
+- Ver [Cloud Deploy Guide](../CLOUD_DEPLOY.md) para URLs públicas
 
 ### Production  
 ```bash

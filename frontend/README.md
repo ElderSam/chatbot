@@ -13,7 +13,15 @@ Acesse: http://localhost:3000
 ```
 VITE_BACKEND_URL=/api
 ```
-Acesse: http://chatbot.local
+**URLs de acesso:**
+- Via Port-forward: http://localhost:8080  
+- Via Ingress: http://chatbot.local (requer configuração de hosts)
+
+**Cloud Deploy (Render.com):**
+```
+VITE_BACKEND_URL=https://chatbot-backend.onrender.com
+```
+Ver [Cloud Deploy Guide](../CLOUD_DEPLOY.md) para URLs públicas
 
 Use `import.meta.env.VITE_BACKEND_URL` no código para requisições à API.
 
