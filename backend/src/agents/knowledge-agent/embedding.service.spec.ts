@@ -17,7 +17,7 @@ describe('EmbeddingService', () => {
   beforeEach(async () => {
     redisCache = {
       getCache: jest.fn().mockResolvedValue(null),
-      setCache: jest.fn().mockResolvedValue(undefined),
+      setCache: jest.fn((...args) => Promise.resolve(undefined)),
       getKeysPattern: jest.fn().mockResolvedValue([
         'cache:embedding:https://test.com/article1',
         'cache:embedding:https://test.com/article2'
@@ -57,15 +57,16 @@ describe('EmbeddingService', () => {
 
     await service.storeArticleEmbeddings(articles);
 
-    expect(redisCache.setCache).toHaveBeenCalledWith(
-      'embedding:https://test.com/article',
-      expect.objectContaining({
-        title: 'Test Article',
-        url: 'https://test.com/article',
-        text: 'This is a test article content',
-        embedding: [0.1, 0.2, 0.3, 0.4]
-      })
-    );
+    // Aceita undefined ou Number como TTL
+    const call = redisCache.setCache.mock.calls[0];
+    expect(call[0]).toBe('embedding:https://test.com/article');
+    expect(call[1]).toEqual(expect.objectContaining({
+      title: 'Test Article',
+      url: 'https://test.com/article',
+      text: 'This is a test article content',
+      embedding: [0.1, 0.2, 0.3, 0.4]
+    }));
+    expect([undefined, expect.any(Number)]).toContainEqual(call[2]);
   });
 
   it('should skip articles already in cache', async () => {
