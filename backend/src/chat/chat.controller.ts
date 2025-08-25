@@ -36,6 +36,18 @@ export class ChatController {
             console.log('\n--------------------------------')
             console.log('/chat - start request: ', { payload })
 
+            // =============================================== 
+            // VALIDATION: Check if user_id and conversation_id exist
+            // ===============================================
+            const chatData = await this.redis.get(`chat:conversation:${payload.conversation_id}`);
+            if (!chatData || chatData.user_id !== payload.user_id) {
+                throw new HttpException({
+                    message: 'Conversation not found or access denied. Create conversation first with POST /chats/new',
+                    error: 'Not Found',
+                    statusCode: 404
+                }, HttpStatus.NOT_FOUND);
+            }
+
             // Always use the original message for processing agents
             // The normalized cache is only for search/embedding purposes
             const messageToProcess = payload.message;
@@ -55,6 +67,23 @@ export class ChatController {
                     { agent: chosenAgent }
                 ]
             };
+
+            // ===============================================
+            // PERSIST: Add to conversation history
+            // ===============================================
+            const history = await this.redis.get(`chat:history:${payload.conversation_id}`) || [];
+            const historyEntry = {
+                timestamp: new Date().toISOString(),
+                message: payload.message,
+                response: agentResult.responseMsg,
+                source_agent_response: agentResult.data,
+                agent_workflow: [
+                    { agent: 'RouterAgent', decision: chosenAgent },
+                    { agent: chosenAgent }
+                ]
+            };
+            history.push(historyEntry);
+            await this.redis.set(`chat:history:${payload.conversation_id}`, history);
         }
         catch (error: any) {
             // Log the error for debugging
