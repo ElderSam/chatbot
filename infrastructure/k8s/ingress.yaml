@@ -18,13 +18,20 @@ spec:
   - host: chatbot.local  # Change this to your domain
     http:
       paths:
-      - path: /
+      - path: /api
         pathType: Prefix
         backend:
           service:
             name: chatbot-backend
             port:
               number: 3000
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: chatbot-frontend
+            port:
+              number: 80
   # Alternative for IP-based access (uncomment if needed)
   # - http:
   #     paths:
