@@ -15,12 +15,20 @@ function formatWhatsappDate(dateString: string) {
 }
 
 const ChatPage: React.FC = () => {
+  const messagesEndRef = React.useRef<HTMLDivElement>(null);
   const params = useParams({ from: '/chat/$conversation_id' });
   const conversation_id = params.conversation_id;
   const user_id = localStorage.getItem('user_id');
   const [messages, setMessages] = useState<Array<{ message: string; response: string; agent: string; timestamp: string; error?: boolean }>>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+
+  // Scroll to bottom when messages change
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages]);
 
   // Fetch conversation history on mount
   useEffect(() => {
@@ -143,38 +151,41 @@ const ChatPage: React.FC = () => {
           {messages.length === 0 ? (
             <p>No messages yet.</p>
           ) : (
-            messages.map((msg, idx) => (
-              <div key={idx} style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                <div className={styles.userRow}>
-                  <div className={styles.userMessage}>
-                    <strong>You:</strong> {msg.message}
-                    <div className={styles.timestamp}>{formatWhatsappDate(msg.timestamp)}</div>
+            <>
+              {messages.map((msg, idx) => (
+                <div key={idx} style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                  <div className={styles.userRow}>
+                    <div className={styles.userMessage}>
+                      <strong>You:</strong> {msg.message}
+                      <div className={styles.timestamp}>{formatWhatsappDate(msg.timestamp)}</div>
+                    </div>
+                  </div>
+                  <div className={styles.botRow}>
+                    <div className={
+                      `${styles.botMessage} ` +
+                      (msg.error
+                        ? styles.botError
+                        : msg.agent === 'KnowledgeAgent'
+                          ? styles.agentKnowledge
+                          : msg.agent === 'MathAgent'
+                          ? styles.agentMath
+                          : styles.agentOther)
+                    }>
+                      {msg.response
+                        ? <>
+                            <strong>{msg.error ? 'Erro:' : 'Bot:'}</strong> {renderBotResponse(msg.response)}
+                            <div className={styles.timestamp}>
+                              {msg.agent ? <>Agent: {msg.agent} | </> : null}{formatWhatsappDate(msg.timestamp)}
+                            </div>
+                          </>
+                        : <span style={{ color: '#888' }}>Aguardando resposta...</span>
+                      }
+                    </div>
                   </div>
                 </div>
-                <div className={styles.botRow}>
-                  <div className={
-                    `${styles.botMessage} ` +
-                    (msg.error
-                      ? styles.botError
-                      : msg.agent === 'KnowledgeAgent'
-                        ? styles.agentKnowledge
-                        : msg.agent === 'MathAgent'
-                        ? styles.agentMath
-                        : styles.agentOther)
-                  }>
-                    {msg.response
-                      ? <>
-                          <strong>{msg.error ? 'Erro:' : 'Bot:'}</strong> {renderBotResponse(msg.response)}
-                          <div className={styles.timestamp}>
-                            {msg.agent ? <>Agent: {msg.agent} | </> : null}{formatWhatsappDate(msg.timestamp)}
-                          </div>
-                        </>
-                      : <span style={{ color: '#888' }}>Aguardando resposta...</span>
-                    }
-                  </div>
-                </div>
-              </div>
-            ))
+              ))}
+              <div ref={messagesEndRef} />
+            </>
           )}
         </div>
         <form onSubmit={handleSend} className={styles.form}>
