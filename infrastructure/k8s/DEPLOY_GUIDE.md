@@ -1,26 +1,24 @@
-# Sobre o domínio chatbot.local
+# 🚀 Kubernetes Deploy Guide
 
-O domínio `chatbot.local` é utilizado para acessar o sistema via Ingress no Kubernetes. Ele serve para facilitar o roteamento de requisições para o backend e frontend dentro do cluster.
+Este guia cobre o deploy completo do chatbot usando Kubernetes, seguindo os requisitos do `challenge.md`.
 
-**Como configurar:**
-- Após o deploy do Ingress, adicione uma linha ao seu arquivo `/etc/hosts` apontando para o IP do Minikube:
-  ```
-  192.168.49.2 chatbot.local
-  ```
-  (Use o IP retornado por `minikube ip`)
-- Só utilize `chatbot.local` em ambiente Kubernetes com Ingress habilitado.
-- Para desenvolvimento local, use `localhost` e as portas padrão.
+## ⚠️ **Importante: Acesso Real**
 
-**Mais detalhes:**
-Sempre consulte este guia para instruções sobre o uso do domínio `chatbot.local`.
-# Deploy com Kubernetes
+**Este deploy Kubernetes é para desenvolvimento/aprendizado.** Para acesso público real, veja [Cloud Deploy Guide](../../CLOUD_DEPLOY.md).
 
-Este guia cobre o deploy dos serviços Redis, Backend e Frontend usando Kubernetes, seguindo o padrão do `challenge.md`.
+**Acesso funcional após deploy:**
+- ✅ Via `kubectl port-forward` (localhost)
+- ⚠️ Via Ingress `chatbot.local` (requer configuração manual complexa)
 
-## Pré-requisitos
-- Cluster Kubernetes configurado (local ou cloud)
+---
+
+## 📋 **Pré-requisitos**
+- Minikube ou cluster Kubernetes local
 - `kubectl` instalado e configurado
-- Docker images publicadas ou build local
+- Docker para build das imagens
+- NGINX Ingress Controller habilitado (`minikube addons enable ingress`)
+
+---
 
 ## 1. Namespace
 Crie o namespace para isolar os recursos:
@@ -56,44 +54,92 @@ Deploy do frontend:
 kubectl apply -f infrastructure/k8s/frontend.yaml
 ```
 
-## 6. Ingress
-Configure o acesso externo (URLs públicas):
+## 6. Ingress (Opcional - Configuração Avançada)
+Configure o acesso via domínio local:
 ```bash
 kubectl apply -f infrastructure/k8s/ingress.yaml
+
+# Configure hosts (opcional)
+echo "$(minikube ip) chatbot.local" | sudo tee -a /etc/hosts
 ```
-- O arquivo define as rotas públicas para backend e frontend.
-- Após aplicar, verifique o endereço público do ingress:
-  ```bash
-  kubectl get ingress -n chatbot
-  ```
+⚠️ **Nota**: Ingress pode ser complexo. Use port-forward para acesso garantido.
 
-## 7. Verificação
-- Verifique se todos os pods estão rodando:
-  ```bash
-  kubectl get pods -n chatbot
-  ```
-- Teste as URLs públicas do backend e frontend conforme configurado no ingress.
+## 7. ✅ **Verificação e Acesso Funcional**
 
-## 8. Variáveis de ambiente em produção
-- Use secrets/configMap para passar variáveis do `.env` para os containers.
-- Não copie o `.env` diretamente para o container em produção.
-- Exemplo de uso no `backend.yaml`:
-  ```yaml
-  envFrom:
-    - secretRef:
-        name: chatbot-secrets
-  ```
+### Status dos Pods
+```bash
+kubectl get pods -n chatbot
+# Deve mostrar todos READY 1/1
+```
 
-## 9. Backup/Restore do Redis
-- O volume persistente do Redis garante os dados.
-- Para restaurar, substitua o arquivo `dump.rdb` no volume antes de subir o pod.
-- Para backup, copie o arquivo do volume para um storage seguro.
+### 🎯 **Acesso Recomendado (Port-forward)**
+```bash
+# Backend
+kubectl port-forward -n chatbot svc/chatbot-backend 3000:3000 &
 
-## 10. Referências
-- [challenge.md](../../challenge.md)
-- [docker-compose.yml](../../infrastructure/docker/docker-compose.yml)
-- [k8s/](../../infrastructure/k8s/)
+# Frontend (em outro terminal)  
+kubectl port-forward -n chatbot svc/chatbot-frontend 8080:80 &
+```
+
+**URLs funcionais:**
+- ✅ Frontend: http://localhost:8080
+- ✅ Backend Health: http://localhost:3000/health
+- ✅ Backend API: http://localhost:3000/chat
+
+### 🧪 **Teste de Funcionalidade**
+```bash
+# 1. Health check
+curl localhost:3000/health
+
+# 2. Criar usuário
+curl -X POST localhost:3000/user \
+  -H "Content-Type: application/json" \
+  -d '{"user_name":"Test User"}'
+
+# 3. Criar conversa (use user_id retornado)
+curl -X POST localhost:3000/chats/new \
+  -H "Content-Type: application/json" \
+  -d '{"user_id":"CLIENT_ID"}'
+
+# 4. Enviar mensagem (use conversation_id retornado)  
+curl -X POST localhost:3000/chat \
+  -H "Content-Type: application/json" \
+  -d '{"user_id":"CLIENT_ID","conversation_id":"CONV_ID","message":"Hello!"}'
+```
+
+## 8. 🔧 **Configuração de API Keys (Opcional)**
+
+Para funcionalidade completa do chat:
+
+```bash
+# Delete secret existente  
+kubectl delete secret -n chatbot chatbot-secrets
+
+# Crie com suas chaves reais
+kubectl create secret generic chatbot-secrets -n chatbot \
+  --from-literal=GROQ_API_KEY=sua_chave_groq \
+  --from-literal=HUGGINGFACE_API_KEY=sua_chave_huggingface
+
+# Reinicie backend para carregar
+kubectl delete pod -n chatbot -l app=chatbot-backend
+```
+
+## 9. 🌐 **Para Acesso Público Real**
+
+**⚠️ Este deploy Kubernetes é local/desenvolvimento.**
+
+Para URLs públicas reais, use:
+- **☁️ Cloud Deploy**: [Cloud Deploy Guide](../../CLOUD_DEPLOY.md)
+- **🌐 URLs públicas**: Render.com, Railway, Fly.io
+- **🔒 HTTPS automático**: Incluso no cloud deploy
 
 ---
 
-Se todos os passos estiverem completos, siga para o deploy prático dos serviços.
+## 📚 **Referências**
+- [challenge.md](../../docs/challenge.md) - Requisitos originais
+- [Cloud Deploy Guide](../../CLOUD_DEPLOY.md) - Deploy público real  
+- [Infrastructure Guide](../README.md) - Visão geral de infraestrutura
+
+---
+
+✅ **Deploy Kubernetes completo!** Para acesso público, vá para cloud deploy.

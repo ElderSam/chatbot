@@ -21,7 +21,7 @@ http://localhost:3000
 
 **Produção/Kubernetes:**
 - Via Port-forward: http://localhost:8080
-- Via Ingress: http://chatbot.local (requer configuração de /etc/hosts)
+- ⚠️ Via Ingress: http://chatbot.local (configuração complexa, não recomendado)
 
 **Cloud Deploy:**
 Ver [Cloud Deploy Guide](./CLOUD_DEPLOY.md) para URLs públicas

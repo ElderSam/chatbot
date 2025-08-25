@@ -15,7 +15,7 @@ VITE_BACKEND_URL=/api
 ```
 **URLs de acesso:**
 - Via Port-forward: http://localhost:8080  
-- Via Ingress: http://chatbot.local (requer configuração de hosts)
+- ⚠️ Via Ingress: http://chatbot.local (configuração complexa)
 
 **Cloud Deploy (Render.com):**
 ```

@@ -16,10 +16,9 @@ docker-compose -f docker-compose.dev.yml up --build
 **Produção/Kubernetes:**
 - Frontend via Port-forward: http://localhost:8080  
 - Backend via Port-forward: http://localhost:3000
-- Frontend via Ingress: http://chatbot.local
-- Backend via Ingress: http://chatbot.local/api
+- ⚠️ Via Ingress: http://chatbot.local (configuração complexa, não recomendado)
 
-> Para usar Ingress, adicione `192.168.49.2 chatbot.local` ao `/etc/hosts`
+> Para acesso público real, veja [Cloud Deploy Guide](../CLOUD_DEPLOY.md)
 
 **Cloud Deploy (Render.com):**
 - Ver [Cloud Deploy Guide](../CLOUD_DEPLOY.md) para URLs públicas
@@ -57,8 +56,13 @@ curl http://localhost:3000/health
 ```
 
 **Produção/Kubernetes:**
-```
-curl http://chatbot.local/api/health
+```bash
+# Via Port-forward (recomendado)
+kubectl port-forward -n chatbot svc/chatbot-backend 3000:3000
+curl http://localhost:3000/health
+
+# Via Ingress (configuração complexa - não recomendado)
+# curl http://chatbot.local/api/health
 ```
 
 ## 📁 Structure
