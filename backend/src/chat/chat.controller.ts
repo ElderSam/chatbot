@@ -27,7 +27,7 @@ export class ChatController {
     async handleChat(@Body() payload: ChatDto) {
         if (this.promptGuard.isBlocked(payload.message)) {
             throw new ForbiddenException({
-                response: this.promptGuard.getBlockReason(payload.message)
+                message: this.promptGuard.getBlockReason(payload.message) || 'Mensagem proibida pelo sistema.'
             });
         }
         let response = {};
@@ -80,12 +80,11 @@ export class ChatController {
             };
             history.push(historyEntry);
             await this.redis.set(`chat:history:${payload.conversation_id}`, history);
-        }
-        catch (error: any) {
-            // Log the error for debugging
+        } catch (error: any) {
             console.error('Chat request failed:', error.message);
-            
-            // Return proper HTTP error status
+            if (error instanceof HttpException) {
+                throw error;
+            }
             throw new HttpException({
                 message: 'Unable to process your request. Please try again later.',
                 error: 'Internal Server Error',

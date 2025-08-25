@@ -29,6 +29,8 @@ export class GroqService {
 
         const raw: any = await res.json();
 
+        if (!res.ok) throw new Error(`Groq API error: ${raw.error?.message || res.statusText}`);
+
         const usagePercent = ((raw.usage?.completion_tokens * 100) / (raw.usage?.total_tokens || 1)).toFixed(2) + '%';
         const remainingTokens = raw.usage?.prompt_tokens;
 
@@ -47,6 +49,7 @@ export class GroqService {
         };
 
         const responseMsg = responseMessage.content ?? '';
+        // const responseMsg = responseMessage?.content ?? '';
         return { responseMsg, data };
     }
 }

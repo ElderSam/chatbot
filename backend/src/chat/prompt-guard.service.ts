@@ -23,10 +23,10 @@ export class PromptGuardService {
 
   getBlockReason(message: string): string {
     if (!this.allowedLang.test(message)) {
-      return 'Mensagem bloqueada: idioma não permitido.';
+      return 'Blocked message: language not allowed.';
     }
     if (this.suspiciousPatterns.some((pattern) => pattern.test(message))) {
-      return 'Mensagem bloqueada: instrução suspeita detectada.';
+      return 'Blocked message: suspicious instruction detected.';
     }
     return '';
   }
