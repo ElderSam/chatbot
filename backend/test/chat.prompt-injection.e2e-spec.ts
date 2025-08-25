@@ -24,7 +24,7 @@ describe('Chat Prompt Injection Prevention (e2e)', () => {
         })
         .expect(403)
         .expect((res) => {
-          expect(res.body.response).toContain('instrução suspeita detectada');
+          expect(res.body.message).toContain('Blocked message: suspicious instruction detected.');
         });
     });
 
@@ -38,7 +38,7 @@ describe('Chat Prompt Injection Prevention (e2e)', () => {
         })
         .expect(403)
         .expect((res) => {
-          expect(res.body.response).toContain('instrução suspeita detectada');
+          expect(res.body.message).toContain('Blocked message: suspicious instruction detected.');
         });
     });
 
@@ -52,7 +52,7 @@ describe('Chat Prompt Injection Prevention (e2e)', () => {
         })
         .expect(403)
         .expect((res) => {
-          expect(res.body.response).toContain('instrução suspeita detectada');
+          expect(res.body.message).toContain('Blocked message: suspicious instruction detected.');
         });
     });
 
@@ -66,7 +66,7 @@ describe('Chat Prompt Injection Prevention (e2e)', () => {
         })
         .expect(403)
         .expect((res) => {
-          expect(res.body.response).toContain('instrução suspeita detectada');
+          expect(res.body.message).toContain('Blocked message: suspicious instruction detected.');
         });
     });
 
@@ -80,7 +80,7 @@ describe('Chat Prompt Injection Prevention (e2e)', () => {
         })
         .expect(403)
         .expect((res) => {
-          expect(res.body.response).toContain('instrução suspeita detectada');
+          expect(res.body.message).toContain('Blocked message: suspicious instruction detected.');
         });
     });
 
@@ -94,7 +94,7 @@ describe('Chat Prompt Injection Prevention (e2e)', () => {
         })
         .expect(403)
         .expect((res) => {
-          expect(res.body.response).toContain('instrução suspeita detectada');
+          expect(res.body.message).toContain('Blocked message: suspicious instruction detected.');
         });
     });
 
@@ -108,7 +108,7 @@ describe('Chat Prompt Injection Prevention (e2e)', () => {
         })
         .expect(403)
         .expect((res) => {
-          expect(res.body.response).toContain('instrução suspeita detectada');
+          expect(res.body.message).toContain('Blocked message: suspicious instruction detected.');
         });
     });
   });
@@ -124,7 +124,7 @@ describe('Chat Prompt Injection Prevention (e2e)', () => {
         })
         .expect(403)
         .expect((res) => {
-          expect(res.body.response).toContain('idioma não permitido');
+          expect(res.body.message).toContain('Blocked message: language not allowed.');
         });
     });
   });
