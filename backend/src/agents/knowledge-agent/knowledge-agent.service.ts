@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { GroqService } from '../groq/groq.service';
 import { loadDynamicContext, setRedisCacheService } from './context-loader';
 import { EmbeddingService } from './embedding.service';
@@ -135,10 +135,17 @@ export class KnowledgeAgentService {
         ...userContext
       });
 
-      return {
-        responseMsg: 'Desculpe, ocorreu um erro ao processar sua pergunta. Por favor, tente novamente.',
-        data: {}
-      };
+        // If error is an HttpException, propagate its status and message
+        if (error && typeof error.getStatus === 'function') {
+          throw error;
+        }
+        // If error has a status code (e.g., ForbiddenException, BadRequestException)
+        if (error && (error.status === 400 || error.status === 403)) {
+          throw error;
+        }
+        // Otherwise, return 500 Internal Server Error
+        const internalError = new InternalServerErrorException('Sorry, an error occurred while processing your request. Please try again.');
+        throw internalError;
     }
   }
 
