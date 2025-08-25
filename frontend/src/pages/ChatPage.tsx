@@ -80,6 +80,22 @@ const ChatPage: React.FC = () => {
     }
   };
 
+  function renderBotResponse(response: string) {
+    // Regex para encontrar links (http/https)
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    const parts = response.split(urlRegex);
+    return parts.map((part, idx) => {
+      if (urlRegex.test(part)) {
+        return (
+          <a key={idx} href={part} target="_blank" rel="noopener noreferrer" className={styles.link}>
+            {part}
+          </a>
+        );
+      }
+      return part;
+    });
+  }
+
   return (
     <div className={styles.container}>
       <h2 className={styles.header}>Chat</h2>
@@ -104,7 +120,7 @@ const ChatPage: React.FC = () => {
                     ? styles.agentMath
                     : styles.agentOther)
                 }>
-                  <strong>Bot:</strong> {msg.response}
+                  <strong>Bot:</strong> {renderBotResponse(msg.response)}
                   <div className={styles.timestamp}>
                     Agent: {msg.agent} | {formatWhatsappDate(msg.timestamp)}
                   </div>

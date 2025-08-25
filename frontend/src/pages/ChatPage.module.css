@@ -87,3 +87,11 @@
   color: #ff4444;
   margin-top: 8px;
 }
+.link {
+  color: #111;
+  text-decoration: underline;
+  transition: color 0.2s;
+}
+.link:hover {
+  color: #2b2a2a;
+}
