@@ -49,7 +49,17 @@
 }
 
 .agentKnowledge {
-  background: #1976d2;
+  background: #43729fd6;
+  color: #000;
+}
+
+.agentKnowledge a {
+  color: #66b3ff;
+  text-decoration: underline;
+  transition: color 0.2s;
+}
+.agentKnowledge a:hover {
+  color: #2c2059;
 }
 .agentMath {
   background: #444;
@@ -86,12 +96,4 @@
 .error {
   color: #ff4444;
   margin-top: 8px;
-}
-.link {
-  color: #111;
-  text-decoration: underline;
-  transition: color 0.2s;
-}
-.link:hover {
-  color: #2b2a2a;
 }

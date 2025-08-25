@@ -87,7 +87,7 @@ const ChatPage: React.FC = () => {
     return parts.map((part, idx) => {
       if (urlRegex.test(part)) {
         return (
-          <a key={idx} href={part} target="_blank" rel="noopener noreferrer" className={styles.link}>
+          <a key={idx} href={part} target="_blank" rel="noopener noreferrer">
             {part}
           </a>
         );
