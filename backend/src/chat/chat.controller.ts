@@ -156,4 +156,42 @@ export class ChatController {
 
         return { conversations };
     }
+
+    @Get()
+    async getConversation(
+        @Query('user_id') user_id: string,
+        @Query('conversation_id') conversation_id: string
+    ) {
+        if (!user_id || !user_id.match(/^client\d+$/)) {
+            throw new HttpException({
+                message: 'Invalid user_id format. Must be: client{number}',
+                error: 'Bad Request',
+                statusCode: 400
+            }, HttpStatus.BAD_REQUEST);
+        }
+
+        if (!conversation_id || !conversation_id.match(/^conv-\d+$/)) {
+            throw new HttpException({
+                message: 'Invalid conversation_id format. Must be: conv-{number}',
+                error: 'Bad Request', 
+                statusCode: 400
+            }, HttpStatus.BAD_REQUEST);
+        }
+
+        // Validate conversation exists and belongs to user
+        const chatData = await this.redis.get(`chat:conversation:${conversation_id}`);
+        if (!chatData || chatData.user_id !== user_id) {
+            throw new HttpException({
+                message: 'Conversation not found or access denied',
+                error: 'Not Found',
+                statusCode: 404
+            }, HttpStatus.NOT_FOUND);
+        }
+
+        const history = await this.redis.get(`chat:history:${conversation_id}`) || [];
+        return { 
+            conversation: chatData,
+            history 
+        };
+    }
 }
