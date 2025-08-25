@@ -4,6 +4,7 @@ import { AppModule } from '../../src/app.module';
 import { GroqService } from '../../src/agents/groq/groq.service';
 import { EmbeddingService } from '../../src/agents/knowledge-agent/embedding.service';
 import { ConfigService } from '@nestjs/config';
+import { RedisCacheService } from '../../src/redis/redis-cache/redis-cache.service';
 import { createTestModuleConfig } from './common-mocks';
 
 export interface MockGroqServiceOptions {
@@ -17,6 +18,7 @@ export interface TestAppOptions {
     groqService?: any;
     embeddingService?: any;
     configService?: any;
+    redisCacheService?: any;
   };
 }
 
@@ -31,6 +33,7 @@ export class TestAppFactory {
     const mockGroqService = customMocks.groqService || this.createMockGroqService(groqServiceOptions);
     const mockEmbeddingService = customMocks.embeddingService || baseMocks.embeddingService;
     const mockConfigService = customMocks.configService || baseMocks.configService;
+    const mockRedisCacheService = customMocks.redisCacheService || this.createMockRedisCacheService();
 
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
@@ -41,6 +44,8 @@ export class TestAppFactory {
     .useValue(mockEmbeddingService)
     .overrideProvider(ConfigService)
     .useValue(mockConfigService)
+    .overrideProvider(RedisCacheService)
+    .useValue(mockRedisCacheService)
     .compile();
     
     const app = moduleFixture.createNestApplication();
@@ -52,6 +57,44 @@ export class TestAppFactory {
     
     await app.init();
     return app;
+  }
+
+  private static createMockRedisCacheService() {
+    // In-memory storage for test data
+    const storage = new Map();
+    
+    // Pre-populate with test data that matches CommonTestPayloads
+    storage.set('users:client123', {
+      user_id: 'client123',
+      user_name: 'Test User',
+      created_at: new Date().toISOString()
+    });
+    
+    storage.set('chat:conversation:conv-1234', {
+      conversation_id: 'conv-1234',
+      user_id: 'client123',
+      created_at: new Date().toISOString()
+    });
+    
+    storage.set('chats:client123', ['conv-1234']);
+    storage.set('chat:history:conv-1234', []);
+
+    return {
+      get: jest.fn().mockImplementation((key: string) => {
+        return Promise.resolve(storage.get(key) || null);
+      }),
+      set: jest.fn().mockImplementation((key: string, value: any, ttl?: number) => {
+        storage.set(key, value);
+        return Promise.resolve();
+      }),
+      getCache: jest.fn().mockImplementation((key: string) => {
+        return Promise.resolve(storage.get(`cache:${key}`) || null);
+      }),
+      setCache: jest.fn().mockImplementation((key: string, value: any, ttlSec = 86400) => {
+        storage.set(`cache:${key}`, value);
+        return Promise.resolve();
+      })
+    };
   }
 
   private static createMockGroqService(options: MockGroqServiceOptions) {
