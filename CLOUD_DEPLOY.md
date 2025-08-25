@@ -1,5 +1,15 @@
 # 🚀 Cloud Deployment - Render.com
 
+```
+### 2. Public URLs (after deploy)
+```
+🌐 Frontend: https://chatbot-frontend-s734.onrender.com/
+🌐 Backend: https://chatbot-backend-wmrl.onrender.com/health  
+```
+
+
+# 🚀 Cloud Deployment - Render.com
+
 ## 🎯 Bonus Challenge (Challenge.md Item 11)
 
 This guide implements **Item 11** from challenge.md: deployment on a free cloud platform.
@@ -32,14 +42,8 @@ This guide implements **Item 11** from challenge.md: deployment on a free cloud 
 - **Redis**: Separate service connected to backend
 - **Domain rewriting**: `/api/*` → backend service
 
-### 2. Public URLs (after deploy)
-```
-🌐 Frontend: https://chatbot-frontend-xxx.onrender.com
-🌐 Backend: https://chatbot-backend-xxx.onrender.com/health  
-🌐 Chat API: https://chatbot-backend-xxx.onrender.com/chat
-```
 
-### 3. Deploy Process
+### 2. Deploy Process
 ```bash
 # 1. Connect repository to Render.com
 # 2. Configure Blueprint (render.yaml)
