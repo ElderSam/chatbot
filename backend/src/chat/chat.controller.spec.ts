@@ -4,6 +4,8 @@ import { RouterAgentService } from '../agents/router-agent/router-agent.service'
 import { PromptGuardService } from './prompt-guard.service';
 import { UnitTestFactory } from '../../test/utils/unit-test.factory';
 
+import { RedisCacheService } from '../redis/redis-cache/redis-cache.service';
+
 describe('ChatController', () => {
   let controller: ChatController;
   let routerAgentService: jest.Mocked<RouterAgentService>;
@@ -32,15 +34,26 @@ describe('ChatController', () => {
       getBlockReason: jest.fn().mockReturnValue('')
     } as any;
 
+  const redisCacheMock = { get: jest.fn(), set: jest.fn() };
     const module: TestingModule = await UnitTestFactory.createTestingModule({
       providers: [
         ChatController,
         { provide: RouterAgentService, useValue: routerAgentService },
         { provide: PromptGuardService, useValue: promptGuardService },
+        { provide: RedisCacheService, useValue: redisCacheMock },
       ]
     });
-    
     controller = module.get<ChatController>(ChatController);
+    // Mock padrão: conversa existe
+    redisCacheMock.get.mockImplementation((key: string) => {
+      if (key.startsWith('chat:conversation:')) {
+        return Promise.resolve({ user_id: chatPayload.user_id });
+      }
+      if (key.startsWith('chat:history:')) {
+        return Promise.resolve([]);
+      }
+      return Promise.resolve(undefined);
+    });
   });
 
   it('should be defined', () => {
@@ -77,6 +90,16 @@ describe('ChatController', () => {
       user_id: 'client789',
       conversation_id: 'conv-1234',
     };
+    // Mock conversa existente para esse payload
+    (controller as any).redis.get.mockImplementation((key: string) => {
+      if (key.startsWith('chat:conversation:')) {
+        return Promise.resolve({ user_id: mathPayload.user_id });
+      }
+      if (key.startsWith('chat:history:')) {
+        return Promise.resolve([]);
+      }
+      return Promise.resolve(undefined);
+    });
 
     const result = await controller.handleChat(mathPayload) as any;
 
