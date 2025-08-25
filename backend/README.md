@@ -7,9 +7,9 @@
 **Complete API reference:** See [docs/API_ROUTES.md](./docs/API_ROUTES.md)
 
 **Quick overview:**
-- `POST /chat/user` - Create user
-- `POST /chat/chats/new` - Create conversation  
-- `GET /chat/chats` - List user conversations
+- `POST /user` - Create user
+- `POST /chats/new` - Create conversation  
+- `GET /chats` - List user conversations
 - `GET /chat` - Get conversation history
 - `POST /chat` - Send message (original challenge endpoint)
 

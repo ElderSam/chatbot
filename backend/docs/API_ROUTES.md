@@ -10,7 +10,7 @@ No authentication required for this prototype. Users are identified by `user_id`
 
 ## 🔗 User Management
 
-### `POST /chat/user`
+### `POST /user`
 Create a new user in the system.
 
 **Request:**
@@ -34,7 +34,7 @@ Create a new user in the system.
 
 ## 💬 Conversation Management
 
-### `POST /chat/chats/new`
+### `POST /chats/new`
 Create a new conversation for an existing user.
 
 **Request:**
@@ -60,12 +60,12 @@ Create a new conversation for an existing user.
 
 ---
 
-### `GET /chat/chats?user_id={user_id}`
+### `GET /chats?user_id={user_id}`
 List all conversations for a specific user.
 
 **Request:**
 ```
-GET /chat/chats?user_id=client1756089237704
+GET /chats?user_id=client1756089237704
 ```
 
 **Response:**
@@ -185,22 +185,22 @@ Send a message in an existing conversation and get AI response.
 
 ```bash
 # 1. Create user
-curl -X POST http://localhost:3003/chat/user -H "Content-Type: application/json" -d '{"user_name": "Test User"}'
+curl -X POST http://localhost:3003/user -H "Content-Type: application/json" -d '{"user_name": "Test User"}'
 # Response: {"user_id": "client1756089237704"}
 
 # 2. Create conversation
-curl -X POST http://localhost:3003/chat/chats/new -H "Content-Type: application/json" -d '{"user_id": "client1756089237704"}'
+curl -X POST http://localhost:3003/chats/new -H "Content-Type: application/json" -d '{"user_id": "client1756089237704"}'
 # Response: {"conversation_id": "conv-1756089244143"}
 
 # 3. Send message
 curl -X POST http://localhost:3003/chat -H "Content-Type: application/json" -d '{
-  "message": "Como funciona a maquininha?", 
+  "message": "Como funciona a taxa da maquininha?", 
   "user_id": "client1756089237704", 
   "conversation_id": "conv-1756089244143"
 }'
 
 # 4. List user conversations
-curl "http://localhost:3003/chat/chats?user_id=client1756089237704"
+curl "http://localhost:3003/chats?user_id=client1756089237704"
 
 # 5. Get conversation history
 curl "http://localhost:3003/chat?user_id=client1756089237704&conversation_id=conv-1756089244143"

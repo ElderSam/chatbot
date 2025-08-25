@@ -7,7 +7,7 @@ import { RouterAgentService } from '../agents/router-agent/router-agent.service'
 import { PromptGuardService } from './prompt-guard.service';
 import { RedisCacheService } from '../redis/redis-cache/redis-cache.service';
 
-@Controller('chat')
+@Controller()
 export class ChatController {
     constructor(
         private readonly routerAgent: RouterAgentService,
@@ -15,7 +15,7 @@ export class ChatController {
         private readonly redis: RedisCacheService
     ) {}
 
-    @Post()
+    @Post('chat')
     @UsePipes(
         new ValidationPipe({ 
             whitelist: true, 
@@ -182,7 +182,7 @@ export class ChatController {
         return { conversations };
     }
 
-    @Get()
+    @Get('chat')
     async getConversation(
         @Query('user_id') user_id: string,
         @Query('conversation_id') conversation_id: string
