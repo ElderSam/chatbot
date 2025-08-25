@@ -55,17 +55,15 @@ const Sidebar: React.FC = () => {
       {error && <div className={styles.error}>{error}</div>}
       <ul className={styles.list}>
         {[...conversations].reverse().map((conv) => (
-          <li
+            <li
             key={conv.conversation_id}
             className={
-              conv.conversation_id === currentConversation
-                ? styles.active
-                : styles.item
+              `${styles.item} ${(conv.conversation_id === currentConversation) ? styles.active : ''}`
             }
             onClick={() => navigate({ to: `/chat/${conv.conversation_id}` })}
-          >
+            >
             {conv.conversation_id}
-          </li>
+            </li>
         ))}
       </ul>
     </aside>
