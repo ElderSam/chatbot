@@ -52,7 +52,7 @@ const Sidebar: React.FC = () => {
             }
             onClick={() => navigate({ to: `/chat/${conv.conversation_id}` })}
           >
-            Conversation {conv.conversation_id}
+            {conv.conversation_id}
           </li>
         ))}
       </ul>
