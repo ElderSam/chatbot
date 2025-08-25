@@ -20,7 +20,7 @@ export const UserForm: React.FC<UserFormProps> = ({ onUserCreated }) => {
     }
     setLoading(true);
     try {
-      const res = await fetch(`${backendUrl}/chat/user`, {
+      const res = await fetch(`${backendUrl}/user`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ user_name: userName.trim() }),
