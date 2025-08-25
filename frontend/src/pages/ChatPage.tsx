@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from '@tanstack/react-router';
 import styles from './ChatPage.module.css';
+import Sidebar from '../components/Sidebar';
 
 function formatWhatsappDate(dateString: string) {
   const date = new Date(dateString);
@@ -97,53 +98,56 @@ const ChatPage: React.FC = () => {
   }
 
   return (
-    <div className={styles.container}>
-      <h2 className={styles.header}>Chat</h2>
-      <div className={styles.messages}>
-        {messages.length === 0 ? (
-          <p>No messages yet.</p>
-        ) : (
-          messages.map((msg, idx) => (
-            <div key={idx} style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-              <div className={styles.userRow}>
-                <div className={styles.userMessage}>
-                  <strong>You:</strong> {msg.message}
-                  <div className={styles.timestamp}>{formatWhatsappDate(msg.timestamp)}</div>
+    <div style={{ display: 'flex', minHeight: '100vh' }}>
+      <Sidebar />
+      <div className={styles.container}>
+        <h2 className={styles.header}>Chat</h2>
+        <div className={styles.messages}>
+          {messages.length === 0 ? (
+            <p>No messages yet.</p>
+          ) : (
+            messages.map((msg, idx) => (
+              <div key={idx} style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                <div className={styles.userRow}>
+                  <div className={styles.userMessage}>
+                    <strong>You:</strong> {msg.message}
+                    <div className={styles.timestamp}>{formatWhatsappDate(msg.timestamp)}</div>
+                  </div>
                 </div>
-              </div>
-              <div className={styles.botRow}>
-                <div className={
-                  `${styles.botMessage} ` +
-                  (msg.agent === 'KnowledgeAgent'
-                    ? styles.agentKnowledge
-                    : msg.agent === 'MathAgent'
-                    ? styles.agentMath
-                    : styles.agentOther)
-                }>
-                  <strong>Bot:</strong> {renderBotResponse(msg.response)}
-                  <div className={styles.timestamp}>
-                    Agent: {msg.agent} | {formatWhatsappDate(msg.timestamp)}
+                <div className={styles.botRow}>
+                  <div className={
+                    `${styles.botMessage} ` +
+                    (msg.agent === 'KnowledgeAgent'
+                      ? styles.agentKnowledge
+                      : msg.agent === 'MathAgent'
+                      ? styles.agentMath
+                      : styles.agentOther)
+                  }>
+                    <strong>Bot:</strong> {renderBotResponse(msg.response)}
+                    <div className={styles.timestamp}>
+                      Agent: {msg.agent} | {formatWhatsappDate(msg.timestamp)}
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          ))
-        )}
+            ))
+          )}
+        </div>
+        <form onSubmit={handleSend} className={styles.form}>
+          <input
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="Type your message..."
+            className={styles.input}
+            disabled={loading}
+          />
+          <button type="submit" disabled={loading || !input.trim()} className={styles.button}>
+            {loading ? 'Sending...' : 'Send'}
+          </button>
+        </form>
+        {error && <p className={styles.error}>{error}</p>}
       </div>
-      <form onSubmit={handleSend} className={styles.form}>
-        <input
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Type your message..."
-          className={styles.input}
-          disabled={loading}
-        />
-        <button type="submit" disabled={loading || !input.trim()} className={styles.button}>
-          {loading ? 'Sending...' : 'Send'}
-        </button>
-      </form>
-      {error && <p className={styles.error}>{error}</p>}
     </div>
   );
 };

@@ -1,0 +1,63 @@
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useParams } from '@tanstack/react-router';
+import styles from './Sidebar.module.css';
+
+interface Conversation {
+  conversation_id: string;
+  created_at?: string;
+  // Add other fields if needed
+}
+
+const Sidebar: React.FC = () => {
+  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const user_id = localStorage.getItem('user_id');
+  const navigate = useNavigate();
+  const params = useParams({ from: '/chat/$conversation_id' });
+  const currentConversation = params.conversation_id;
+
+  useEffect(() => {
+    const fetchConversations = async () => {
+      if (!user_id) return;
+      setLoading(true);
+      setError(null);
+      try {
+        const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/chats?user_id=${user_id}`);
+        if (!res.ok) throw new Error('Error fetching conversations');
+        const data = await res.json();
+        setConversations(data.conversations || []);
+      } catch (err) {
+        setError('Error fetching conversations.');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchConversations();
+  }, [user_id]);
+
+  return (
+    <aside className={styles.sidebar}>
+      <h3>Conversations</h3>
+      {loading && <div>Loading...</div>}
+      {error && <div className={styles.error}>{error}</div>}
+      <ul className={styles.list}>
+        {[...conversations].reverse().map((conv) => (
+          <li
+            key={conv.conversation_id}
+            className={
+              conv.conversation_id === currentConversation
+                ? styles.active
+                : styles.item
+            }
+            onClick={() => navigate({ to: `/chat/${conv.conversation_id}` })}
+          >
+            Conversation {conv.conversation_id}
+          </li>
+        ))}
+      </ul>
+    </aside>
+  );
+};
+
+export default Sidebar;

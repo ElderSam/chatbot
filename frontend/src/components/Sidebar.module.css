@@ -1,0 +1,46 @@
+.sidebar {
+  width: 220px;
+  background: #181f2a;
+  color: #fff;
+  padding: 1rem;
+  border-radius: 8px 0 0 8px;
+  min-height: 100vh;
+  box-shadow: 2px 0 8px rgba(0,0,0,0.08);
+  display: flex;
+  flex-direction: column;
+}
+
+h3 {
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  flex: 1;
+}
+
+.item {
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-bottom: 4px;
+  transition: background 0.2s;
+}
+.item:hover {
+  background: #24304a;
+}
+
+.active {
+  background: #43729fd6;
+  color: #000;
+  font-weight: bold;
+}
+
+.error {
+  color: #ff4444;
+  margin-bottom: 1rem;
+}
