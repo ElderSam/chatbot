@@ -1,6 +1,7 @@
 import { Controller, Post, Get, UsePipes, ValidationPipe, Body, Query, ForbiddenException, HttpException, HttpStatus } from '@nestjs/common';
 import { ChatDto } from './dto/chat.dto';
 import { CreateUserDto } from './dto/create-user.dto';
+import { CreateChatDto } from './dto/create-chat.dto';
 import { SanitizePipe } from './pipes/sanitize.pipe';
 import { RouterAgentService } from '../agents/router-agent/router-agent.service';
 import { PromptGuardService } from './prompt-guard.service';
@@ -86,5 +87,40 @@ export class ChatController {
 
         await this.redis.set(`users:${user_id}`, userData);
         return { user_id };
+    }
+
+    @Post('chats/new') 
+    @UsePipes(new ValidationPipe({ 
+        whitelist: true, 
+        forbidNonWhitelisted: true, 
+        transform: true 
+    }))
+    async createChat(@Body() payload: CreateChatDto) {
+        // Validate user exists
+        const user = await this.redis.get(`users:${payload.user_id}`);
+        if (!user) {
+            throw new HttpException({
+                message: 'User not found',
+                error: 'Not Found',
+                statusCode: 404
+            }, HttpStatus.NOT_FOUND);
+        }
+
+        const conversation_id = `conv-${Date.now()}`;
+        const chatData = {
+            conversation_id,
+            user_id: payload.user_id,
+            created_at: new Date().toISOString()
+        };
+
+        // Store chat metadata
+        await this.redis.set(`chat:conversation:${conversation_id}`, chatData);
+        
+        // Add to user's chat list
+        const userChats = await this.redis.get(`chats:${payload.user_id}`) || [];
+        userChats.push(conversation_id);
+        await this.redis.set(`chats:${payload.user_id}`, userChats);
+
+        return { conversation_id };
     }
 }
