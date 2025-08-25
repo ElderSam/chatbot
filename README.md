@@ -16,10 +16,8 @@ See [Infrastructure Guide - Kubernetes](./infrastructure/README.md#️-kubernete
 See [Backend Setup - System Architecture](./backend/README.md#️-system-architecture) for complete architecture diagram and component details.
 
 ### 4. 💻 Frontend access
-Frontend not yet implemented. Use API directly:
-- **User Management**: `POST /chat/user`, `POST /chat/chats/new`, `GET /chat/chats`, `GET /chat`
-- **Chat**: `POST /chat` with `{"message": "...", "user_id": "...", "conversation_id": "..."}`
-- **Complete API**: [Backend API Routes](./backend/docs/API_ROUTES.md)
+Access the frontend at [http://localhost:3000](http://localhost:3000) after starting with Docker or Kubernetes.
+See [Frontend README](./frontend/README.md) for usage instructions and features.
 
 ### 5. 📊 Example logs (JSON)
 See [Backend Setup](./backend/README.md#-api-examples--logs) for complete request/response/log examples.
