@@ -29,7 +29,12 @@ const HomePage: React.FC = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ user_id: userId })
       });
-      if (!chatRes.ok) throw new Error('Erro ao criar conversa');
+      if (!chatRes.ok) {
+        const data = await chatRes.json().catch(() => ({}));
+        setError(data.message || 'Erro ao criar chat ou enviar mensagem.');
+        setLoading(false);
+        return;
+      }
       const chatData = await chatRes.json();
       const conversation_id = chatData.conversation_id;
       // Envia primeira mensagem
@@ -38,7 +43,12 @@ const HomePage: React.FC = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: input, user_id: userId, conversation_id })
       });
-      if (!msgRes.ok) throw new Error('Erro ao enviar mensagem');
+      if (!msgRes.ok) {
+        const data = await msgRes.json().catch(() => ({}));
+        setError(data.message || 'Erro ao criar chat ou enviar mensagem.');
+        setLoading(false);
+        return;
+      }
       // Redireciona para o chat
       navigate({ to: `/chat/${conversation_id}` });
     } catch (err) {
