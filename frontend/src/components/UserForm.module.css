@@ -7,9 +7,9 @@
 }
 
 .input {
-  /* width: 100%; */
-  padding: 8px;
+  padding: 12px;
   margin-bottom: 8px;
+  font-size: 17px;
 }
 
 .button {
