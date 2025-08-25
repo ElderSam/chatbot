@@ -36,9 +36,16 @@ const Sidebar: React.FC = () => {
     fetchConversations();
   }, [user_id]);
 
+  const handleNewChat = () => {
+    navigate({ to: '/' });
+  };
+
   return (
     <aside className={styles.sidebar}>
       <h3>Conversations</h3>
+      <button className={styles.newChatBtn} onClick={handleNewChat}>
+        + Novo Chat
+      </button>
       {loading && <div>Loading...</div>}
       {error && <div className={styles.error}>{error}</div>}
       <ul className={styles.list}>
