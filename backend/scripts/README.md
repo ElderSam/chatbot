@@ -33,10 +33,16 @@ pnpm run embeddings
 
 ---
 
-## `test-observability.ts` 
+## `test-observability.ts`
 
 Tests the logging system.
 
 ```bash
 pnpm tsx scripts/test-observability.ts
 ```
+
+---
+
+## Redis Backup
+
+Veja o guia de backup do Redis em [`REDIS_BACKUP.md`](./REDIS_BACKUP.md)
