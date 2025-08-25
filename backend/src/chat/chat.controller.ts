@@ -123,4 +123,37 @@ export class ChatController {
 
         return { conversation_id };
     }
+
+    @Get('chats')
+    async listChats(@Query('user_id') user_id: string) {
+        if (!user_id || !user_id.match(/^client\d+$/)) {
+            throw new HttpException({
+                message: 'Invalid user_id format. Must be: client{number}',
+                error: 'Bad Request',
+                statusCode: 400
+            }, HttpStatus.BAD_REQUEST);
+        }
+
+        // Validate user exists
+        const user = await this.redis.get(`users:${user_id}`);
+        if (!user) {
+            throw new HttpException({
+                message: 'User not found',
+                error: 'Not Found', 
+                statusCode: 404
+            }, HttpStatus.NOT_FOUND);
+        }
+
+        const chatIds = await this.redis.get(`chats:${user_id}`) || [];
+        const conversations: any[] = [];
+
+        for (const chatId of chatIds) {
+            const chatData = await this.redis.get(`chat:conversation:${chatId}`);
+            if (chatData) {
+                conversations.push(chatData);
+            }
+        }
+
+        return { conversations };
+    }
 }
