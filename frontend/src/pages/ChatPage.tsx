@@ -37,8 +37,20 @@ const ChatPage: React.FC = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: input, user_id, conversation_id }),
       });
-      if (!res.ok) throw new Error('Erro ao enviar mensagem');
-      const data = await res.json();
+      let data;
+      try {
+        data = await res.json();
+      } catch {
+        throw new Error('Erro ao processar resposta do servidor');
+      }
+      if (!res.ok) {
+        if (data && data.message) {
+          setError(Array.isArray(data.message) ? data.message.join(' ') : data.message);
+        } else {
+          setError('Erro ao enviar mensagem.');
+        }
+        return;
+      }
       setMessages((prev) => [
         ...prev,
         {
