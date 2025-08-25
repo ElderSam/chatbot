@@ -76,11 +76,7 @@ export class ChatController {
                 timestamp: new Date().toISOString(),
                 message: payload.message,
                 response: agentResult.responseMsg,
-                source_agent_response: agentResult.data,
-                agent_workflow: [
-                    { agent: 'RouterAgent', decision: chosenAgent },
-                    { agent: chosenAgent }
-                ]
+                agent: chosenAgent
             };
             history.push(historyEntry);
             await this.redis.set(`chat:history:${payload.conversation_id}`, history);
