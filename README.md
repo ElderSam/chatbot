@@ -4,6 +4,34 @@ A modular InfinitePay chatbot prototype, tailored for the InfinitePay platform (
 
 ---
 
+## 📋 Quick Reference
+
+### 1. 🐳 How to run locally (Docker)
+See [Infrastructure Guide - Docker](./infrastructure/README.md#-docker) for complete setup commands.
+
+### 2. ☸️ How to run on Kubernetes
+See [Infrastructure Guide - Kubernetes](./infrastructure/README.md#️-kubernetes) for deployment steps.
+
+### 3. 🏗️ Architecture (Router, Agents, Logs, Redis)
+**RouterAgent** → decides → **KnowledgeAgent** (RAG + embeddings) or **MathAgent** (LLM calculations)  
+All interactions logged as **structured JSON** in **Redis** for observability.
+
+### 4. 💻 Frontend access
+Frontend not yet implemented. Use API directly: `POST /chat` with `{"message": "...", "user_id": "...", "conversation_id": "..."}`
+
+### 5. 📊 Example logs (JSON)
+See [Backend Setup](./backend/README.md#-api-examples--logs) for complete request/response/log examples.
+
+### 6. 🔐 Security implementation
+- **Input sanitization**: HTML/JS removal via `SanitizePipe`
+- **Prompt injection**: Pattern blocking via `PromptGuardService`  
+- **Details**: [Security Guide](./docs/security/input_sanitization.md)
+
+### 7. 🧪 How to run tests (backend)
+See [Backend Setup](./backend/README.md#-testing) for test commands and coverage details.
+
+---
+
 ## 🚀 Quick Start
 
 ### Local Development
