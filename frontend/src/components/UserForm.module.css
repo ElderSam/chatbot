@@ -1,0 +1,20 @@
+.formContainer {
+  max-width: 320px;
+  margin: 0 auto;
+}
+
+.input {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 8px;
+}
+
+.button {
+  width: 100%;
+  padding: 8px;
+}
+
+.error {
+  color: red;
+  margin-top: 8px;
+}

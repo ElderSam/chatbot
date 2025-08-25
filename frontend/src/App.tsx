@@ -1,12 +1,9 @@
 import './App.css';
 
-function App() {
+import UserPage from './pages/UserPage';
 
-  return (
-    <div>
-      <h1>Hello World!</h1>
-    </div>
-  )
+function App() {
+  return <UserPage />;
 }
 
 export default App;
