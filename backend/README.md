@@ -96,7 +96,7 @@ pnpm test:cov    # Coverage report
 
 ### Example Request
 ```bash
-curl -X POST http://localhost:3003/chat \
+curl -X POST http://chatbot.local/api/chat \
   -H "Content-Type: application/json" \
   -d '{"message": "What are the card machine fees?", "user_id": "client123", "conversation_id": "conv-456"}'
 ```

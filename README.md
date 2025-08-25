@@ -16,8 +16,21 @@ See [Kubernetes Deploy Guide](./infrastructure/k8s/DEPLOY_GUIDE.md) for full dep
 See [Backend Setup - System Architecture](./backend/README.md#️-system-architecture) for complete architecture diagram and component details.
 
 ### 4. 💻 Frontend access
-Access the frontend at [http://localhost:3000](http://localhost:3000) after starting with Docker or Kubernetes.
-See [Frontend README](./frontend/README.md) for usage instructions and features.
+**Local (Desenvolvimento):**
+http://localhost:3003
+
+**Produção/Kubernetes:**
+http://chatbot.local
+
+Configure o arquivo `.env` do frontend conforme o ambiente:
+```
+# Local
+VITE_BACKEND_URL=http://localhost:3003
+
+# Produção/Kubernetes
+# VITE_BACKEND_URL=/api
+```
+Veja [Frontend README](./frontend/README.md) para instruções detalhadas.
 
 ### 5. 📊 Example logs (JSON)
 See [Backend Setup](./backend/README.md#-api-examples--logs) for complete request/response/log examples.

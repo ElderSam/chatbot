@@ -7,7 +7,15 @@
 cd infrastructure/docker
 docker-compose -f docker-compose.dev.yml up --build
 ```
-**System:** http://localhost:3003
+## URLs de acesso
+
+**Local (Desenvolvimento):**
+http://localhost:3003 (frontend)
+http://localhost:3000 (backend)
+
+**Produção/Kubernetes:**
+http://chatbot.local (frontend via Ingress)
+http://chatbot.local/api (backend via Ingress)
 
 ### Production  
 ```bash
@@ -34,7 +42,17 @@ kubectl apply -f .
 kubectl port-forward svc/chatbot-backend 3000:3000 -n chatbot
 ```
 
-**Test:** `curl http://localhost:3000/health`
+## Teste de saúde
+
+**Local:**
+```
+curl http://localhost:3000/health
+```
+
+**Produção/Kubernetes:**
+```
+curl http://chatbot.local/api/health
+```
 
 ## 📁 Structure
 

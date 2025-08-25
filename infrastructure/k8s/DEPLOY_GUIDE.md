@@ -1,3 +1,18 @@
+# Sobre o domínio chatbot.local
+
+O domínio `chatbot.local` é utilizado para acessar o sistema via Ingress no Kubernetes. Ele serve para facilitar o roteamento de requisições para o backend e frontend dentro do cluster.
+
+**Como configurar:**
+- Após o deploy do Ingress, adicione uma linha ao seu arquivo `/etc/hosts` apontando para o IP do Minikube:
+  ```
+  192.168.49.2 chatbot.local
+  ```
+  (Use o IP retornado por `minikube ip`)
+- Só utilize `chatbot.local` em ambiente Kubernetes com Ingress habilitado.
+- Para desenvolvimento local, use `localhost` e as portas padrão.
+
+**Mais detalhes:**
+Sempre consulte este guia para instruções sobre o uso do domínio `chatbot.local`.
 # Deploy com Kubernetes
 
 Este guia cobre o deploy dos serviços Redis, Backend e Frontend usando Kubernetes, seguindo o padrão do `challenge.md`.

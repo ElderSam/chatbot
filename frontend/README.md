@@ -1,12 +1,21 @@
 
 # 🖥️ Frontend (React + TypeScript + Vite)
 
-## Environment Variables
-Set the backend URL in `.env`:
+## Ambiente
+
+**Local (Desenvolvimento):**
 ```
 VITE_BACKEND_URL=http://localhost:3003
 ```
-Use `import.meta.env.VITE_BACKEND_URL` in the code for API requests.
+Acesse: http://localhost:3003
+
+**Produção/Kubernetes:**
+```
+VITE_BACKEND_URL=/api
+```
+Acesse: http://chatbot.local
+
+Use `import.meta.env.VITE_BACKEND_URL` no código para requisições à API.
 
 ## How to run
 
