@@ -32,21 +32,21 @@ export class ChatController {
         }
         let response = {};
 
+        // =============================================== 
+        // VALIDATION: Check if user_id and conversation_id exist
+        // ===============================================
+        const chatData = await this.redis.get(`chat:conversation:${payload.conversation_id}`);
+        if (!chatData || chatData.user_id !== payload.user_id) {
+            throw new HttpException({
+                message: 'Conversation not found or access denied. Create conversation first with POST /chats/new',
+                error: 'Not Found',
+                statusCode: 404
+            }, HttpStatus.NOT_FOUND);
+        }
+
         try {
             console.log('\n--------------------------------')
             console.log('/chat - start request: ', { payload })
-
-            // =============================================== 
-            // VALIDATION: Check if user_id and conversation_id exist
-            // ===============================================
-            const chatData = await this.redis.get(`chat:conversation:${payload.conversation_id}`);
-            if (!chatData || chatData.user_id !== payload.user_id) {
-                throw new HttpException({
-                    message: 'Conversation not found or access denied. Create conversation first with POST /chats/new',
-                    error: 'Not Found',
-                    statusCode: 404
-                }, HttpStatus.NOT_FOUND);
-            }
 
             // Always use the original message for processing agents
             // The normalized cache is only for search/embedding purposes
