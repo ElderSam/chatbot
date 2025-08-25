@@ -103,7 +103,7 @@ export class ChatController {
         transform: true 
     }), SanitizePipe)
     async createUser(@Body() payload: CreateUserDto) {
-        const user_id = `client${Date.now()}`;
+    const user_id = `client${Math.floor(Date.now() % 1e10)}`;
         const userData = {
             user_id,
             user_name: payload.user_name,
@@ -131,7 +131,7 @@ export class ChatController {
             }, HttpStatus.NOT_FOUND);
         }
 
-        const conversation_id = `conv-${Date.now()}`;
+    const conversation_id = `conv-${Math.floor(Date.now() % 1e10)}`;
         const chatData = {
             conversation_id,
             user_id: payload.user_id,

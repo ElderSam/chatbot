@@ -23,7 +23,7 @@ Create a new user in the system.
 **Response:**
 ```json
 {
-  "user_id": "client1756089237704"
+  "user_id": "client1234567890"
 }
 ```
 
@@ -40,14 +40,14 @@ Create a new conversation for an existing user.
 **Request:**
 ```json
 {
-  "user_id": "client1756089237704"
+  "user_id": "client1234567890"
 }
 ```
 
 **Response:**
 ```json
 {
-  "conversation_id": "conv-1756089244143"
+  "conversation_id": "conv-1234567890"
 }
 ```
 
@@ -65,7 +65,7 @@ List all conversations for a specific user.
 
 **Request:**
 ```
-GET /chats?user_id=client1756089237704
+GET /chats?user_id=client1234567890
 ```
 
 **Response:**
@@ -73,8 +73,8 @@ GET /chats?user_id=client1756089237704
 {
   "conversations": [
     {
-      "conversation_id": "conv-1756089244143",
-      "user_id": "client1756089237704",
+      "conversation_id": "conv-1234567890",
+      "user_id": "client1234567890",
       "created_at": "2025-08-25T02:34:04.143Z"
     }
   ]
@@ -92,15 +92,15 @@ Get a specific conversation with its full message history.
 
 **Request:**
 ```
-GET /chat?user_id=client1756089237704&conversation_id=conv-1756089244143
+GET /chat?user_id=client1234567890&conversation_id=conv-1234567890
 ```
 
 **Response:**
 ```json
 {
   "conversation": {
-    "conversation_id": "conv-1756089244143",
-    "user_id": "client1756089237704",
+    "conversation_id": "conv-1234567890",
+    "user_id": "client1234567890",
     "created_at": "2025-08-25T02:34:04.143Z"
   },
   "history": [
@@ -133,8 +133,8 @@ Send a message in an existing conversation and get AI response.
 ```json
 {
   "message": "Como funciona a taxa da maquininha?",
-  "user_id": "client1756089237704", 
-  "conversation_id": "conv-1756089244143"
+  "user_id": "client1234567890", 
+  "conversation_id": "conv-1234567890"
 }
 ```
 
@@ -186,24 +186,24 @@ Send a message in an existing conversation and get AI response.
 ```bash
 # 1. Create user
 curl -X POST http://localhost:3003/user -H "Content-Type: application/json" -d '{"user_name": "Test User"}'
-# Response: {"user_id": "client1756089237704"}
+# Response: {"user_id": "client1234567890"}
 
 # 2. Create conversation
-curl -X POST http://localhost:3003/chats/new -H "Content-Type: application/json" -d '{"user_id": "client1756089237704"}'
-# Response: {"conversation_id": "conv-1756089244143"}
+curl -X POST http://localhost:3003/chats/new -H "Content-Type: application/json" -d '{"user_id": "client1234567890"}'
+# Response: {"conversation_id": "conv-1234567890"}
 
 # 3. Send message
 curl -X POST http://localhost:3003/chat -H "Content-Type: application/json" -d '{
   "message": "Como funciona a taxa da maquininha?", 
-  "user_id": "client1756089237704", 
-  "conversation_id": "conv-1756089244143"
+  "user_id": "client1234567890", 
+  "conversation_id": "conv-1234567890"
 }'
 
 # 4. List user conversations
-curl "http://localhost:3003/chats?user_id=client1756089237704"
+curl "http://localhost:3003/chats?user_id=client1234567890"
 
 # 5. Get conversation history
-curl "http://localhost:3003/chat?user_id=client1756089237704&conversation_id=conv-1756089244143"
+curl "http://localhost:3003/chat?user_id=client1234567890&conversation_id=conv-1234567890"
 ```
 
 ---
