@@ -20,8 +20,8 @@ const HomePage: React.FC = () => {
       <h1>Chatbot Home</h1>
       <p>
         {userName
-          ? `Bem-vindo, ${userName}!`
-          : 'Bem-vindo! Escolha uma opção no menu.'}
+          ? `Welcome, ${userName}!`
+          : 'Welcome! Choose an option from the menu.'}
       </p>
       {userId && <CreateChatComponent />}
     </div>

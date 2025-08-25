@@ -41,22 +41,20 @@ export const UserForm: React.FC<UserFormProps> = ({ onUserCreated }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className={styles.formContainer}>
-      <h2>Create User</h2>
+    <form onSubmit={handleSubmit} className={styles.form}>
+      <label htmlFor="userName">Your name:</label>
       <input
+        id="userName"
         type="text"
         value={userName}
         onChange={(e) => setUserName(e.target.value)}
         placeholder="Enter your name"
-        minLength={2}
-        maxLength={50}
-        required
-        className={styles.input}
+        disabled={loading}
       />
-      <button type="submit" disabled={loading} className={styles.button}>
+      <button type="submit" disabled={loading || !userName.trim()}>
         {loading ? 'Creating...' : 'Create User'}
       </button>
-      {error && <div className={styles.error}>{error}</div>}
+      {error && <p className={styles.error}>{error}</p>}
     </form>
   );
 };

@@ -16,11 +16,11 @@ const ChatPage: React.FC = () => {
       if (!user_id || !conversation_id) return;
       try {
         const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/chat?user_id=${user_id}&conversation_id=${conversation_id}`);
-        if (!res.ok) throw new Error('Erro ao buscar histórico');
+        if (!res.ok) throw new Error('Error fetching history');
         const data = await res.json();
         setMessages(data.history || []);
       } catch (err) {
-        setError('Erro ao buscar histórico.');
+        setError('Error fetching history.');
       }
     };
     fetchHistory();
@@ -41,13 +41,13 @@ const ChatPage: React.FC = () => {
       try {
         data = await res.json();
       } catch {
-        throw new Error('Erro ao processar resposta do servidor');
+        throw new Error('Error processing server response');
       }
       if (!res.ok) {
         if (data && data.message) {
           setError(Array.isArray(data.message) ? data.message.join(' ') : data.message);
         } else {
-          setError('Erro ao enviar mensagem.');
+          setError('Error sending message.');
         }
         return;
       }
@@ -62,7 +62,7 @@ const ChatPage: React.FC = () => {
       ]);
       setInput('');
     } catch (err) {
-      setError('Erro ao enviar mensagem.');
+      setError('Error sending message.');
     } finally {
       setLoading(false);
     }
@@ -73,13 +73,13 @@ const ChatPage: React.FC = () => {
       <h2>Chat</h2>
       <div style={{ minHeight: 200, marginBottom: 16 }}>
         {messages.length === 0 ? (
-          <p>Nenhuma mensagem ainda.</p>
+          <p>No messages yet.</p>
         ) : (
           messages.map((msg, idx) => (
             <div key={idx} style={{ marginBottom: 12 }}>
-              <div><strong>Você:</strong> {msg.message}</div>
+              <div><strong>You:</strong> {msg.message}</div>
               <div><strong>Bot:</strong> {msg.response}</div>
-              <div style={{ fontSize: '0.8em', color: '#888' }}>Agente: {msg.agent} | {new Date(msg.timestamp).toLocaleString()}</div>
+              <div style={{ fontSize: '0.8em', color: '#888' }}>Agent: {msg.agent} | {new Date(msg.timestamp).toLocaleString()}</div>
             </div>
           ))
         )}
@@ -89,12 +89,12 @@ const ChatPage: React.FC = () => {
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="Digite sua mensagem..."
+          placeholder="Type your message..."
           style={{ flex: 1, padding: 8 }}
           disabled={loading}
         />
         <button type="submit" disabled={loading || !input.trim()}>
-          {loading ? 'Enviando...' : 'Enviar'}
+          {loading ? 'Sending...' : 'Send'}
         </button>
       </form>
       {error && <p style={{ color: 'red', marginTop: 8 }}>{error}</p>}
