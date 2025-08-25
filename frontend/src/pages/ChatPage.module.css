@@ -142,3 +142,10 @@ html, body {
   color: #ff4444;
   margin-top: 8px;
 }
+.botError {
+  background: #ffeaea;
+  color: #b20000;
+  border-radius: 8px;
+  padding: 0.75rem;
+  margin-bottom: 8px;
+}

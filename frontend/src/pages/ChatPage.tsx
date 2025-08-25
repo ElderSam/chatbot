@@ -18,10 +18,9 @@ const ChatPage: React.FC = () => {
   const params = useParams({ from: '/chat/$conversation_id' });
   const conversation_id = params.conversation_id;
   const user_id = localStorage.getItem('user_id');
-  const [messages, setMessages] = useState<Array<{ message: string; response: string; agent: string; timestamp: string }>>([]);
+  const [messages, setMessages] = useState<Array<{ message: string; response: string; agent: string; timestamp: string; error?: boolean }>>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   // Fetch conversation history on mount
   useEffect(() => {
@@ -33,7 +32,17 @@ const ChatPage: React.FC = () => {
         const data = await res.json();
         setMessages(data.history || []);
       } catch (err) {
-        setError('Error fetching history.');
+        // Adiciona mensagem de erro como resposta do bot
+        setMessages((prev) => [
+          ...prev,
+          {
+            message: '',
+            response: 'Error fetching history.',
+            agent: '',
+            timestamp: new Date().toISOString(),
+            error: true,
+          },
+        ]);
       }
     };
     fetchHistory();
@@ -43,7 +52,7 @@ const ChatPage: React.FC = () => {
     e.preventDefault();
     if (!input.trim()) return;
     setLoading(true);
-    setError(null);
+  // Erro não é mais exibido abaixo do input
     // Adiciona mensagem do usuário imediatamente
     const userMessage = {
       message: input,
@@ -66,11 +75,18 @@ const ChatPage: React.FC = () => {
         throw new Error('Error processing server response');
       }
       if (!res.ok) {
-        if (data && data.message) {
-          setError(Array.isArray(data.message) ? data.message.join(' ') : data.message);
-        } else {
-          setError('Error sending message.');
-        }
+        // Adiciona mensagem de erro como resposta do bot
+        setMessages((prev) => {
+          const updated = [...prev];
+          updated[messageIndex] = {
+            ...updated[messageIndex],
+            response: data && data.message ? (Array.isArray(data.message) ? data.message.join(' ') : data.message) : 'Error sending message.',
+            agent: data.agent_workflow?.[1]?.agent || '',
+            error: true,
+          };
+          return updated;
+        });
+        setInput('');
         return;
       }
       // Atualiza a última mensagem com a resposta do bot
@@ -80,12 +96,24 @@ const ChatPage: React.FC = () => {
           ...updated[messageIndex],
           response: data.response,
           agent: data.agent_workflow?.[1]?.agent || '',
+          error: false,
         };
         return updated;
       });
       setInput('');
     } catch (err) {
-      setError('Error sending message.');
+      // Adiciona mensagem de erro como resposta do bot
+      setMessages((prev) => [
+        ...prev,
+        {
+          message: input,
+          response: 'Error sending message.',
+          agent: '',
+          timestamp: new Date().toISOString(),
+          error: true,
+        },
+      ]);
+      setInput('');
     } finally {
       setLoading(false);
     }
@@ -126,17 +154,19 @@ const ChatPage: React.FC = () => {
                 <div className={styles.botRow}>
                   <div className={
                     `${styles.botMessage} ` +
-                    (msg.agent === 'KnowledgeAgent'
-                      ? styles.agentKnowledge
-                      : msg.agent === 'MathAgent'
-                      ? styles.agentMath
-                      : styles.agentOther)
+                    (msg.error
+                      ? styles.botError
+                      : msg.agent === 'KnowledgeAgent'
+                        ? styles.agentKnowledge
+                        : msg.agent === 'MathAgent'
+                        ? styles.agentMath
+                        : styles.agentOther)
                   }>
                     {msg.response
                       ? <>
-                          <strong>Bot:</strong> {renderBotResponse(msg.response)}
+                          <strong>{msg.error ? 'Erro:' : 'Bot:'}</strong> {renderBotResponse(msg.response)}
                           <div className={styles.timestamp}>
-                            Agent: {msg.agent} | {formatWhatsappDate(msg.timestamp)}
+                            {msg.agent ? <>Agent: {msg.agent} | </> : null}{formatWhatsappDate(msg.timestamp)}
                           </div>
                         </>
                       : <span style={{ color: '#888' }}>Aguardando resposta...</span>
@@ -160,7 +190,7 @@ const ChatPage: React.FC = () => {
             {loading ? 'Sending...' : 'Send'}
           </button>
         </form>
-        {error && <p className={styles.error}>{error}</p>}
+  {/* Erro não é mais exibido abaixo do input, só como mensagem do bot */}
       </div>
     </MainLayout>
   );
