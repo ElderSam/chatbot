@@ -2,7 +2,18 @@
 
 > **Already ran the quick start?** → Skip to [API Keys Setup](#-api-keys-for-full-functionality)
 
-## 🔑 API Keys for Full Functionality
+## � API Documentation
+
+**Complete API reference:** See [docs/API_ROUTES.md](./docs/API_ROUTES.md)
+
+**Quick overview:**
+- `POST /chat/user` - Create user
+- `POST /chat/chats/new` - Create conversation  
+- `GET /chat/chats` - List user conversations
+- `GET /chat` - Get conversation history
+- `POST /chat` - Send message (original challenge endpoint)
+
+## �🔑 API Keys for Full Functionality
 
 ```bash
 # Copy and edit with your real keys

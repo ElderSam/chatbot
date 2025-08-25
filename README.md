@@ -16,7 +16,10 @@ See [Infrastructure Guide - Kubernetes](./infrastructure/README.md#️-kubernete
 See [Backend Setup - System Architecture](./backend/README.md#️-system-architecture) for complete architecture diagram and component details.
 
 ### 4. 💻 Frontend access
-Frontend not yet implemented. Use API directly: `POST /chat` with `{"message": "...", "user_id": "...", "conversation_id": "..."}`
+Frontend not yet implemented. Use API directly:
+- **User Management**: `POST /chat/user`, `POST /chat/chats/new`, `GET /chat/chats`, `GET /chat`
+- **Chat**: `POST /chat` with `{"message": "...", "user_id": "...", "conversation_id": "..."}`
+- **Complete API**: [Backend API Routes](./backend/docs/API_ROUTES.md)
 
 ### 5. 📊 Example logs (JSON)
 See [Backend Setup](./backend/README.md#-api-examples--logs) for complete request/response/log examples.
