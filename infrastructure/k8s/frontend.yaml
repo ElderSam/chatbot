@@ -19,7 +19,7 @@ spec:
       containers:
       - name: chatbot-frontend
         image: chatbot-frontend:latest
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 3003
         env:
