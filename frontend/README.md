@@ -30,6 +30,7 @@ Use `import.meta.env.VITE_BACKEND_URL` in the code for API requests.
   - Standardized API routes: `/user`, `/chats/new`, `/chats`, `/chat`.
   - SPA navigation uses `/chat/:conversation_id`.
 
+
 ## Features
 
 - User onboarding (create user, localStorage)
@@ -42,6 +43,8 @@ Use `import.meta.env.VITE_BACKEND_URL` in the code for API requests.
 - Error handling for API responses
 - Clickable links in bot messages (styled via CSS module)
 - Date/time formatting (WhatsApp style)
+- Sidebar with conversation history (switch between chats)
+
 
 ## How to run
 
