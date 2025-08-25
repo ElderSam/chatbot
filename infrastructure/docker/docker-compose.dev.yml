@@ -42,5 +42,21 @@ services:
       retries: 3
       start_period: 15s
 
+  frontend:
+    build:
+      context: ../../frontend
+      dockerfile: ../infrastructure/docker/frontend/Dockerfile
+    ports:
+      - "3000:80"
+    environment:
+      - VITE_BACKEND_URL=http://backend:3003
+    depends_on:
+      - backend
+    volumes:
+      - ../../frontend/src:/app/src:ro
+      - ../../frontend/public:/app/public:ro
+      - ../../frontend/package.json:/app/package.json:ro
+      - ../../frontend/tsconfig.json:/app/tsconfig.json:ro
+
 volumes:
   redis_data:

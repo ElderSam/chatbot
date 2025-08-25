@@ -48,9 +48,27 @@ Use `import.meta.env.VITE_BACKEND_URL` in the code for API requests.
 
 ## How to run
 
+
+### Local Development
 1. Install dependencies: `pnpm install`
 2. Set environment variables in `.env`
 3. Start dev server: `pnpm run dev`
+
+### Docker Compose (Production)
+1. Build and run all services (frontend, backend, redis):
+  ```bash
+  cd infrastructure/docker
+  docker-compose up --build
+  ```
+2. Access the frontend at [http://localhost:3000](http://localhost:3000)
+
+### Docker Compose (Development)
+1. For live reload and development, use:
+  ```bash
+  cd infrastructure/docker
+  docker-compose -f docker-compose.dev.yml up --build
+  ```
+2. Access the frontend at [http://localhost:3000](http://localhost:3000)
 
 ## Notes
 
