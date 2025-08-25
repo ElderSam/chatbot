@@ -2,6 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from '@tanstack/react-router';
 import styles from './ChatPage.module.css';
 
+function formatWhatsappDate(dateString: string) {
+  const date = new Date(dateString);
+  const now = new Date();
+  const isToday = date.toDateString() === now.toDateString();
+  const pad = (n: number) => n.toString().padStart(2, '0');
+  if (isToday) {
+    return `${pad(date.getHours())}:${pad(date.getMinutes())}`;
+  }
+  return `${pad(date.getMonth() + 1)}/${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}
+
 const ChatPage: React.FC = () => {
   const params = useParams({ from: '/chat/$conversation_id' });
   const conversation_id = params.conversation_id;
@@ -93,7 +104,9 @@ const ChatPage: React.FC = () => {
                     : styles.agentOther)
                 }>
                   <strong>Bot:</strong> {msg.response}
-                  <div className={styles.timestamp}>Agent: {msg.agent} | {new Date(msg.timestamp).toLocaleString()}</div>
+                  <div className={styles.timestamp}>
+                    Agent: {msg.agent} | {formatWhatsappDate(msg.timestamp)}
+                  </div>
                 </div>
               </div>
             </div>
