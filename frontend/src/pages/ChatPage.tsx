@@ -98,7 +98,7 @@ const ChatPage: React.FC = () => {
   }
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh' }}>
+    <div className={styles.layout}>
       <Sidebar />
       <div className={styles.container}>
         <h2 className={styles.header}>Chat</h2>
