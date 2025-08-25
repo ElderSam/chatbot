@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styles from './HomePage.module.css';
 import { useNavigate } from '@tanstack/react-router';
-import Sidebar from '../components/Sidebar';
+import MainLayout from '../components/MainLayout';
 
 const HomePage: React.FC = () => {
   const userName = localStorage.getItem('user_name');
@@ -49,31 +49,32 @@ const HomePage: React.FC = () => {
   };
 
   return (
-    <div className={styles.layout}>
-      <Sidebar />
-      <div className={styles.homeContainer}>
-        <h1>Chatbot Home</h1>
-        <p>
-          {userName
-            ? `Welcome, ${userName}!`
-            : 'Welcome! Choose an option from the menu.'}
-        </p>
-        <form onSubmit={handleSend} className={styles.form}>
-          <input
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="Type your first message..."
-            className={styles.input}
-            disabled={loading}
-          />
-          <button type="submit" disabled={loading || !input.trim()} className={styles.button}>
-            {loading ? 'Sending...' : 'Send'}
-          </button>
-        </form>
-        {error && <p className={styles.error}>{error}</p>}
+    <MainLayout>
+      <div className={styles.layout}>
+        <div className={styles.homeContainer}>
+          <h1>Chatbot Home</h1>
+          <p>
+            {userName
+              ? `Welcome, ${userName}!`
+              : 'Welcome! Choose an option from the menu.'}
+          </p>
+          <form onSubmit={handleSend} className={styles.form}>
+            <input
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder="Type your first message..."
+              className={styles.input}
+              disabled={loading}
+            />
+            <button type="submit" disabled={loading || !input.trim()} className={styles.button}>
+              {loading ? 'Sending...' : 'Send'}
+            </button>
+          </form>
+          {error && <p className={styles.error}>{error}</p>}
+        </div>
       </div>
-    </div>
+    </MainLayout>
   );
 };
 

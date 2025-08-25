@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from '@tanstack/react-router';
 import styles from './ChatPage.module.css';
-import Sidebar from '../components/Sidebar';
+import MainLayout from '../components/MainLayout';
 
 function formatWhatsappDate(dateString: string) {
   const date = new Date(dateString);
@@ -98,8 +98,7 @@ const ChatPage: React.FC = () => {
   }
 
   return (
-    <div className={styles.layout}>
-      <Sidebar />
+    <MainLayout>
       <div className={styles.container}>
         <h2 className={styles.header}>Chat</h2>
         <div className={styles.messages}>
@@ -148,7 +147,7 @@ const ChatPage: React.FC = () => {
         </form>
         {error && <p className={styles.error}>{error}</p>}
       </div>
-    </div>
+    </MainLayout>
   );
 };
 
