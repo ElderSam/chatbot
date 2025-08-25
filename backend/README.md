@@ -51,4 +51,66 @@ Chat Request → RouterAgent → KnowledgeAgent/MathAgent → Response
 **Technical details:** See [docs/README.md](./docs/README.md)
 
 ---
-**Quick test:** `curl -X POST http://localhost:3000/chat -H "Content-Type: application/json" -d '{"message": "How much is 2+2?", "user_id": "test", "conversation_id": "123"}'`
+
+## 📊 API Examples & Logs
+
+### Example Request
+```bash
+curl -X POST http://localhost:3003/chat \
+  -H "Content-Type: application/json" \
+  -d '{"message": "What are the card machine fees?", "user_id": "client123", "conversation_id": "conv-456"}'
+```
+
+### Example Response
+```json
+{
+  "response": "A taxa da maquininha InfinitePay varia conforme o plano...",
+  "source_agent_response": "Based on InfinitePay documentation, the fees are...",
+  "agent_workflow": [
+    { "agent": "RouterAgent", "decision": "KnowledgeAgent" },
+    { "agent": "KnowledgeAgent" }
+  ]
+}
+```
+
+### Structured Logs Generated
+```json
+// RouterAgent decision
+{
+  "timestamp": "2025-08-24T15:30:12.435Z",
+  "level": "INFO",
+  "agent": "RouterAgent",
+  "conversation_id": "conv-456",
+  "user_id": "client123",
+  "message": "What are the card machine fees?",
+  "decision": "KnowledgeAgent",
+  "execution_time": 45
+}
+
+// KnowledgeAgent processing
+{
+  "timestamp": "2025-08-24T15:30:12.580Z",
+  "level": "INFO", 
+  "agent": "KnowledgeAgent",
+  "conversation_id": "conv-456",
+  "user_id": "client123",
+  "question": "What are the card machine fees?",
+  "sources": ["https://ajuda.infinitepay.io/..."],
+  "execution_time": 320,
+  "usedEmbeddings": true
+}
+
+// Math example  
+{
+  "timestamp": "2025-08-24T15:32:15.123Z",
+  "level": "INFO",
+  "agent": "MathAgent", 
+  "conversation_id": "conv-789",
+  "user_id": "client456",
+  "message": "How much is 2+2?",
+  "responseMsg": "4",
+  "execution_time": 180
+}
+```
+
+---
