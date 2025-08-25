@@ -12,10 +12,11 @@ import CreateChatPage from './pages/CreateChatPage';
 import ChatPage from './pages/ChatPage';
 
 import './App.css';
+import styles from './App.module.css';
 
 // Not Found component
 const NotFound = () => (
-  <div style={{ textAlign: 'center', marginTop: '4rem' }}>
+  <div className={styles.notFound}>
     <h2>Página não encontrada</h2>
     <p>Verifique o endereço ou volte para a Home.</p>
   </div>

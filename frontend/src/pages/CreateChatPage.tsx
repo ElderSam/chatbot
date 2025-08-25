@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import styles from './CreateChatPage.module.css';
 import { useNavigate } from '@tanstack/react-router';
 
 const CreateChatPage: React.FC = () => {
@@ -35,12 +36,12 @@ const CreateChatPage: React.FC = () => {
   };
 
   return (
-    <div style={{ padding: '2rem', textAlign: 'center' }}>
+    <div className={styles.createChatContainer}>
       <h2>Start New Conversation</h2>
-      <button onClick={handleCreateChat} disabled={loading}>
+      <button className={styles.createChatButton} onClick={handleCreateChat} disabled={loading}>
         {loading ? 'Creating...' : 'Start Chat'}
       </button>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+      {error && <p className={styles.createChatError}>{error}</p>}
     </div>
   );
 };
