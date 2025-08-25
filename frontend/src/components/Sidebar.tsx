@@ -14,8 +14,13 @@ const Sidebar: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const user_id = localStorage.getItem('user_id');
   const navigate = useNavigate();
-  const params = useParams({ from: '/chat/$conversation_id' });
-  const currentConversation = params.conversation_id;
+  let currentConversation = '';
+  try {
+    const params = useParams({ from: '/chat/$conversation_id' });
+    currentConversation = params.conversation_id || '';
+  } catch {
+    currentConversation = '';
+  }
 
   useEffect(() => {
     const fetchConversations = async () => {
