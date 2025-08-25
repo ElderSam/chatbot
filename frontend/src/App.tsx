@@ -8,6 +8,7 @@ import {
 
 import HomePage from './pages/HomePage';
 import UserPage from './pages/UserPage';
+import CreateChatPage from './pages/CreateChatPage';
 
 import './App.css';
 
@@ -42,7 +43,18 @@ const createUserRoute = createRoute({
   component: UserPage,
 });
 
-const routeTree = rootRoute.addChildren([indexRoute, homeAliasRoute, createUserRoute]);
+const createChatRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/create-chat',
+  component: CreateChatPage,
+});
+
+const routeTree = rootRoute.addChildren([
+  indexRoute,
+  homeAliasRoute,
+  createUserRoute,
+  createChatRoute,
+]);
 
 const router = createRouter({ routeTree });
 

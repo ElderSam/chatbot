@@ -14,15 +14,8 @@ const UserPage: React.FC = () => {
   };
 
   if (userId && userName) {
-    return (
-      <div className={styles.centered}>
-        <h2>Welcome, {userName}!</h2>
-        <p>
-          Your user ID: <code>{userId}</code>
-        </p>
-        {/* Next: redirect or show next step */}
-      </div>
-    );
+    window.location.replace('/');
+    return null;
   }
 
   return (

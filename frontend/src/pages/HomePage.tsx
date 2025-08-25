@@ -1,9 +1,8 @@
 import React from 'react';
 import styles from './HomePage.module.css';
-import { Link } from '@tanstack/react-router';
-
 import { useEffect } from 'react';
 import { useNavigate } from '@tanstack/react-router';
+import CreateChatComponent from './CreateChatPage';
 
 const HomePage: React.FC = () => {
   const userName = localStorage.getItem('user_name');
@@ -24,6 +23,7 @@ const HomePage: React.FC = () => {
           ? `Bem-vindo, ${userName}!`
           : 'Bem-vindo! Escolha uma opção no menu.'}
       </p>
+      {userId && <CreateChatComponent />}
     </div>
   );
 };
