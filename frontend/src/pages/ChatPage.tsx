@@ -44,6 +44,15 @@ const ChatPage: React.FC = () => {
     if (!input.trim()) return;
     setLoading(true);
     setError(null);
+    // Adiciona mensagem do usuário imediatamente
+    const userMessage = {
+      message: input,
+      response: '', // resposta ainda não chegou
+      agent: '',
+      timestamp: new Date().toISOString(),
+    };
+    setMessages((prev) => [...prev, userMessage]);
+    const messageIndex = messages.length; // índice da nova mensagem
     try {
       const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/chat`, {
         method: 'POST',
@@ -64,15 +73,16 @@ const ChatPage: React.FC = () => {
         }
         return;
       }
-      setMessages((prev) => [
-        ...prev,
-        {
-          message: input,
+      // Atualiza a última mensagem com a resposta do bot
+      setMessages((prev) => {
+        const updated = [...prev];
+        updated[messageIndex] = {
+          ...updated[messageIndex],
           response: data.response,
           agent: data.agent_workflow?.[1]?.agent || '',
-          timestamp: new Date().toISOString(),
-        },
-      ]);
+        };
+        return updated;
+      });
       setInput('');
     } catch (err) {
       setError('Error sending message.');
@@ -122,10 +132,15 @@ const ChatPage: React.FC = () => {
                       ? styles.agentMath
                       : styles.agentOther)
                   }>
-                    <strong>Bot:</strong> {renderBotResponse(msg.response)}
-                    <div className={styles.timestamp}>
-                      Agent: {msg.agent} | {formatWhatsappDate(msg.timestamp)}
-                    </div>
+                    {msg.response
+                      ? <>
+                          <strong>Bot:</strong> {renderBotResponse(msg.response)}
+                          <div className={styles.timestamp}>
+                            Agent: {msg.agent} | {formatWhatsappDate(msg.timestamp)}
+                          </div>
+                        </>
+                      : <span style={{ color: '#888' }}>Aguardando resposta...</span>
+                    }
                   </div>
                 </div>
               </div>
